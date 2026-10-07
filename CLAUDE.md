@@ -16,7 +16,7 @@
 - `pnpm build` / `pnpm start`：建置 / 正式環境啟動
 - `pnpm lint`：ESLint
 - `pnpm format` / `pnpm format:check`：Prettier 格式化 / 檢查
-- `pnpm exec tsc --noEmit`：型別檢查
+- `pnpm typecheck`：型別檢查（先 `next typegen` 產生 `LayoutProps` / `PageProps` 等路由型別，再 `tsc --noEmit`；乾淨環境直接跑 `tsc` 會找不到這些型別）
 - `pnpm exec prisma generate`：產生 Prisma Client（`pnpm install` 的 `postinstall` 也會自動執行）
 - `pnpm exec prisma migrate dev --name <name>`：修改 schema 後建立 migration
 
@@ -73,7 +73,7 @@
 ## 品質檢查流程
 
 - **改完任何 `.ts` / `.tsx` 後，回報完成前一律執行**：
-  1. `pnpm exec tsc --noEmit`
+  1. `pnpm typecheck`
   2. `pnpm lint`
   3. `pnpm format:check`（有格式問題直接 `pnpm format` 修正）
 - 修改 `prisma/schema.prisma` 後另外執行 `pnpm exec prisma validate`。

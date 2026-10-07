@@ -26,5 +26,6 @@ pnpm dev
 | `pnpm dev`          | Start the dev server        |
 | `pnpm build`        | Production build            |
 | `pnpm lint`         | ESLint                      |
+| `pnpm typecheck`    | Generate route types + tsc  |
 | `pnpm format`       | Format with Prettier        |
 | `pnpm format:check` | Check formatting            |
