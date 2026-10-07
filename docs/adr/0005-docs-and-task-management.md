@@ -26,6 +26,7 @@ CLAUDE.md 控制在 150 行內，細部規則拆到 `.claude/rules/`；文件以
 
 - `ROADMAP.md` + `PROGRESS.md`：待辦勾選與進度紀錄要人工同步，容易過期；兩份檔案內容又與 commit 歷史重疊。
 - 只靠 CLAUDE.md：規則、現況、待辦混在一起，篇幅失控後 AI 遵守度下降。
+- 每個分支開 PR：單人專案沒有審查者，PR 頁面的資訊與 commit 歷史、對話回報重複；合併改為本機 fast-forward，`Closes #N` 寫在 commit 即可關閉 issue。
 
 ## 後果
 
