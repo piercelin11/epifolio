@@ -1,0 +1,3 @@
+mkdocs-material
+# MkDocs 2.0 is incompatible with Material for MkDocs
+mkdocs<2

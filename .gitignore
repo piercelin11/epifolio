@@ -48,3 +48,8 @@ next-env.d.ts
 
 # local uploads
 /public/uploads/
+
+# docs site
+/site/
+/.venv/
+__pycache__/

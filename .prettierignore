@@ -2,6 +2,8 @@
 out/
 build/
 coverage/
+site/
+.venv/
 node_modules/
 src/generated/
 prisma/migrations/

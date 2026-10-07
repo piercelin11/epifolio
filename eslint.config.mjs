@@ -14,6 +14,9 @@ const eslintConfig = defineConfig([
 		"next-env.d.ts",
 		// Prisma generated client
 		"src/generated/**",
+		// MkDocs build output and Python venv
+		"site/**",
+		".venv/**",
 	]),
 ]);
 

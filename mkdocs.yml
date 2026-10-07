@@ -1,0 +1,29 @@
+site_name: "epifolio 文件"
+docs_dir: docs
+theme:
+  name: material
+  language: zh-TW
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+plugins:
+  - search
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn

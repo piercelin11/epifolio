@@ -1,143 +1,143 @@
 @AGENTS.md
 
-# Epifolio
+# epifolio
 
-## 專案目的
+食譜記錄 + 可翻頁的餐廳菜單書。個人本機使用。
+技術棧：Next.js 16、React 19、TypeScript 5、Tailwind CSS v4、shadcn（Base UI）、Prisma 7 + SQLite（版本以 `package.json` 為準）。文件站：MkDocs Material。
 
-可翻頁的自製菜單。菜單可新增、編輯；點進菜單項目可編輯食譜內容（材料、步驟、參考 URL、圖片等）。
+## 1. 工作階段規則
 
-## 溝通語言
+- 溝通一律繁體中文（回覆、提問、狀態更新）。
+- 開始：先讀 `docs/STATUS.md`，再 `gh issue list` 看待辦，依任務讀相關文件（見第 2 節）。
+- 結束或中斷前：**覆蓋更新** `docs/STATUS.md`（現在在做什麼 / 下一步 / 卡點與待決定）。只寫現況，不累加歷史。
+- 不確定就先問，一次問完，不要臆測需求。
+- 重大取捨（資料模型、儲存方式、套件選型）：先提 ADR 草稿請使用者確認，再實作。
+- 不擅自擴大範圍：發現額外問題就開 issue，不順手改。
+- 小改動（不超過一個檔案、沒有取捨）直接做，不需要計畫或 issue。
 
-與使用者的所有互動——回覆內容、提問、澄清、狀態更新——一律使用繁體中文。程式碼、identifier、commit message、檔案路徑等技術產物維持英文。
+## 2. 文件地圖
 
-## 專案指令
+| 文件                         | 用途                                                     |
+| ---------------------------- | -------------------------------------------------------- |
+| `docs/STATUS.md`             | 交接筆記：現在在哪、下一步、卡點                         |
+| `docs/vision.md`             | 目標、使用者、非目標、優先順序                           |
+| `docs/architecture.md`       | 系統總覽、資料流、目錄結構、設計原則                     |
+| `docs/glossary.md`           | 領域詞彙與對應的程式碼識別字                             |
+| `docs/features/`             | 每個功能「現在怎麼運作」（Reference）                    |
+| `docs/adr/`                  | 決策紀錄：為什麼選 A 不選 B                              |
+| `docs/plans/`                | 計畫（規格）：做之前寫，完成後封存                       |
+| GitHub Issues                | 待辦、優先序、「明確不做」（唯一來源）                   |
+| `.claude/rules/git.md`       | 分支、push 與 CI、合併、commit 規範（每次載入）          |
+| `.claude/rules/coding.md`    | 技術棧細節與程式碼規範（操作 `src/`、`prisma/` 時載入）  |
+| `.claude/rules/docs.md`      | 文件撰寫規範（操作 `docs/` 時載入）                      |
 
-- `pnpm dev`：開發伺服器（Turbopack）
-- `pnpm build` / `pnpm start`：建置 / 正式環境啟動
-- `pnpm lint`：ESLint
-- `pnpm format` / `pnpm format:check`：Prettier 格式化 / 檢查
-- `pnpm typecheck`：型別檢查（先 `next typegen` 產生 `LayoutProps` / `PageProps` 等路由型別，再 `tsc --noEmit`；乾淨環境直接跑 `tsc` 會找不到這些型別）
-- `pnpm exec prisma generate`：產生 Prisma Client（`pnpm install` 的 `postinstall` 也會自動執行）
-- `pnpm exec prisma migrate dev --name <name>`：修改 schema 後建立 migration
+## 3. 常用指令
 
-## 技術棧
+- 開發：`pnpm dev`（使用者自己開著，port 3000；**不要自己起 / 殺 dev server**，驗證用 `curl` 或 `pnpm build`）
+- 建置：`pnpm build` / `pnpm start`
+- 檢查：`pnpm typecheck`（`next typegen` + `tsc`）、`pnpm lint`、`pnpm format:check`（修正用 `pnpm format`）
+- 資料庫：`pnpm exec prisma migrate dev --name <name>`、`pnpm exec prisma validate`
+- 文件站預覽：`pnpm docs:serve`；建置檢查：`pnpm docs:build`（需先建 `.venv`，見 `README.md`）
+- 文件健檢：`/doc-audit`（只出報告，不自動修改）
 
-- **框架**：Next.js 16（App Router、Turbopack，預設啟用 `cacheComponents`）+ React 19 + TypeScript 5
-- **樣式**：Tailwind CSS v4（`@tailwindcss/turbopack`，無 `tailwind.config`；theme token 全在 `src/app/globals.css`）
-- **UI 元件**：shadcn（`base-nova` style，底層為 Base UI `@base-ui/react`，非 Radix）+ `lucide-react` 圖示 + `sonner` toast
-  - 新增元件用 `pnpm dlx shadcn@latest add <name>`，放在 `src/components/ui/`
-  - Base UI 的組合寫法是 `render` prop（例：`<DropdownMenuTrigger render={<Button />} />`），不是 Radix 的 `asChild`
-- **主題**：`next-themes`（`attribute="class"`，light / dark / system），切換元件 `src/components/theme-toggle.tsx`
-- **翻頁動畫**：`motion`（Framer Motion）+ CSS 3D transform 自製，不使用現成翻頁套件
-- **表單**：`react-hook-form` + `zod`（`@hookform/resolvers/zod`），動態清單（材料、步驟、URL）用 `useFieldArray`；表單 UI 用 shadcn 的 `field` 元件
-- **資料庫**：Prisma 7 + SQLite（`@prisma/adapter-better-sqlite3`）
-- **套件管理**：pnpm 8.15.4（`packageManager` 鎖定），Node >= 22
+## 4. 目錄結構
 
-## 目錄結構
+- `src/app/`：路由；`src/components/ui/`：shadcn 元件；`src/components/`：共用元件
+- `src/features/<feature>/`：功能模組；`src/lib/`：共用函式庫（`db.ts` 為 Prisma 單例）
+- `src/generated/prisma/`：Prisma 產出（gitignored）；`prisma/`：schema 與 migrations
+- `docs/`：專案文件（MkDocs）；`.claude/`：Claude 規則與指令；`.github/`：CI 與 issue 模板；`scripts/`：工具腳本
 
-- `src/app/`：路由
-- `src/components/ui/`：shadcn 元件（盡量不改，要客製就包一層）
-- `src/components/`：專案共用元件
-- `src/features/<feature>/`：功能模組（各自的 components / hooks / lib / actions）
-- `src/lib/`：共用函式庫；`src/lib/db.ts` 是 Prisma 單例
-- `src/generated/prisma/`：Prisma 產出（gitignored，不要手改）
-- `prisma/schema.prisma`、`prisma/migrations/`：schema 與 migration
+新增重要目錄時同步更新本節與 `docs/architecture.md`。
 
-## 資料庫
+## 5. 程式碼規範
 
-- 連線字串在 `.env` 的 `DATABASE_URL`（`file:./prisma/dev.db`），由 `prisma.config.ts` 與 `src/lib/db.ts` 讀取。`.env.example` 是範本。
-- Prisma 7 寫法：連線設定在 `prisma.config.ts`（不是 `schema.prisma` 的 `datasource.url`）；`PrismaClient` 必須搭配 driver adapter 建立。
-- `src/lib/db.ts` 檔頭有 `import "server-only"`，只能在 Server Component / Server Action import。
-- Prisma model 單數命名（`Recipe` 不是 `Recipes`），欄位 camelCase。
-- 修改 schema 後：`prisma migrate dev --name <name>`（會一併 generate）。
-- **資料存取用 Server Actions**（不建 REST API），回傳可序列化的 plain object（`Date` 先轉字串）。
-- `cacheComponents` 啟用時，讀 DB 的元件需要 `<Suspense>` 包裹或 `"use cache"`，**不要用 `export const dynamic`**（與 `cacheComponents` 不相容）。寫之前先讀 `node_modules/next/dist/docs/01-app/01-getting-started/08-caching.md`。
+- 識別字、檔名、註解、commit 訊息用英文；文件與 UI 以外的溝通用繁體中文；**UI 顯示文字一律英文**。
+- 領域詞彙一律使用 `docs/glossary.md` 的對應英文識別字，不自創同義詞。
+- 資料與呈現分離：資料模型與商業邏輯放在不依賴 UI 的模組，元件只負責呈現。
+- 樣式與主題用 design tokens（CSS variables / Tailwind theme）管理，不在元件內寫死顏色與頁面尺寸。
+- 需要互動展示的核心邏輯（如份數換算）：寫成純函式、參數集中單一設定檔，Artifact 或文件引用同一份。
+- **TODO**：Claude 不新增 `TODO`/`FIXME` 註解，發現新工作就開 issue；使用者自己寫的 `TODO` 不得刪除。
+- 技術棧細節與其餘規範見 `.claude/rules/coding.md`。
 
-## 圖片上傳
+## 6. 工作流程
 
-- 採本機儲存：Server Action 將圖片存進 `public/uploads/`（gitignored），DB 只存相對路徑。
-- 所有寫檔集中在單一 `saveImage()` 函式，日後改用雲端儲存（S3 / R2 / Vercel Blob）只需換這一處。
-- 前端上傳前先壓縮；顯示用 `next/image`。
+- 一切工作以 GitHub Issue 追蹤。開工前：`gh issue view <編號>`，依驗收條件做。
+- 分支：計畫工作用 `plan-NNN-<slug>`；其他用 `feat/<slug>`、`fix/<slug>`、`refactor/<slug>`、`chore/<slug>`、`docs/<slug>`。
+- **不開 PR**：每次 commit 後 push 並檢查 CI，使用者說「合併」才 fast-forward 合併進 `main`。細節見 `.claude/rules/git.md`。
+- 關聯 issue：commit body 結尾寫 `Refs #<編號>`（進行中）或 `Closes #<編號>`（完成），推到 `main` 時 GitHub 自動關閉。
+- 開 issue：使用 `.github/ISSUE_TEMPLATE/` 的格式（目標、驗收條件、不做的事、相關文件），用 `gh issue create`。
+- 決定不做的事：關閉 issue（`gh issue close <編號> --reason "not planned"`）並標 `wontfix`，附理由。
+- 已知限制：功能頁寫「已知限制」，同時開 issue 標 `known-limitation`。
 
-## 編碼規範
+## 7. 單一來源原則
 
-- **UI 文字語言**：所有顯示在畫面上的文字（按鈕、標籤、提示、錯誤訊息）一律英文。
-- **註解**：專業、簡潔，不使用表情符號。
-- **TypeScript 型別定義**：
-  - 純物件形狀（`{ key: value }` 結構，含 React props、API 資料結構）→ `interface`
-  - 其餘（union、intersection、utility types、mapped types、type alias）→ `type`
-- **Tailwind class 條件合併**：一律用 `cn()`（`@/lib/utils`），禁止 template literal 或三元字串拼接 class。
-- **顏色**：元件只用語意 token（`bg-background`、`text-muted-foreground`、`bg-primary`、`text-destructive`…），不直接寫 `slate-500` / `blue-600` 等色階，確保 light / dark 都正確。新增語意色時在 `globals.css` 的 `:root` 與 `.dark` 各加一組，並在 `@theme inline` 註冊。
-- **禁止事項**：不要移除程式碼中的 `TODO`。
+| 資訊                   | 唯一存放處                                           |
+| ---------------------- | ---------------------------------------------------- |
+| 待辦、優先序、明確不做 | GitHub Issues（不得出現在任何 md 檔）                |
+| 做了什麼、何時做的     | git commit（含 `Closes #N` 連結到 issue）            |
+| 現在怎麼運作           | `docs/features/`                                     |
+| 為什麼這樣決定         | `docs/adr/`（功能頁只放連結）                        |
+| 權重、門檻、參數       | 程式碼中的單一設定檔（文件引用路徑，不手抄數字）     |
+| 專有名詞定義           | `docs/glossary.md`                                   |
+| 規則與踩雷             | 本檔第 11 節                                         |
 
-## 品質檢查流程
+## 8. 計畫（docs/plans/）：自動辨識，使用者不用指示
 
-- **改完任何 `.ts` / `.tsx` 後，回報完成前一律執行**：
-  1. `pnpm typecheck`
-  2. `pnpm lint`
-  3. `pnpm format:check`（有格式問題直接 `pnpm format` 修正）
-- 修改 `prisma/schema.prisma` 後另外執行 `pnpm exec prisma validate`。
-- 錯誤與警告都要在回報前處理乾淨，不要留給使用者。
-- 以上與 `.github/workflows/ci.yml` 的檢查項目一致。CI 是在乾淨環境重跑一次的保險（例如本機殘留 `.next` 會掩蓋缺少產生型別的問題），流程見下方「Git 流程」。
-- **不要自己起 / 殺 dev server**：使用者平常自己開著 `pnpm dev`（port 3000）。要驗證 runtime，直接 `curl http://localhost:3000/...`；打不通就請使用者開 dev server，或改用 `pnpm build` 靜態驗證。
+**辨識意圖**
 
-## Git 流程
+- 使用者說「規劃／設計／想一下 X」→ 建立計畫。
+- 使用者說「開始做／執行計畫／繼續」→ 執行計畫。
 
-- **在 `main` 上絕不直接改**。每個新任務開始前先 `git branch --show-current` 確認分支：
-  - 一律從 `main` 開新分支（`feat/...`、`fix/...`、`refactor/...`、`chore/...`），不要在未合併的 feature 分支上疊新分支。
-  - 若當前分支還有未合併的完成工作，或分支名與新任務主題明顯不符 → 先停下來問使用者：
-    - (B) 先把當前分支 merge 回 `main`，再從 `main` 開新分支 ← **預設建議**
-    - (C) 在當前分支繼續（僅限同一主題的延續）
-    - (A) 從當前分支直接切新分支 ← 僅在使用者明確要求時使用，並說明兩份工作會綁在一起
-  - 分支名相符且無未合併的完成工作，或使用者已說「就在這改」→ 直接做，不用每次問。
-- **Commit 由 Claude 自行處理**：完成一個邏輯變更、通過品質檢查後就 commit，不需要每次詢問。
-- **每次 commit 後立刻 push 並檢查 CI**（CI 對所有分支的 push 觸發）：
-  1. `git push -u origin <branch>`（第一次）/ `git push`（之後）
-  2. `gh run watch $(gh run list --branch <branch> --limit 1 --json databaseId -q '.[0].databaseId') --exit-status`
-  3. 通過 → 繼續下一步工作。失敗 → `gh run view <run-id> --log-failed` 讀錯誤，依下面分級處理。
-- **CI 失敗分級**：
-  - **小問題 → 直接修正**：格式、lint、型別錯誤、漏產生的檔案、CI 設定本身的錯誤等，修法明確且不改變功能行為或設計。在同一分支**補一筆新的 commit**（如 `fix(ci): ...` 或對應 scope），重新 push 並再次確認 CI 通過，完成後在回覆中簡短告知使用者「CI 抓到什麼、怎麼修的」。
-  - **大問題 → 停下來回報使用者**：需要改變功能行為、資料結構（Prisma schema）、架構或相依套件版本；原因不明或無法在本機重現；同一問題修了兩次仍失敗。回報內容包含失敗步驟、錯誤摘要、推測原因與建議修法，等使用者決定再動手。
-- **不改寫已推上遠端的歷史**：不 `commit --amend` 已 push 的 commit、不 `git push --force`。唯一例外是合併前 rebase 自己的 feature 分支後，用 `git push --force-with-lease` 更新該分支；`main` 永遠不 force push。
-- **Merge 是使用者的決定**：使用者沒說不要自己 merge；使用者一說「合併 / merge / 提交並合併」就執行：
-  1. 確認該分支最新一次 CI 為通過（未通過先依上面分級處理）
-  2. `git checkout main && git pull --ff-only && git merge --ff-only <branch>`
-     （`--ff-only` 失敗代表 `main` 已前進：回分支 `git rebase main`、`git push --force-with-lease`、等 CI 通過後再合併）
-  3. `git push origin main`，確認 `main` 的 CI 通過
-  4. `git branch -d <branch> && git push origin --delete <branch>`
-- 不開 PR、不走 code review 流程。
+**建立計畫**
 
-## Commit Message 規範
+1. `ls docs/plans/` 取得下一個編號，建立 `PLAN-NNN-<slug>.md`（模板見 `docs/plans/README.md`），並更新其索引。
+2. 需求有模糊處，先問最少必要的問題。
+3. 填寫：目標、非目標、驗收條件、邊界情況、設計摘要、任務拆解。frontmatter `status: draft`。
+4. 摘要給使用者確認；**確認前不寫程式**。
 
-格式（全英文）：
+**執行計畫** — 找對應計畫的順序：
 
-```
-type(scope): imperative summary in lowercase
+1. 目前分支名含 `plan-NNN` → 就是那份。
+2. 在 `main` 且只有一份 `status` 為 `approved` 或 `in-progress` → 就是那份。
+3. 有多份 → 列出來請使用者選。
 
-Optional paragraph: why the change was made, its scope, and anything
-deliberately left out.
+使用者確認後（`draft` → `approved`）：
 
-- What changed, one logical change per bullet
-- Keep identifiers and file paths as-is (RecipeForm, src/lib/db.ts)
+- 建立父 issue（label `plan`，連到計畫檔），任務拆解建立為子 issue，把 issue 編號寫回計畫 frontmatter，從 `main` 建立分支 `plan-NNN-<slug>`，`status: in-progress`。子 issue 先查 `gh` 目前支援的做法；無法自動化時，改用父 issue 的任務清單（`- [ ] #編號`）並告知使用者。
+- 逐一完成子 issue（commit 寫 `Closes #子issue`）；進度只記在 issue，不在計畫檔勾選。
+- 全部完成：`status: done`，把持久知識遷移到 `docs/features/` 與 `docs/adr/`，關閉父 issue，更新 `docs/STATUS.md`。
+- 同時有多條計畫分支時：先合併的直接 fast-forward，後合併的必須先 `git rebase main`（見 `.claude/rules/git.md`）。
 
-Optional: how it was verified.
-```
+## 9. 完成定義與文件維護觸發表
 
-- **type**（僅限）：`feat` / `fix` / `refactor` / `perf` / `style` / `docs` / `chore` / `ci`
-  - `style` 指格式調整（不影響邏輯），UI 視覺調整屬於 `feat` 或 `fix`
-- **scope**：功能模組名（如 `menu`、`recipe`、`ui`、`db`、`theme`、`config`）。跨兩個模組用逗號（`menu,recipe`）；跨更多模組則省略 scope。不要用動作當 scope（如 `fix(merge)`）。
-- **header**：祈使語氣（`add` 不是 `added`）、小寫開頭、不加句號、不超過 72 字元。
-- **body**：每行約 72 字元換行；條列只寫「改了什麼」，不重複 header。小改動可以只有 header。
-- 修改 Prisma schema 時，body 註明 migration 名稱。
-- 一個 commit 只做一個邏輯變更。
-- **不要加 `Co-Authored-By` 或任何 AI 署名 trailer。**
+每次 commit 前：`pnpm typecheck`、`pnpm lint`、`pnpm format:check` 通過（改 schema 加 `prisma validate`；改 `docs/` 且有 `.venv` 加 `pnpm docs:build`）。push 後 CI 通過。功能完成前另需下表對應文件已更新。
 
-範例：
+| 發生什麼事                             | 必須更新                                                                      |
+| -------------------------------------- | ----------------------------------------------------------------------------- |
+| 功能完成                               | `docs/features/` 對應頁（含 `updated`、`source`）、`features/index.md`、glossary 新詞 |
+| 做了「選 A 不選 B」的取捨              | 新增 ADR（更新 `adr/README.md` 索引），功能頁加連結                           |
+| 架構、目錄、資料流變動                 | `docs/architecture.md`、本檔第 4 節                                           |
+| 被使用者糾正或踩雷                     | 本檔第 11 節新增一條編號規則（能自動檢查者附上對應 lint）                     |
+| 接入第一個外部 API 或新增資料源        | 建立或更新 `docs/data-sources.md`                                             |
+| 出現第一個維運步驟（部署、排程、排查） | 建立或更新 `docs/runbook.md`                                                  |
+| 新增環境變數                           | `.env.example` 與 `README.md`                                                 |
+| 範圍改變                               | `docs/vision.md` 的「非目標」                                                 |
+| 發現新工作                             | 開 issue（不寫 TODO、不建 md 待辦）                                           |
+| 每次對話結束                           | 覆蓋 `docs/STATUS.md`                                                         |
 
-```
-feat(recipe): add reference url list to recipe form
+## 10. 文件撰寫規範
 
-- RecipeForm uses useFieldArray for dynamic url rows
-- recipeSchema validates each entry with z.url()
-- Add RecipeUrl model (migration: add_recipe_url)
-```
+詳見 `.claude/rules/docs.md`。重點：繁體中文、固定模板、一件事一個地方、不手抄參數、功能頁維護 `source` 與 `updated`。
+
+## 11. 絕對不要做的事與編號規則
+
+**絕對不要**
+
+- 提交 `.env` 或任何金鑰；force push 到 `main`；跳過 hooks；在 commit 加 `Co-Authored-By` 等 AI 署名。
+- 在 md 檔建立待辦清單或進度紀錄；在文件中手抄權重、門檻等參數。
+- 沒有計畫與確認就動手做大功能；擅自擴大範圍。
+- 把食譜與菜單品項混為同一個資料結構（見 `docs/architecture.md`）。
+
+**編號規則**（每次被糾正或踩雷後新增，格式：`R<編號>. 規則（原因，日期）`）
+
+- R1. 型別檢查用 `pnpm typecheck`，不直接跑 `tsc`（乾淨環境缺 `next typegen` 產生的 `LayoutProps` 等型別，CI 曾因此失敗，2026-10-07）
