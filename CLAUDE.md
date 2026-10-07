@@ -78,7 +78,7 @@
   3. `pnpm format:check`（有格式問題直接 `pnpm format` 修正）
 - 修改 `prisma/schema.prisma` 後另外執行 `pnpm exec prisma validate`。
 - 錯誤與警告都要在回報前處理乾淨，不要留給使用者。
-- 以上與 `.github/workflows/ci.yml` 的檢查項目一致，本機通過即代表 CI 會通過。
+- 以上與 `.github/workflows/ci.yml` 的檢查項目一致。CI 是在乾淨環境重跑一次的保險（例如本機殘留 `.next` 會掩蓋缺少產生型別的問題），流程見下方「Git 流程」。
 - **不要自己起 / 殺 dev server**：使用者平常自己開著 `pnpm dev`（port 3000）。要驗證 runtime，直接 `curl http://localhost:3000/...`；打不通就請使用者開 dev server，或改用 `pnpm build` 靜態驗證。
 
 ## Git 流程
@@ -91,9 +91,20 @@
     - (A) 從當前分支直接切新分支 ← 僅在使用者明確要求時使用，並說明兩份工作會綁在一起
   - 分支名相符且無未合併的完成工作，或使用者已說「就在這改」→ 直接做，不用每次問。
 - **Commit 由 Claude 自行處理**：完成一個邏輯變更、通過品質檢查後就 commit，不需要每次詢問。
-- **Merge 是使用者的決定**：使用者沒說不要自己 merge；使用者一說「合併 / merge / 提交並合併」就直接執行：
-  `git checkout main && git merge --ff-only <branch> && git branch -d <branch>`
-  （`--ff-only` 失敗代表 `main` 已前進，先在分支上 `git rebase main` 再合併。）
+- **每次 commit 後立刻 push 並檢查 CI**（CI 對所有分支的 push 觸發）：
+  1. `git push -u origin <branch>`（第一次）/ `git push`（之後）
+  2. `gh run watch $(gh run list --branch <branch> --limit 1 --json databaseId -q '.[0].databaseId') --exit-status`
+  3. 通過 → 繼續下一步工作。失敗 → `gh run view <run-id> --log-failed` 讀錯誤，依下面分級處理。
+- **CI 失敗分級**：
+  - **小問題 → 直接修正**：格式、lint、型別錯誤、漏產生的檔案、CI 設定本身的錯誤等，修法明確且不改變功能行為或設計。在同一分支**補一筆新的 commit**（如 `fix(ci): ...` 或對應 scope），重新 push 並再次確認 CI 通過，完成後在回覆中簡短告知使用者「CI 抓到什麼、怎麼修的」。
+  - **大問題 → 停下來回報使用者**：需要改變功能行為、資料結構（Prisma schema）、架構或相依套件版本；原因不明或無法在本機重現；同一問題修了兩次仍失敗。回報內容包含失敗步驟、錯誤摘要、推測原因與建議修法，等使用者決定再動手。
+- **不改寫已推上遠端的歷史**：不 `commit --amend` 已 push 的 commit、不 `git push --force`。唯一例外是合併前 rebase 自己的 feature 分支後，用 `git push --force-with-lease` 更新該分支；`main` 永遠不 force push。
+- **Merge 是使用者的決定**：使用者沒說不要自己 merge；使用者一說「合併 / merge / 提交並合併」就執行：
+  1. 確認該分支最新一次 CI 為通過（未通過先依上面分級處理）
+  2. `git checkout main && git pull --ff-only && git merge --ff-only <branch>`
+     （`--ff-only` 失敗代表 `main` 已前進：回分支 `git rebase main`、`git push --force-with-lease`、等 CI 通過後再合併）
+  3. `git push origin main`，確認 `main` 的 CI 通過
+  4. `git branch -d <branch> && git push origin --delete <branch>`
 - 不開 PR、不走 code review 流程。
 
 ## Commit Message 規範
