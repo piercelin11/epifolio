@@ -1,56 +1,62 @@
 # epifolio
 
-食譜記錄 + 可翻頁的餐廳菜單書。個人本機使用。
+A personal recipe book that doubles as a page-flipping restaurant menu. Built for local, single-user use.
 
-## 這是什麼
+## Features
 
-- 記錄食譜：用量、步驟、參考連結、圖片。
-- 把食譜編排成自己的餐廳菜單，用翻頁的方式瀏覽與編輯。
-- 之後：菜單輸出 PDF、多種菜單主題。
+- Record recipes: ingredients, steps, reference links and images.
+- Arrange recipes into your own restaurant menu, then browse and edit it like a book.
+- Planned: export menus to PDF and switch between menu themes.
 
-## 技術棧
+## Tech stack
 
 - Next.js 16 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4 + shadcn (Base UI) + next-themes
-- motion（翻頁動畫）
+- motion for the page-flip animation
 - react-hook-form + zod
 - Prisma 7 + SQLite
 
-## 快速開始
+## Getting started
+
+Requires Node.js 22+ and pnpm 8.
 
 ```bash
 cp .env.example .env
-pnpm install                  # 會自動執行 prisma generate
+pnpm install                  # also runs prisma generate
 pnpm exec prisma migrate dev
-pnpm dev                      # 開發伺服器
+pnpm dev
 ```
 
-## 指令
+## Scripts
 
-| 指令                | 說明                                  |
-| ------------------- | ------------------------------------- |
-| `pnpm dev`          | 開發伺服器                            |
-| `pnpm build`        | 正式環境建置                          |
-| `pnpm lint`         | ESLint                                |
-| `pnpm typecheck`    | 產生路由型別 + tsc                    |
-| `pnpm format`       | Prettier 格式化                       |
-| `pnpm format:check` | Prettier 檢查                         |
-| `pnpm docs:serve`   | 文件站本機預覽                        |
-| `pnpm docs:build`   | 文件站建置檢查（strict）              |
+| Command             | Description                          |
+| ------------------- | ------------------------------------ |
+| `pnpm dev`          | Start the dev server                 |
+| `pnpm build`        | Production build                     |
+| `pnpm lint`         | Run ESLint                           |
+| `pnpm typecheck`    | Generate route types and run tsc     |
+| `pnpm format`       | Format with Prettier                 |
+| `pnpm format:check` | Check formatting                     |
+| `pnpm docs:serve`   | Preview the docs site locally        |
+| `pnpm docs:build`   | Build the docs site in strict mode   |
 
-## 環境變數
+## Environment variables
 
-| 變數           | 說明                                     |
-| -------------- | ---------------------------------------- |
-| `DATABASE_URL` | SQLite 檔案路徑，預設 `file:./prisma/dev.db` |
+| Variable       | Description                                          |
+| -------------- | ---------------------------------------------------- |
+| `DATABASE_URL` | SQLite database file, defaults to `file:./prisma/dev.db` |
 
-## 文件
+## Documentation
 
-- 專案文件放在 `docs/`，用 MkDocs Material 本機預覽：
-  ```bash
-  python3 -m venv .venv
-  .venv/bin/pip install -r requirements-docs.txt
-  pnpm docs:serve
-  ```
-- 給 AI 協作者的規則見 `CLAUDE.md`；目前進度見 `docs/STATUS.md`。
-- 待辦與路線圖在 GitHub Issues。
+Project documentation lives in `docs/` (written in Traditional Chinese) and is previewed locally with MkDocs Material:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-docs.txt
+pnpm docs:serve
+```
+
+- Current status: `docs/STATUS.md`
+- Architecture and decisions: `docs/architecture.md`, `docs/adr/`
+- Rules for AI collaborators: `CLAUDE.md`
+- Tasks and roadmap: GitHub Issues

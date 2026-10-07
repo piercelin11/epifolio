@@ -51,7 +51,7 @@
 
 ## 5. 程式碼規範
 
-- 識別字、檔名、註解、commit 訊息用英文；文件與 UI 以外的溝通用繁體中文；**UI 顯示文字一律英文**。
+- 語言：識別字、檔名、註解、commit 訊息、`README.md` 用英文；`docs/` 文件與溝通用繁體中文；**UI 顯示文字一律英文**。
 - 領域詞彙一律使用 `docs/glossary.md` 的對應英文識別字，不自創同義詞。
 - 資料與呈現分離：資料模型與商業邏輯放在不依賴 UI 的模組，元件只負責呈現。
 - 樣式與主題用 design tokens（CSS variables / Tailwind theme）管理，不在元件內寫死顏色與頁面尺寸。
@@ -120,7 +120,7 @@
 | 被使用者糾正或踩雷                     | 本檔第 11 節新增一條編號規則（能自動檢查者附上對應 lint）                     |
 | 接入第一個外部 API 或新增資料源        | 建立或更新 `docs/data-sources.md`                                             |
 | 出現第一個維運步驟（部署、排程、排查） | 建立或更新 `docs/runbook.md`                                                  |
-| 新增環境變數                           | `.env.example` 與 `README.md`                                                 |
+| 新增或修改 scripts、安裝步驟、環境變數、技術棧 | `README.md`（英文）；環境變數另加 `.env.example`                     |
 | 範圍改變                               | `docs/vision.md` 的「非目標」                                                 |
 | 發現新工作                             | 開 issue（不寫 TODO、不建 md 待辦）                                           |
 | 每次對話結束                           | 覆蓋 `docs/STATUS.md`                                                         |
