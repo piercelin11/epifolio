@@ -12,16 +12,16 @@ export function MenuItemRow({ item, onSelect }: MenuItemRowProps) {
 			<button
 				type="button"
 				onClick={onSelect}
-				className="group grid w-full max-w-2xl cursor-pointer grid-cols-[1fr_auto] gap-x-10 gap-y-1 text-left"
+				className="group grid w-full cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-10 gap-y-1 text-left"
 			>
-				<span className="font-heading text-primary text-2xl uppercase group-hover:underline">
+				<span className="font-heading text-title uppercase group-hover:underline">
 					{item.name}
 				</span>
-				<span className="self-center tabular-nums">
+				<span className="text-body tabular-nums">
 					{formatPrice(item.price)}
 				</span>
 				{item.description && (
-					<span className="col-span-full text-sm">{item.description}</span>
+					<span className="text-body col-span-full">{item.description}</span>
 				)}
 			</button>
 		</li>

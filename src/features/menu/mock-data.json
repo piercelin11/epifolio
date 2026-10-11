@@ -4,11 +4,16 @@
 		"title": "Table for One",
 		"subtitle": "A personal menu, cooked and revised at home",
 		"currency": "TWD",
+		"groups": [
+			{ "id": "main", "label": "Main", "order": 1 },
+			{ "id": "dessert", "label": "Dessert", "order": 2 },
+			{ "id": "drinks", "label": "Drinks", "order": 3 }
+		],
 		"categories": [
-			{ "id": "starters", "label": "Starters", "order": 1 },
-			{ "id": "pasta", "label": "Pasta", "order": 2 },
-			{ "id": "mains", "label": "Mains", "order": 3 },
-			{ "id": "desserts", "label": "Desserts", "order": 4 }
+			{ "id": "starters", "label": "Starters", "order": 1, "group": "main" },
+			{ "id": "pasta", "label": "Pasta", "order": 2, "group": "main" },
+			{ "id": "mains", "label": "Mains", "order": 3, "group": "main" },
+			{ "id": "desserts", "label": "Desserts", "order": 4, "group": "dessert" }
 		]
 	},
 	"dishes": [

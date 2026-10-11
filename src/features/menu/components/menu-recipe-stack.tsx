@@ -8,16 +8,16 @@ import { usePaperStack } from "@/features/paper-stack/hooks/use-paper-stack";
 import { RecipeSheet } from "@/features/recipe/components/recipe-sheet";
 import type { Recipe } from "@/features/recipe/types";
 
-import type { Section } from "../types";
+import type { MenuGroup } from "../types";
 import { MenuSheet } from "./menu-sheet";
 
 interface MenuRecipeStackProps {
-	sections: Section[];
+	group: MenuGroup;
 	recipes: Recipe[];
 }
 
 /** The menu sheet over the recipe sheet; picking an item swaps them. */
-export function MenuRecipeStack({ sections, recipes }: MenuRecipeStackProps) {
+export function MenuRecipeStack({ group, recipes }: MenuRecipeStackProps) {
 	const stack = usePaperStack("base");
 	const [recipeId, setRecipeId] = useState<string>();
 	const recipe = recipes.find((r) => r.id === recipeId);
@@ -30,7 +30,7 @@ export function MenuRecipeStack({ sections, recipes }: MenuRecipeStackProps) {
 				content: (
 					<PaperSheet tone="paper">
 						<MenuSheet
-							sections={sections}
+							group={group}
 							onSelectItem={(item) =>
 								stack.swapTo("offset", () => setRecipeId(item.recipeId))
 							}

@@ -35,11 +35,12 @@ export function PaperSheet({
 					className
 				)}
 			>
-				{children}
+				{/* Texture sits under the content, so text stays a clean solid colour */}
 				<div
 					aria-hidden
 					className="paper-texture pointer-events-none absolute inset-0"
 				/>
+				<div className="relative">{children}</div>
 			</div>
 		</div>
 	);

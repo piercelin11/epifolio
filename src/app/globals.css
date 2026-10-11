@@ -50,6 +50,26 @@
 	--radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+ * Type scale by role, on a 1.25 ratio from a 16px body. Large roles
+ * scale with the viewport. Use these instead of text-sm, text-2xl, etc.
+ */
+@theme {
+	--text-caption: 0.875rem;
+	--text-caption--line-height: 1.45;
+	--text-body: 1rem;
+	--text-body--line-height: 1.5;
+	--text-title: 1.5625rem;
+	--text-title--line-height: 1.2;
+	--text-title--letter-spacing: 0.02em;
+	--text-headline: clamp(2.5rem, 1.5rem + 2vw, 3.8125rem);
+	--text-headline--line-height: 1.05;
+	--text-headline--letter-spacing: -0.01em;
+	--text-display: clamp(3rem, 1.75rem + 3vw, 4.75rem);
+	--text-display--line-height: 1;
+	--text-display--letter-spacing: -0.02em;
+}
+
 :root {
 	/* Menu palette (light): paper, ink, red accent */
 	--background: #eae0d0;
