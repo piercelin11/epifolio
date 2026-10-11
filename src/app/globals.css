@@ -86,14 +86,14 @@
 
 .dark {
 	/* Menu palette (dark): olive, cream, mustard accent */
-	--background: #3f4328;
+	--background: #2f331a;
 	--foreground: #f2e8d8;
 	--card: #484c30;
 	--card-foreground: #f2e8d8;
 	--popover: #4b4f33;
 	--popover-foreground: #f2e8d8;
 	--primary: #dbc437;
-	--primary-foreground: #3f4328;
+	--primary-foreground: #2f331a;
 	--secondary: #53573a;
 	--secondary-foreground: #f2e8d8;
 	--muted: #4d5134;
