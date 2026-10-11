@@ -1,15 +1,20 @@
 import { ThemeToggle } from "@/components/theme-toggle";
+import { MenuBook } from "@/features/menu/components/menu-book";
+import { getMockMenu } from "@/features/menu/lib/mock-menu";
+import { splitIntoSpread } from "@/features/menu/lib/spread";
 
 export default function Home() {
+	const menu = getMockMenu();
+
 	return (
-		<main className="flex flex-1 flex-col">
-			<header className="flex items-center justify-between border-b px-6 py-4">
-				<h1 className="font-heading text-lg font-semibold">Epifolio</h1>
-				<ThemeToggle />
-			</header>
-			<section className="flex flex-1 items-center justify-center p-6">
-				<p className="text-muted-foreground">Menu coming soon.</p>
-			</section>
-		</main>
+		<MenuBook
+			spread={splitIntoSpread(menu.sections)}
+			leftHeader={<h1 className="font-heading text-xl font-bold">Epifolio</h1>}
+			rightHeader={
+				<div className="ml-auto">
+					<ThemeToggle />
+				</div>
+			}
+		/>
 	);
 }
