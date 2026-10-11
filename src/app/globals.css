@@ -153,6 +153,32 @@
 	--paper-hole-inset: 2.25rem;
 }
 
+/* The dark texture swallows dark paper under overlay; soften it */
+.dark {
+	--paper-texture-opacity: 0.35;
+}
+
+/* Texture layer laid over a sheet; blends with the sheet colour beneath */
+@utility paper-texture {
+	background-image: var(--paper-texture);
+	background-repeat: repeat-y;
+	background-size: 100% auto;
+	mix-blend-mode: overlay;
+	opacity: var(--paper-texture-opacity);
+}
+
+/* Cuts real, see-through holes down the right edge of the sheet */
+@utility paper-perforated {
+	--hole-radius: calc(var(--paper-hole-size) / 2);
+	mask-image: radial-gradient(
+		circle var(--hole-radius) at calc(100% - var(--paper-hole-inset)) 50%,
+		transparent calc(var(--hole-radius) - 0.5px),
+		#000 var(--hole-radius)
+	);
+	mask-size: 100% var(--paper-hole-pitch);
+	mask-repeat: repeat-y;
+}
+
 /* Colour mode cross-fade; ThemeToggle uses the View Transitions API */
 :root {
 	--color-mode-transition-duration: 300ms;
