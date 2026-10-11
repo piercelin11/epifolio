@@ -32,7 +32,7 @@ export function PaperSheet({
 					"relative isolate h-full",
 					toneClasses[tone],
 					perforated && "paper-perforated",
-					className,
+					className
 				)}
 			>
 				{children}

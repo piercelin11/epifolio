@@ -22,7 +22,7 @@ export function PaperStack({ base, offset, front }: PaperStackProps) {
 			<div
 				className={cn(
 					"col-start-1 row-start-1 min-h-[calc(100dvh-var(--paper-top))] w-(--paper-width)",
-					front === "base" && "z-10",
+					front === "base" && "z-10"
 				)}
 			>
 				{base}
@@ -30,7 +30,7 @@ export function PaperStack({ base, offset, front }: PaperStackProps) {
 			<div
 				className={cn(
 					"col-start-1 row-start-1 mt-(--paper-offset-y) ml-(--paper-offset-x) min-h-[calc(100dvh-var(--paper-top))] w-(--paper-width)",
-					front === "offset" && "z-10",
+					front === "offset" && "z-10"
 				)}
 			>
 				{offset}
