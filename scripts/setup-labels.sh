@@ -11,7 +11,7 @@ create "chore"            "cfd3d7" "雜務、維護"
 create "docs"             "0075ca" "文件"
 # area
 create "area:recipe"      "5319e7" "食譜資料與頁面"
-create "area:menu"        "5319e7" "菜單與翻頁檢視"
+create "area:menu"        "5319e7" "菜單與紙張堆疊"
 create "area:ui"          "5319e7" "共用 UI、主題"
 create "area:export"      "5319e7" "輸出（PDF 等）"
 # priority

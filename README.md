@@ -1,6 +1,6 @@
 # epifolio
 
-A personal recipe book that doubles as a page-flipping restaurant menu. Built for local, single-user use.
+A personal recipe book that doubles as a restaurant menu with a distinctive, animated interface. Built for local, single-user use.
 
 ## Features
 
@@ -12,7 +12,7 @@ A personal recipe book that doubles as a page-flipping restaurant menu. Built fo
 
 - Next.js 16 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4 + shadcn (Base UI) + next-themes
-- motion for the page-flip animation
+- motion for UI animation
 - react-hook-form + zod
 - Prisma 7 + SQLite
 

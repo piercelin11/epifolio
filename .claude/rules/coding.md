@@ -17,7 +17,7 @@ paths:
   - Base UI 的組合寫法是 `render` prop（例：`<DropdownMenuTrigger render={<Button />} />`），不是 Radix 的 `asChild`
   - `cn()` 由 shadcn 官方 `cn` 套件提供（取代 clsx + tailwind-merge），專案內從 `@/lib/utils` import
 - **色彩模式**（`ColorMode`）：`next-themes`（`attribute="class"`，預設 system），切換元件 `src/components/theme-toggle.tsx` 只在 light / dark 間切換（View Transitions 淡入淡出）。與菜單主題（`MenuTheme`）是不同概念，見 `docs/glossary.md`。
-- **翻頁動畫**：`motion` + CSS 3D transform 自製，不使用現成翻頁套件（ADR-0004）
+- **動畫**：`motion`（`motion/react`）；可調參數集中在單一設定檔，例如 `src/features/paper-stack/swap-motion.ts`（ADR-0007）
 - **表單**：`react-hook-form` + `zod`（`@hookform/resolvers/zod`），動態清單（用量、步驟、參考連結）用 `useFieldArray`；表單 UI 用 shadcn 的 `field` 元件
 - **套件管理**：pnpm 8.15.4（`packageManager` 鎖定），Node >= 22
 

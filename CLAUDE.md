@@ -2,7 +2,7 @@
 
 # epifolio
 
-食譜記錄 + 可翻頁的餐廳菜單書。個人本機使用。
+食譜記錄 + 有獨特 UI 與動畫的餐廳菜單。個人本機使用。
 技術棧：Next.js 16、React 19、TypeScript 5、Tailwind CSS v4、shadcn（Base UI）、Prisma 7 + SQLite（版本以 `package.json` 為準）。文件站：MkDocs Material。
 
 ## 1. 工作階段規則

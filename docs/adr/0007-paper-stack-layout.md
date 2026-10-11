@@ -26,7 +26,7 @@ PLAN-001 的首頁是左右攤開的菜單書（`MenuSpread`）。使用者想�
 - 紙張的幾何與外觀參數都是 `globals.css` 的 design token，元件內不寫死尺寸。
 - 用了 mask 的紙不能用 `box-shadow`，陰影改由外層的 `drop-shadow` 提供。
 - 換紙時紙張會位移到畫面外，頁面容器必須裁切溢出（`overflow: clip`），否則會撐大捲動範圍。
-- 願景中的「翻頁」（[ADR-0004](0004-custom-page-flip.md)）尚未實作；紙張堆疊是目前首頁的呈現方式，與翻頁如何並存之後再決定。
+- 書本式翻頁不再是網站特色（取代 [ADR-0004](0004-custom-page-flip.md)）；特色改為獨特的 UI 與動畫，不侷限於特定形式，見 [願景](../vision.md)。
 
 ## 相關
 

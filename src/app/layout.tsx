@@ -8,7 +8,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
 	title: "Epifolio",
-	description: "A page-flipping personal menu and recipe book",
+	description: "A personal menu and recipe book",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -16,13 +16,12 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 | 資料     | Prisma 7 + SQLite，資料存取走 Server Actions           | [ADR-0001](adr/0001-prisma-with-sqlite.md) |
 | 圖片     | 本機 `public/uploads/`，DB 只存路徑                    | [ADR-0002](adr/0002-local-image-storage.md) |
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
-| 翻頁     | `motion` + CSS 3D transform 自製                       | [ADR-0004](adr/0004-custom-page-flip.md)   |
 | 首頁版面 | 紙張堆疊（`PaperStack`），換紙動畫用 `motion`          | [ADR-0007](adr/0007-paper-stack-layout.md) |
 | 色彩模式 | `next-themes`（light / dark 切換，初次造訪跟隨 system） | —                                          |
 
 ```mermaid
 flowchart LR
-    UI[元件：FlipView / QuickView / 表單] -->|呼叫| SA[Server Actions]
+    UI[元件：PaperStack / QuickView / 表單] -->|呼叫| SA[Server Actions]
     SA --> DOMAIN[領域邏輯：純函式]
     SA --> DB[(SQLite via Prisma)]
     SA --> FS[public/uploads]
@@ -47,13 +46,13 @@ erDiagram
 ## 設計原則
 
 1. **資料與呈現分離**：資料模型與商業邏輯不依賴 UI；元件只負責呈現。
-2. **翻頁只是菜單檢視的一種皮**：另保留不翻頁的快速檢視（清單或搜尋），避免翻頁效果拖累編輯、搜尋與手機操作。
+2. **特色在 UI 與動畫，但不犧牲操作**：獨特的呈現與動畫是網站特色，資料與呈現分離，必要時另提供精簡的快速檢視（清單或搜尋）。
 3. **主題化**：頁面尺寸、顏色、字型用 design tokens 管理，為之後的 PDF 輸出與多種菜單主題預留空間。
 4. **單一設定檔**：可調參數集中管理，文件只引用路徑。
 
 ## 已知風險
 
-- 翻頁的擬真效果可能拖累編輯、搜尋與手機操作 → 由原則 1、2 處理：資料與呈現分離，並保留 QuickView 當後路。
+- 動畫與特殊版面可能拖累編輯、搜尋與手機操作 → 由原則 1、2 處理：資料與呈現分離，並保留 QuickView 當後路。
 
 ## 目錄結構
 
@@ -75,6 +74,5 @@ erDiagram
 ## 待決定
 
 - 資料模型欄位與關係、圖片上傳細節
-- 翻頁元件的互動細節
 
 各項待規劃時建立計畫，見 [計畫索引](plans/README.md)。

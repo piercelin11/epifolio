@@ -1,7 +1,7 @@
 # ADR-0004：翻頁以 motion 與 CSS 3D 自製
 
 日期：2026-10-07
-狀態：Accepted
+狀態：Superseded by ADR-0007
 
 ## 背景
 

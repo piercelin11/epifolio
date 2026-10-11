@@ -19,7 +19,7 @@
 ## 後果
 
 - 元件組合寫法使用 Base UI 的 `render` prop，不是 Radix 的 `asChild`。
-- 翻頁等 shadcn 沒有的元件需要自製（見 ADR-0004）。
+- 紙張堆疊等 shadcn 沒有的元件需要自製（見 ADR-0007）。
 
 ## 相關
 
