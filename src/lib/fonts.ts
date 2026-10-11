@@ -1,12 +1,11 @@
-import { IBM_Plex_Sans, Rufina } from "next/font/google";
+import { IBM_Plex_Sans, Playfair_Display } from "next/font/google";
 
 // Fonts are named by role, not by typeface (ADR-0006). To swap a typeface,
 // change the import and the loader call here; components keep using
 // `font-heading` / `font-sans`, mapped in src/app/globals.css.
 
 /** Site title, section headings and dish names. */
-export const headingFont = Rufina({
-	weight: ["400", "700"],
+export const headingFont = Playfair_Display({
 	subsets: ["latin"],
 	variable: "--font-heading-src",
 });
