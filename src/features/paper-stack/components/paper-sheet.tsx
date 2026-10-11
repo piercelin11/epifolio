@@ -26,10 +26,10 @@ export function PaperSheet({
 }: PaperSheetProps) {
 	return (
 		// The mask would clip a box-shadow, so the shadow sits on this wrapper.
-		<div className="h-full drop-shadow-xl">
+		<div className="flex flex-1 flex-col drop-shadow-xl">
 			<div
 				className={cn(
-					"relative isolate h-full",
+					"relative isolate flex-1",
 					toneClasses[tone],
 					perforated && "paper-perforated",
 					className

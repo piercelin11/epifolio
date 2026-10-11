@@ -9,9 +9,12 @@ import type { StackPosition } from "../types";
 
 const positions: StackPosition[] = ["base", "offset"];
 
-/** Distance that moves a sheet resting at `restTop` fully below the viewport. */
-function exitDistance(restTop: number) {
-	return window.innerHeight - restTop + swapMotion.exitMargin;
+/**
+ * Distance that moves a sheet fully below the visible part of the scroll
+ * area, given the sheet's top relative to the area's top edge.
+ */
+function exitDistance(area: HTMLElement, topInView: number) {
+	return area.clientHeight - topInView + swapMotion.exitMargin;
 }
 
 /**
@@ -22,6 +25,7 @@ function exitDistance(restTop: number) {
 export function usePaperStack(initialFront: StackPosition = "base") {
 	const [front, setFront] = useState(initialFront);
 	const swapping = useRef(false);
+	const scrollRef = useRef<HTMLDivElement>(null);
 	const sheetRefs = useRef<Record<StackPosition, HTMLDivElement | null>>({
 		base: null,
 		offset: null,
@@ -30,12 +34,13 @@ export function usePaperStack(initialFront: StackPosition = "base") {
 
 	/** `onHidden` runs while the sheets are off-screen, before they rise. */
 	async function swapTo(next: StackPosition, onHidden?: () => void) {
-		if (swapping.current || next === front) return;
+		const area = scrollRef.current;
+		if (!area || swapping.current || next === front) return;
 
 		if (reduceMotion) {
 			onHidden?.();
 			setFront(next);
-			window.scrollTo({ top: 0, behavior: "instant" });
+			area.scrollTo({ top: 0, behavior: "instant" });
 			return;
 		}
 
@@ -51,8 +56,10 @@ export function usePaperStack(initialFront: StackPosition = "base") {
 			const riseOrder = (position: StackPosition) =>
 				position === next ? 1 : 0;
 
-			const docTops = sheets.map(
-				({ el }) => el.getBoundingClientRect().top + window.scrollY
+			// Sheet tops within the scrolled content, independent of scroll position.
+			const areaTop = area.getBoundingClientRect().top;
+			const contentTops = sheets.map(
+				({ el }) => el.getBoundingClientRect().top - areaTop + area.scrollTop
 			);
 
 			await Promise.all(
@@ -60,7 +67,7 @@ export function usePaperStack(initialFront: StackPosition = "base") {
 					animate(
 						el,
 						{
-							y: exitDistance(docTops[i] - window.scrollY),
+							y: exitDistance(area, contentTops[i] - area.scrollTop),
 							rotate: swapMotion.rotate[position].out,
 						},
 						{
@@ -75,14 +82,14 @@ export function usePaperStack(initialFront: StackPosition = "base") {
 				onHidden?.();
 				setFront(next);
 			});
-			window.scrollTo({ top: 0, behavior: "instant" });
+			area.scrollTo({ top: 0, behavior: "instant" });
 
 			await Promise.all(
 				sheets.map(({ position, el }, i) =>
 					animate(
 						el,
 						{
-							y: [exitDistance(docTops[i]), 0],
+							y: [exitDistance(area, contentTops[i]), 0],
 							rotate: [swapMotion.rotate[position].in, 0],
 						},
 						{
@@ -97,7 +104,7 @@ export function usePaperStack(initialFront: StackPosition = "base") {
 		}
 	}
 
-	return { front, swapTo, sheetRefs };
+	return { front, swapTo, sheetRefs, scrollRef };
 }
 
 export type PaperStackController = ReturnType<typeof usePaperStack>;
