@@ -23,4 +23,4 @@ Server Action 將圖片寫入 `public/uploads/`（gitignored），資料庫只�
 
 ## 相關
 
-PLAN-001（圖片上傳細節）
+圖片上傳細節待後續計畫規劃（見 [計畫索引](../plans/README.md)）
