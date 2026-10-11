@@ -19,7 +19,7 @@ export function MenuPage({ header, sections, className }: MenuPageProps) {
 				{header}
 			</header>
 			<div className="flex-1 overflow-y-auto px-10 pt-6 pb-10">
-				<div className="mx-auto flex max-w-xl flex-col gap-12">
+				<div className="flex flex-col gap-12">
 					{sections.map((section) => (
 						<MenuSection key={section.id} section={section} />
 					))}

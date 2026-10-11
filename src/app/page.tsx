@@ -9,7 +9,11 @@ export default function Home() {
 	return (
 		<MenuBook
 			spread={splitIntoSpread(menu.sections)}
-			leftHeader={<h1 className="font-heading text-xl font-bold">Epifolio</h1>}
+			leftHeader={
+				<h1 className="font-heading text-primary text-xl font-bold">
+					Epifolio
+				</h1>
+			}
 			rightHeader={
 				<div className="ml-auto">
 					<ThemeToggle />
