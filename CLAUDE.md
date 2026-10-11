@@ -45,6 +45,7 @@
 - `src/app/`：路由；`src/components/ui/`：shadcn 元件；`src/components/`：共用元件
 - `src/features/<feature>/`：功能模組；`src/lib/`：共用函式庫（`db.ts` 為 Prisma 單例）
 - `src/generated/prisma/`：Prisma 產出（gitignored）；`prisma/`：schema 與 migrations
+- `public/`：靜態檔（`textures/` 紙張材質；`uploads/` 上傳圖片，gitignored）
 - `docs/`：專案文件（MkDocs）；`.claude/`：Claude 規則與指令；`.github/`：CI 與 issue 模板；`scripts/`：工具腳本
 
 新增重要目錄時同步更新本節與 `docs/architecture.md`。

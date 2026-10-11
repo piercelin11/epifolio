@@ -17,6 +17,7 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 | 圖片     | 本機 `public/uploads/`，DB 只存路徑                    | [ADR-0002](adr/0002-local-image-storage.md) |
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
 | 翻頁     | `motion` + CSS 3D transform 自製                       | [ADR-0004](adr/0004-custom-page-flip.md)   |
+| 首頁版面 | 紙張堆疊（`PaperStack`），換紙動畫用 `motion`          | [ADR-0007](adr/0007-paper-stack-layout.md) |
 | 色彩模式 | `next-themes`（light / dark 切換，初次造訪跟隨 system） | —                                          |
 
 ```mermaid
@@ -61,7 +62,8 @@ erDiagram
 | `src/app/`               | 路由（App Router）                     |
 | `src/components/ui/`     | shadcn 元件                            |
 | `src/components/`        | 專案共用元件（如色彩模式切換）         |
-| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions） |
+| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`paper-stack` |
+| `public/textures/`       | 紙張材質等靜態圖片                     |
 | `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例     |
 | `src/generated/prisma/`  | Prisma 產出（gitignored）              |
 | `prisma/`                | schema 與 migrations                   |

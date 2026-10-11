@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-002-paper-stack
 issue: 13
 created: 2026-10-11
@@ -88,7 +88,7 @@ flowchart TB
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：`docs/features/menu-book.md` 改寫（或改名為紙張堆疊）
-- [ ] ADR：`docs/adr/0007-paper-stack-layout.md`
-- [ ] glossary：新增 `PaperStack`、`PaperSheet`，移除 `MenuSpread`
-- [ ] `docs/architecture.md`：新增 `src/features/recipe/`
+- [x] 功能頁：`docs/features/menu-book.md` 改寫並改名為 `docs/features/paper-stack.md`
+- [x] ADR：`docs/adr/0007-paper-stack-layout.md`
+- [x] glossary：新增 `PaperStack`、`PaperSheet`，移除 `MenuSpread`
+- [x] `docs/architecture.md`：新增 `src/features/recipe/`、`src/features/paper-stack/`、`public/textures/`
