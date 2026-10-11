@@ -6,11 +6,12 @@
 
 ## 現在在做什麼
 
-紙張堆疊（[PLAN-002](plans/PLAN-002-paper-stack.md)）與後續微調（#19 移除翻頁特色、#20 大類標題與字級 token、#22 固定 header 與版面微調）已合併進 `main`。功能說明見 [紙張堆疊](features/paper-stack.md)。目前沒有進行中的分支。
+分支 `feat/menu-layout-refine`（已 push，CI 通過，尚未合併）：紙張捲動時蓋過頁首、菜單紙變窄並置中（食譜紙左側露出約一個紙張內距）、菜單版面依參考圖調整、內文字體改 Inter、light `primary` 改 `#b03828`、title 字級移除字距。功能說明見 [紙張堆疊](features/paper-stack.md)。
 
 ## 下一步
 
-- 使用者打算繼續微調紙張堆疊的 UI：從 `main` 開新分支（例如 `feat/paper-stack-polish`）。紙張與字級 token 在 `src/app/globals.css`，動畫參數在 `src/features/paper-stack/swap-motion.ts`。
+- 使用者在瀏覽器確認畫面；需要微調的參數在 `src/app/globals.css`（`--paper-padding`、`--paper-overhang`、`--paper-base-width`、type scale）與 `src/features/menu/components/`。
+- 確認後合併進 `main`。
 - 之後的候選：大類之間的切換（#21）、窄螢幕版面（#10）。
 
 ## 卡點與待決定
