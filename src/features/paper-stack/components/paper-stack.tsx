@@ -20,16 +20,16 @@ interface PaperStackProps {
 }
 
 const positionClasses: Record<StackPosition, string> = {
-	base: "ml-(--paper-overhang) w-(--paper-base-width)",
-	offset: "mt-(--paper-offset-y) w-(--paper-width)",
+	base: "w-(--paper-base-width)",
+	offset: "mt-(--paper-offset-y) ml-(--paper-inset-x) w-(--paper-width)",
 };
 
 /**
  * Two sheets in their own scroll area, which fills the space it is given.
  * They share one grid cell, so they scroll together; each is as tall as its
  * content, at least the height of the area below the header. Only the
- * stacking order changes. The base sheet is narrower and centred; the offset
- * sheet sticks out past it on the left, right and top.
+ * stacking order changes. The base sheet is centred; the offset sheet starts
+ * inside its left edge and sticks out past its right edge, lower down.
  */
 export function PaperStack({
 	stack,
@@ -50,10 +50,11 @@ export function PaperStack({
 			{/*
 			 * Clipping keeps sheets that drop out of view from growing the scroll
 			 * area. This layer covers the header once scrolled, so only the sheets
-			 * take pointer input. The left padding centres the base sheet.
+			 * take pointer input. The left padding, matching the offset
+			 * sheet's overhang on the right, centres the base sheet.
 			 */}
 			<div className="pointer-events-none relative z-10 flex justify-center overflow-clip pb-24">
-				<div className="box-content grid w-(--paper-width) items-start pl-[calc(var(--paper-offset-x)-var(--paper-overhang))]">
+				<div className="box-content grid w-[calc(var(--paper-base-width)+var(--paper-offset-x))] items-start pl-(--paper-offset-x)">
 					{(["base", "offset"] as const).map((position) => {
 						const inFront = front === position;
 						return (

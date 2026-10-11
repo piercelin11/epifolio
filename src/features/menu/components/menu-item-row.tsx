@@ -12,7 +12,7 @@ export function MenuItemRow({ item, onSelect }: MenuItemRowProps) {
 			<button
 				type="button"
 				onClick={onSelect}
-				className="group grid w-full cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-10 gap-y-1 text-left"
+				className="group grid w-full cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-10 gap-y-0.5 text-left"
 			>
 				<span className="text-title uppercase group-hover:underline">
 					{item.name}
@@ -21,7 +21,7 @@ export function MenuItemRow({ item, onSelect }: MenuItemRowProps) {
 					{formatPrice(item.price)}
 				</span>
 				{item.description && (
-					<span className="text-caption text-muted-foreground col-span-full font-light">
+					<span className="text-caption col-span-full font-light">
 						{item.description}
 					</span>
 				)}

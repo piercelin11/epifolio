@@ -59,15 +59,15 @@
 	--text-caption--line-height: 1.45;
 	--text-body: 1rem;
 	--text-body--line-height: 1.5;
-	--text-title: 1.25rem;
-	--text-title--line-height: 1.3;
-	--text-heading: 2.44140625rem;
+	--text-title: 1.15rem;
+	--text-title--line-height: 1.2;
+	--text-heading: 2.2rem;
 	--text-heading--line-height: 1.15;
-	--text-heading--letter-spacing: 0.01em;
+	--text-heading--letter-spacing: 0em;
 	--text-headline: clamp(2.5rem, 1.5rem + 2vw, 3.8125rem);
 	--text-headline--line-height: 1.05;
 	--text-headline--letter-spacing: -0.01em;
-	--text-display: clamp(3rem, 1.75rem + 3vw, 4.75rem);
+	--text-display: clamp(3.5rem, 2rem + 3.5vw, 5.9605rem);
 	--text-display--line-height: 1;
 	--text-display--letter-spacing: -0.02em;
 }
@@ -164,12 +164,12 @@
 :root {
 	/* Fixed band above the scrolling sheets; holds the site header */
 	--header-height: 8.5rem;
-	/* Width of the base (menu) sheet, centred in the viewport */
+	/* Width of the base (menu) sheet, centred on screen */
 	--paper-base-width: min(48rem, 100vw - 24rem);
 	/* Inner margin between a sheet's edge and its content */
 	--paper-padding: 2.25rem;
-	/* How far the offset sheet's left edge sits past the base sheet's */
-	--paper-overhang: var(--paper-padding);
+	/* How far the offset sheet's left edge sits inside the base sheet's */
+	--paper-inset-x: var(--paper-padding);
 	/* How far the offset sheet's right edge sits past the base sheet's: its punched holes plus the padding */
 	--paper-offset-x: calc(
 		var(--paper-hole-inset) + var(--paper-hole-size) / 2 + var(--paper-padding)
@@ -178,7 +178,7 @@
 	--paper-offset-y: 10.5rem;
 	/* Width of the offset (recipe) sheet */
 	--paper-width: calc(
-		var(--paper-base-width) + var(--paper-overhang) + var(--paper-offset-x)
+		var(--paper-base-width) - var(--paper-inset-x) + var(--paper-offset-x)
 	);
 	--paper-texture: url("/textures/paper.webp");
 	--paper-texture-opacity: 1;

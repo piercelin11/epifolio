@@ -15,10 +15,11 @@ export function MenuSheet({ group, onSelectItem, chefName }: MenuSheetProps) {
 		<div className="flex flex-col overflow-clip pb-24">
 			<div className="flex items-start justify-between gap-6">
 				{/* Trimmed to the cap height, then nudged slightly past the corner */}
-				<h2 className="font-heading text-primary text-display -mt-[0.06em] -ml-[0.04em] font-bold uppercase [text-box:trim-both_cap_alphabetic]">
+				<h2 className="font-heading text-primary text-display mt-[-0.06em] ml-[-0.06em] font-bold uppercase [text-box:trim-both_cap_alphabetic]">
 					{group.label}.
 				</h2>
-				<p className="text-body pt-(--paper-padding) pr-(--paper-padding) uppercase">
+				{/* Trimmed to the cap height, so the top margin matches the right one */}
+				<p className="text-body text-primary pt-(--paper-padding) pr-(--paper-padding) uppercase [text-box:trim-both_cap_alphabetic]">
 					{chefName}
 				</p>
 			</div>
