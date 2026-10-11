@@ -131,7 +131,7 @@
 	}
 }
 
-/* Colour mode cross-fade (ThemeToggle uses the View Transitions API) */
+/* Colour mode cross-fade; ThemeToggle uses the View Transitions API */
 :root {
 	--color-mode-transition-duration: 300ms;
 }
