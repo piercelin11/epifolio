@@ -80,7 +80,7 @@
 	--card-foreground: #000000;
 	--popover: #f3ecdf;
 	--popover-foreground: #000000;
-	--primary: #b03828;
+	--primary: #9c2e20;
 	--primary-foreground: #f2e8d8;
 	--secondary: #d8c9b0;
 	--secondary-foreground: #000000;
@@ -167,12 +167,13 @@
 	/* Width of the base (menu) sheet, centred on screen */
 	--paper-base-width: min(48rem, 100vw - 24rem);
 	/* Inner margin between a sheet's edge and its content */
-	--paper-padding: 2.25rem;
+	--paper-padding: 2rem;
 	/* How far the offset sheet's left edge sits inside the base sheet's */
 	--paper-inset-x: calc(var(--paper-padding) * 2);
-	/* How far the offset sheet's right edge sits past the base sheet's: its punched holes plus the padding */
+	/* How far the offset sheet's right edge sits past the base sheet's: its punched holes plus twice the padding */
 	--paper-offset-x: calc(
-		var(--paper-hole-inset) + var(--paper-hole-size) / 2 + var(--paper-padding)
+		var(--paper-hole-inset) + var(--paper-hole-size) / 2 +
+			var(--paper-padding) * 2
 	);
 	/* How far the offset sheet's top edge sits below the base sheet's */
 	--paper-offset-y: 10rem;
@@ -180,8 +181,11 @@
 	--paper-width: calc(
 		var(--paper-base-width) - var(--paper-inset-x) + var(--paper-offset-x)
 	);
-	--paper-texture: url("/textures/paper.webp");
-	--paper-texture-opacity: 1;
+	/* Texture per sheet tone (PaperSheet); applied by the paper-texture utility */
+	--paper-texture-paper: url("/textures/fiber-paper.webp");
+	--paper-texture-paper-opacity: 1;
+	--paper-texture-primary: url("/textures/paper.webp");
+	--paper-texture-primary-opacity: 0.6;
 	/* Punched holes along the right edge of the recipe sheet */
 	--paper-hole-size: 1.875rem;
 	--paper-hole-pitch: 3.25rem;
@@ -190,7 +194,18 @@
 
 /* The dark texture swallows dark paper under overlay; soften it */
 .dark {
-	--paper-texture-opacity: 0.35;
+	--paper-texture-paper-opacity: 0.35;
+	--paper-texture-primary-opacity: 0.2;
+}
+
+[data-paper-tone="paper"] {
+	--paper-texture: var(--paper-texture-paper);
+	--paper-texture-opacity: var(--paper-texture-paper-opacity);
+}
+
+[data-paper-tone="primary"] {
+	--paper-texture: var(--paper-texture-primary);
+	--paper-texture-opacity: var(--paper-texture-primary-opacity);
 }
 
 /* Texture layer laid over a sheet; blends with the sheet colour beneath */

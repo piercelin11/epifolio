@@ -28,6 +28,7 @@ export function PaperSheet({
 		// The mask would clip a box-shadow, so the shadow sits on this wrapper.
 		<div className="flex flex-1 flex-col drop-shadow-xl">
 			<div
+				data-paper-tone={tone}
 				className={cn(
 					"relative isolate flex-1",
 					toneClasses[tone],

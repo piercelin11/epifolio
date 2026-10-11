@@ -27,7 +27,10 @@ export function MenuRecipeStack({
 	header,
 }: MenuRecipeStackProps) {
 	const stack = usePaperStack("base");
-	const [recipeId, setRecipeId] = useState<string>();
+	// Until an item is picked, the recipe sheet shows the first one on the menu.
+	const [recipeId, setRecipeId] = useState(
+		() => group.sections[0]?.items[0]?.recipeId
+	);
 	const recipe = recipes.find((r) => r.id === recipeId);
 
 	return (
