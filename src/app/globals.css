@@ -130,3 +130,20 @@
 		@apply font-sans;
 	}
 }
+
+/* Colour mode cross-fade (ThemeToggle uses the View Transitions API) */
+:root {
+	--color-mode-transition-duration: 300ms;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: var(--color-mode-transition-duration);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+	}
+}

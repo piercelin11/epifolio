@@ -2,6 +2,7 @@
 
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { flushSync } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 
@@ -9,12 +10,23 @@ import { Button } from "@/components/ui/button";
 export function ThemeToggle() {
 	const { resolvedTheme, setTheme } = useTheme();
 
+	function toggleTheme() {
+		const next = resolvedTheme === "dark" ? "light" : "dark";
+		if (!document.startViewTransition) {
+			setTheme(next);
+			return;
+		}
+		// Cross-fade the whole page; timing lives in globals.css.
+		// flushSync applies the theme class before the new snapshot is taken.
+		document.startViewTransition(() => flushSync(() => setTheme(next)));
+	}
+
 	return (
 		<Button
 			variant="outline"
 			size="icon"
 			aria-label="Toggle theme"
-			onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+			onClick={toggleTheme}
 		>
 			<SunIcon className="scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
 			<MoonIcon className="absolute scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
