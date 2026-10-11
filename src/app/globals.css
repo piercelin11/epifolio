@@ -7,6 +7,8 @@
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+	--color-backdrop: var(--backdrop);
+	--color-backdrop-foreground: var(--backdrop-foreground);
 	/* Font roles (ADR-0006); typefaces are loaded in src/lib/fonts.ts */
 	--font-sans: var(--font-body-src), ui-sans-serif, system-ui, sans-serif;
 	--font-heading: var(--font-heading-src), ui-serif, Georgia, serif;
@@ -82,6 +84,9 @@
 	--sidebar-accent-foreground: oklch(0.205 0 0);
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: oklch(0.708 0 0);
+	/* Page surface behind the paper stack */
+	--backdrop: #1c1a12;
+	--backdrop-foreground: #ece2d0;
 }
 
 .dark {
@@ -117,6 +122,8 @@
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(1 0 0 / 10%);
 	--sidebar-ring: oklch(0.556 0 0);
+	--backdrop: #14160b;
+	--backdrop-foreground: #f2e8d8;
 }
 
 @layer base {
@@ -129,6 +136,21 @@
 	html {
 		@apply font-sans;
 	}
+}
+
+/* Paper stack geometry and surface (PaperStack, PaperSheet) */
+:root {
+	--paper-width: min(60rem, 100vw - 16rem);
+	--paper-top: 8.5rem;
+	/* How far the lower sheet sits to the right of and below the upper one */
+	--paper-offset-x: 6.5rem;
+	--paper-offset-y: 10.5rem;
+	--paper-texture: url("/textures/paper.webp");
+	--paper-texture-opacity: 1;
+	/* Punched holes along the right edge of the recipe sheet */
+	--paper-hole-size: 2.25rem;
+	--paper-hole-pitch: 3.5rem;
+	--paper-hole-inset: 2.25rem;
 }
 
 /* Colour mode cross-fade; ThemeToggle uses the View Transitions API */
