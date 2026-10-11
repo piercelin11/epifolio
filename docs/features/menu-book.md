@@ -5,6 +5,7 @@ source:
   - src/app/page.tsx
   - src/features/menu/
   - src/lib/fonts.ts
+  - src/components/theme-toggle.tsx
   - src/app/globals.css
 adr: [0006]
 plan: PLAN-001

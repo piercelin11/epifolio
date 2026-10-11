@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-07
+updated: 2026-10-11
 ---
 
 # 架構
@@ -17,7 +17,7 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 | 圖片     | 本機 `public/uploads/`，DB 只存路徑                    | [ADR-0002](adr/0002-local-image-storage.md) |
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
 | 翻頁     | `motion` + CSS 3D transform 自製                       | [ADR-0004](adr/0004-custom-page-flip.md)   |
-| 色彩模式 | `next-themes`（light / dark / system）                 | —                                          |
+| 色彩模式 | `next-themes`（light / dark 切換，初次造訪跟隨 system） | —                                          |
 
 ```mermaid
 flowchart LR

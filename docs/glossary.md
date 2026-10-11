@@ -20,4 +20,4 @@ updated: 2026-10-11
 | 快速檢視 | `QuickView`     | 不翻頁的清單或搜尋式呈現。                                                             |
 | 跨頁     | `MenuSpread`    | 菜單書攤開時的左右兩頁，各自包含若干章節。                                             |
 | 菜單主題 | `MenuTheme`     | 一組菜單外觀設定（顏色、字型、頁面樣式），用於菜單呈現與 PDF 輸出。                    |
-| 色彩模式 | `ColorMode`     | 整個網站介面的 light / dark / system 切換（`next-themes`）。與菜單主題無關。           |
+| 色彩模式 | `ColorMode`     | 整個網站介面的 light / dark 切換，初次造訪跟隨 system（`next-themes`）。與菜單主題無關。           |

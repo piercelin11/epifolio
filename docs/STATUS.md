@@ -6,11 +6,11 @@
 
 ## 現在在做什麼
 
-[PLAN-001 菜單書版面與視覺基礎](plans/PLAN-001-menu-book-layout.md) 已完成並合併：首頁是左右兩頁的菜單書（mock 資料、指定配色與字體），現況見 [菜單書功能頁](features/menu-book.md)。CI 已加入 `pnpm build`（#11）。
+菜單書（[功能頁](features/menu-book.md)）的視覺微調，分支 `feat/playfair-heading-font`（CI 通過，等使用者說「合併」）：標題字體改為 Playfair Display、菜名大寫、網站標題小寫並放大、色彩模式切換淡入淡出、修正 CLAUDE.md R2。
 
 ## 下一步
 
-尚未決定。候選方向（各自另立計畫）：翻頁互動、窄螢幕版面（#10）、資料模型。
+合併後再決定。候選方向（各自另立計畫）：翻頁互動、窄螢幕版面（#10）、資料模型。
 
 ## 卡點與待決定
 
