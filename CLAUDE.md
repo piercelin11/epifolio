@@ -141,4 +141,4 @@
 **編號規則**（每次被糾正或踩雷後新增，格式：`R<編號>. 規則（原因，日期）`）
 
 - R1. 型別檢查用 `pnpm typecheck`，不直接跑 `tsc`（乾淨環境缺 `next typegen` 產生的 `LayoutProps` 等型別，CI 曾因此失敗，2026-10-07）
-- R2. 跑 `pnpm build` 前先確認 port 3000 沒有 dev server；有在跑就只用 `pnpm typecheck`、`pnpm lint` 與 `curl` 驗證（build 與 dev 共用 `.next`，曾導致 dev server 的 CSS 停在舊版、改了配色畫面不變，2026-10-11）
+- R2. 改 `src/app/globals.css` 後，用 `curl` 確認 dev server 送出的 CSS 已包含變更；沒有就再對該檔做一次實際內容修改，仍無效請使用者重啟 dev server。dev server 開著時不跑 `pnpm build`（dev server 曾兩次漏讀 `globals.css` 變更、畫面停在舊樣式，其中一次與 build 無關，2026-10-11）
