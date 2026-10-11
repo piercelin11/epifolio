@@ -50,11 +50,11 @@
 
 :root {
 	/* Menu palette (light): paper, ink, red accent */
-	--background: #e5d8c4;
+	--background: #eae0d0;
 	--foreground: #000000;
-	--card: #ece2d1;
+	--card: #f0e8db;
 	--card-foreground: #000000;
-	--popover: #efe6d8;
+	--popover: #f3ecdf;
 	--popover-foreground: #000000;
 	--primary: #ba3d2c;
 	--primary-foreground: #f2e8d8;
