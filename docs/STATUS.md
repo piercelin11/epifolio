@@ -6,12 +6,11 @@
 
 ## 現在在做什麼
 
-[PLAN-001 菜單書版面與視覺基礎](plans/PLAN-001-menu-book-layout.md) 已完成（分支 `plan-001-menu-book-layout`，CI 通過），等使用者看過畫面、說「合併」後 fast-forward 進 `main`。現況見 [菜單書功能頁](features/menu-book.md)。
+[PLAN-001 菜單書版面與視覺基礎](plans/PLAN-001-menu-book-layout.md) 已完成並合併：首頁是左右兩頁的菜單書（mock 資料、指定配色與字體），現況見 [菜單書功能頁](features/menu-book.md)。CI 已加入 `pnpm build`（#11）。
 
 ## 下一步
 
-1. 使用者檢視首頁並提出排版調整
-2. 合併後再規劃下一步（翻頁互動、窄螢幕版面 #10、資料模型等，各自另立計畫）
+尚未決定。候選方向（各自另立計畫）：翻頁互動、窄螢幕版面（#10）、資料模型。
 
 ## 卡點與待決定
 
