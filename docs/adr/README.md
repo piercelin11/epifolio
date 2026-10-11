@@ -11,6 +11,7 @@
 | 0003 | [UI 元件使用 shadcn（Base UI）](0003-shadcn-base-ui.md)     | Accepted | 2026-10-07 |
 | 0004 | [翻頁以 motion 與 CSS 3D 自製](0004-custom-page-flip.md)    | Accepted | 2026-10-07 |
 | 0005 | [文件與任務管理：Issues + git + STATUS + plans](0005-docs-and-task-management.md) | Accepted | 2026-10-07 |
+| 0006 | [字體以 next/font 載入，Tailwind 依用途命名](0006-role-based-fonts-with-next-font.md) | Proposed | 2026-10-11 |
 
 ## 模板
 
