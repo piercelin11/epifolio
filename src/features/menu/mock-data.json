@@ -1,0 +1,473 @@
+{
+	"book": {
+		"id": "book-01",
+		"title": "Table for One",
+		"subtitle": "A personal menu, cooked and revised at home",
+		"currency": "TWD",
+		"categories": [
+			{ "id": "starters", "label": "Starters", "order": 1 },
+			{ "id": "pasta", "label": "Pasta", "order": 2 },
+			{ "id": "mains", "label": "Mains", "order": 3 },
+			{ "id": "desserts", "label": "Desserts", "order": 4 }
+		]
+	},
+	"dishes": [
+		{
+			"id": "dish-01",
+			"number": "01",
+			"name": "Mushroom Velouté",
+			"originalName": "蘑菇濃湯",
+			"category": "starters",
+			"description": "Slow-caramelised onion · button mushroom · thyme · cream",
+			"price": 280,
+			"rating": 4.5,
+			"serves": 2,
+			"timeMinutes": 70,
+			"difficulty": "Easy",
+			"tags": ["Soup", "Vegetarian-friendly", "Staub"],
+			"inMenu": true,
+			"signature": false,
+			"image": null,
+			"timesCooked": 3,
+			"lastCooked": "2026-09-21",
+			"ingredients": [
+				{
+					"group": "Main",
+					"items": [
+						{
+							"name": "Button mushrooms, sliced",
+							"amount": "200 g",
+							"note": "reserve 1/4 cup to garnish"
+						},
+						{ "name": "Unsalted butter", "amount": "2 tsp" },
+						{ "name": "Olive oil", "amount": "2 tsp" },
+						{ "name": "Onion, diced", "amount": "1/2 small" },
+						{ "name": "Garlic, minced", "amount": "1 clove" },
+						{ "name": "Dry white wine", "amount": "30 ml" },
+						{ "name": "All-purpose flour", "amount": "1.5 tbsp" },
+						{ "name": "Chicken stock", "amount": "600 ml" },
+						{ "name": "Heavy cream", "amount": "80 ml" }
+					]
+				},
+				{
+					"group": "Herbs & seasoning",
+					"items": [
+						{
+							"name": "Dried parsley",
+							"amount": "1/2 tsp",
+							"note": "plus a pinch to finish"
+						},
+						{ "name": "Dried thyme", "amount": "1/8 tsp" },
+						{ "name": "Sea salt & black pepper", "amount": "to taste" }
+					]
+				}
+			],
+			"steps": [
+				{
+					"title": "Caramelise the onion",
+					"minutes": 40,
+					"text": "Melt the butter over low heat, add the onion and stir every 3-5 minutes. Deglaze with a spoonful of water whenever the fond darkens."
+				},
+				{
+					"title": "Garlic & mushrooms",
+					"minutes": 10,
+					"text": "Add the garlic, then the mushrooms, and cook until their liquid has evaporated and the edges colour."
+				},
+				{
+					"title": "Wine & roux",
+					"minutes": 3,
+					"text": "Deglaze with white wine, reduce, then stir in the flour for one minute."
+				},
+				{
+					"title": "Simmer",
+					"minutes": 12,
+					"text": "Pour in the stock with the thyme and parsley. Simmer gently until lightly thickened."
+				},
+				{
+					"title": "Blend & finish",
+					"minutes": 5,
+					"text": "Blend until completely smooth, stir in the cream, season, and top with seared mushroom slices."
+				}
+			],
+			"notes": [
+				"Keep the heat low while caramelising. The onion should never turn black.",
+				"Thyme was too strong last time; this version is already reduced.",
+				"Blend longer. There were still onion flecks last time."
+			]
+		},
+		{
+			"id": "dish-02",
+			"number": "02",
+			"name": "Spaghetti Aglio e Olio",
+			"originalName": "蒜香清炒義大利麵",
+			"category": "pasta",
+			"description": "Golden garlic · chilli · olive oil · aged cheese",
+			"price": 320,
+			"rating": 3.5,
+			"serves": 1,
+			"timeMinutes": 20,
+			"difficulty": "Medium",
+			"tags": ["Classic", "Quick", "Vegetarian"],
+			"inMenu": false,
+			"signature": false,
+			"image": null,
+			"timesCooked": 2,
+			"lastCooked": "2026-09-28",
+			"ingredients": [
+				{
+					"group": "Pasta",
+					"items": [
+						{ "name": "Spaghetti", "amount": "75 g" },
+						{ "name": "Water", "amount": "1 L" },
+						{ "name": "Salt for the water", "amount": "10 g" }
+					]
+				},
+				{
+					"group": "Sauce",
+					"items": [
+						{ "name": "Garlic, sliced 1-2 mm", "amount": "3 cloves" },
+						{
+							"name": "Fresh chilli, sliced",
+							"amount": "1/2",
+							"note": "or 1/2 tsp dried flakes"
+						},
+						{ "name": "Olive oil", "amount": "1-1.5 tbsp" },
+						{ "name": "Dried Italian herbs", "amount": "1/3 tsp" },
+						{ "name": "Pasta water", "amount": "3-4 tbsp" },
+						{ "name": "Hard cheese, to grate", "amount": "to finish" },
+						{ "name": "Salt & black pepper", "amount": "to taste" }
+					]
+				}
+			],
+			"steps": [
+				{
+					"title": "Boil the pasta",
+					"minutes": 8,
+					"text": "Cook the spaghetti 1.5 minutes short of the packet time."
+				},
+				{
+					"title": "Cold-start the garlic",
+					"minutes": 4,
+					"text": "Put the oil, garlic and chilli in a cold pan, then warm over the lowest heat until pale gold."
+				},
+				{
+					"title": "Combine",
+					"minutes": 1,
+					"text": "Lift the pasta straight into the pan and add the dried herbs and pepper."
+				},
+				{
+					"title": "Emulsify",
+					"minutes": 1,
+					"text": "Raise the heat, add pasta water and stir hard for 45-60 seconds until the sauce turns cloudy and clings."
+				},
+				{
+					"title": "Season & plate",
+					"minutes": 1,
+					"text": "Taste a strand, adjust with a pinch of salt, plate, and grate cheese over the top."
+				}
+			],
+			"notes": [
+				"Too oily last time. Cut the oil from 2.5 tbsp to 1-1.5 tbsp.",
+				"Do not stir on the heat for 3 minutes. 45-60 seconds, then off.",
+				"Season only after the sauce has emulsified, and by the pinch, never by the spoon."
+			]
+		},
+		{
+			"id": "dish-03",
+			"number": "03",
+			"name": "Rigatoni alla Rosa",
+			"originalName": "粉紅醬義大利麵",
+			"category": "pasta",
+			"description": "Blistered cherry tomato · cream · white wine · Parmigiano",
+			"price": 380,
+			"rating": 4.5,
+			"serves": 1,
+			"timeMinutes": 35,
+			"difficulty": "Easy",
+			"tags": ["Comfort", "Vegetarian", "Staub"],
+			"inMenu": true,
+			"signature": false,
+			"image": "/images/rigatoni-alla-rosa.jpg",
+			"timesCooked": 4,
+			"lastCooked": "2026-10-02",
+			"ingredients": [
+				{
+					"group": "Main",
+					"items": [
+						{ "name": "Rigatoni", "amount": "80-100 g" },
+						{ "name": "Cherry tomatoes, halved", "amount": "255 g" }
+					]
+				},
+				{
+					"group": "Aromatics & fat",
+					"items": [
+						{ "name": "Garlic, crushed and minced", "amount": "3-6 cloves" },
+						{ "name": "Butter", "amount": "1 tbsp" },
+						{ "name": "Olive oil", "amount": "1 tbsp" }
+					]
+				},
+				{
+					"group": "Sauce",
+					"items": [
+						{ "name": "Tomato paste", "amount": "1 tbsp" },
+						{
+							"name": "Dry white wine",
+							"amount": "60 ml",
+							"note": "or pasta water"
+						},
+						{ "name": "Heavy cream, 35% fat", "amount": "100 ml" },
+						{ "name": "Parmigiano, freshly grated", "amount": "35 g" },
+						{ "name": "Reserved pasta water", "amount": "60 ml" },
+						{
+							"name": "Salt, black pepper, chilli flakes",
+							"amount": "to taste"
+						}
+					]
+				}
+			],
+			"steps": [
+				{
+					"title": "Prep & boil",
+					"minutes": 10,
+					"text": "Halve the tomatoes, mince the garlic, grate the cheese. Cook the rigatoni 2 minutes short of the packet time."
+				},
+				{
+					"title": "Sweat the garlic",
+					"minutes": 3,
+					"text": "Warm the oil and butter over medium-low heat and cook the garlic gently until fragrant."
+				},
+				{
+					"title": "Break down the tomatoes",
+					"minutes": 10,
+					"text": "Add the tomatoes with a pinch of salt and pepper. Cook until jammy."
+				},
+				{
+					"title": "Paste & deglaze",
+					"minutes": 4,
+					"text": "Fry the tomato paste for 1-2 minutes, add the wine, scrape the base, and reduce."
+				},
+				{
+					"title": "Cream & finish",
+					"minutes": 5,
+					"text": "Stir in the cream, add the pasta and a splash of pasta water, then fold in the Parmigiano off the heat."
+				}
+			],
+			"notes": ["Try adding half to one bay leaf next time."]
+		},
+		{
+			"id": "dish-04",
+			"number": "04",
+			"name": "Bucatini ai Frutti di Mare",
+			"originalName": "海鮮義大利麵",
+			"category": "mains",
+			"description": "Prawn · clam · scallop · shellfish stock · lemon",
+			"price": 580,
+			"rating": 4.0,
+			"serves": 1,
+			"timeMinutes": 50,
+			"difficulty": "Hard",
+			"tags": ["Seafood", "Signature"],
+			"inMenu": true,
+			"signature": true,
+			"image": "/images/bucatini-frutti-di-mare.jpg",
+			"timesCooked": 2,
+			"lastCooked": "2026-10-05",
+			"ingredients": [
+				{
+					"group": "Seafood",
+					"items": [
+						{
+							"name": "Prawns, peeled",
+							"amount": "4-6",
+							"note": "keep shells and tails for the stock"
+						},
+						{ "name": "Fresh clams", "amount": "6-8" },
+						{ "name": "Scallops", "amount": "2", "note": "optional" }
+					]
+				},
+				{
+					"group": "Base",
+					"items": [
+						{ "name": "Yellow onion, finely chopped", "amount": "1.5 tbsp" },
+						{ "name": "Cherry tomatoes, halved", "amount": "4-6" },
+						{ "name": "Garlic, minced", "amount": "1-2 cloves" },
+						{ "name": "Chilli", "amount": "a pinch" },
+						{ "name": "Unsalted butter, cold", "amount": "1.5 tbsp" },
+						{ "name": "Extra virgin olive oil", "amount": "1 tbsp" },
+						{ "name": "Dry white wine", "amount": "45 ml" },
+						{ "name": "Chicken stock", "amount": "100 ml" },
+						{ "name": "Paprika", "amount": "1/2 tsp" },
+						{ "name": "Bay leaf", "amount": "1/3" }
+					]
+				},
+				{
+					"group": "Pasta & finish",
+					"items": [
+						{ "name": "Bucatini", "amount": "80 g" },
+						{ "name": "Flat-leaf parsley, chopped", "amount": "1 tbsp" },
+						{
+							"name": "Lemon",
+							"amount": "1",
+							"note": "peel for aroma, wedge to serve"
+						}
+					]
+				}
+			],
+			"steps": [
+				{
+					"title": "Purge the clams",
+					"minutes": 60,
+					"text": "Soak the clams in cold salted water in a dark place, then scrub the shells."
+				},
+				{
+					"title": "Shell stock",
+					"minutes": 12,
+					"text": "Toast the prawn shells in olive oil until deep red, add stock and bay leaf, simmer 10 minutes, and strain."
+				},
+				{
+					"title": "Sear the seafood",
+					"minutes": 3,
+					"text": "Pat the prawns and scallops dry, sear briefly until half-cooked, and set aside."
+				},
+				{
+					"title": "Build the sauce",
+					"minutes": 8,
+					"text": "In the same pan, sweat the onion, garlic and lemon peel in butter, then cook down the tomatoes."
+				},
+				{
+					"title": "Reduce",
+					"minutes": 6,
+					"text": "Add the wine, clams and shell stock. Reduce until the sauce is lightly thickened before the pasta goes in."
+				},
+				{
+					"title": "Finish",
+					"minutes": 3,
+					"text": "Toss in the bucatini with a splash of pasta water, return the seafood, and finish with cold butter, lemon juice and parsley."
+				}
+			],
+			"notes": [
+				"No cheese.",
+				"Use only the shells from this batch of prawns for the stock.",
+				"Reduce the prawn stock further.",
+				"80 g of pasta is enough.",
+				"A little more parsley.",
+				"Let the sauce thicken slightly before adding the pasta.",
+				"Keep some pasta water to help the sauce thicken.",
+				"Stir a little lemon juice into the sauce just before plating."
+			]
+		},
+		{
+			"id": "dish-05",
+			"number": "05",
+			"name": "Spinach Gnocchi, Prawn Bisque Cream",
+			"originalName": "蝦白醬玉琪",
+			"category": "mains",
+			"description": "White prawn · spinach purée · zucchini · 24-month Parmigiano",
+			"price": 520,
+			"rating": 5.0,
+			"serves": 1,
+			"timeMinutes": 45,
+			"difficulty": "Medium",
+			"tags": ["Seafood", "Cream"],
+			"inMenu": true,
+			"signature": false,
+			"image": null,
+			"timesCooked": 1,
+			"lastCooked": "2026-09-14",
+			"ingredients": [
+				{
+					"group": "Main",
+					"items": [
+						{ "name": "Potato gnocchi", "amount": "200 g" },
+						{ "name": "White prawns, peeled", "amount": "3-5" },
+						{ "name": "Zucchini, sliced", "amount": "1/2" },
+						{ "name": "Spinach leaves, puréed", "amount": "80 g" }
+					]
+				},
+				{
+					"group": "Prawn marinade",
+					"items": [
+						{ "name": "Garlic, minced", "amount": "1/2 clove" },
+						{ "name": "Olive oil", "amount": "1/2 tbsp" },
+						{ "name": "Lemon juice", "amount": "1/2 tsp" },
+						{ "name": "Salt & black pepper", "amount": "a pinch" }
+					]
+				},
+				{
+					"group": "Shell reduction",
+					"items": [
+						{ "name": "Prawn heads and shells", "amount": "from above" },
+						{ "name": "Olive oil or butter", "amount": "1/2 tbsp" },
+						{ "name": "Dry white wine", "amount": "1 tsp" },
+						{ "name": "Water", "amount": "50-80 ml" }
+					]
+				},
+				{
+					"group": "Cream sauce",
+					"items": [
+						{ "name": "Onion, finely diced", "amount": "1/4" },
+						{ "name": "Garlic, minced", "amount": "1 clove" },
+						{ "name": "Dry white wine", "amount": "1.5 tbsp" },
+						{ "name": "Heavy cream", "amount": "100 ml" },
+						{
+							"name": "Parmigiano, 24 months, finely grated",
+							"amount": "20 g"
+						},
+						{ "name": "Unsalted butter", "amount": "8 g" },
+						{ "name": "Thyme", "amount": "a pinch" }
+					]
+				},
+				{
+					"group": "To finish",
+					"items": [
+						{ "name": "Salt", "amount": "1/4 tsp" },
+						{ "name": "Black pepper", "amount": "a pinch" },
+						{ "name": "Lemon zest", "amount": "1/4 lemon" },
+						{ "name": "Fresh parsley, chopped", "amount": "1/2 tbsp" }
+					]
+				}
+			],
+			"steps": [
+				{
+					"title": "Prep the prawns",
+					"minutes": 15,
+					"text": "Peel and devein, keep the heads and shells, and marinate the prawns in the fridge for 10-15 minutes."
+				},
+				{
+					"title": "Shell reduction",
+					"minutes": 10,
+					"text": "Fry the heads and shells until red, deglaze with wine, add water, reduce, and strain."
+				},
+				{
+					"title": "Sear",
+					"minutes": 4,
+					"text": "Sear the prawns and zucchini in olive oil, then set aside."
+				},
+				{
+					"title": "Cream sauce",
+					"minutes": 8,
+					"text": "Sweat the onion and garlic, deglaze with wine, add the cream, shell reduction and thyme, and simmer."
+				},
+				{
+					"title": "Gnocchi & finish",
+					"minutes": 5,
+					"text": "Boil the gnocchi until they float, fold into the sauce with the spinach purée, Parmigiano and butter. Top with prawns, lemon zest and parsley."
+				}
+			],
+			"notes": []
+		}
+	],
+	"menus": [
+		{
+			"id": "menu-01",
+			"title": "Autumn Supper",
+			"date": "2026-10-10",
+			"guests": 2,
+			"courses": [
+				{ "course": "Starter", "dishId": "dish-01" },
+				{ "course": "Pasta", "dishId": "dish-03" },
+				{ "course": "Main", "dishId": "dish-04" }
+			]
+		}
+	]
+}
