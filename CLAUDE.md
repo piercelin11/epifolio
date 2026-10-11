@@ -33,7 +33,7 @@
 
 ## 3. 常用指令
 
-- 開發：`pnpm dev`（使用者自己開著，port 3000；**不要自己起 / 殺 dev server**，驗證用 `curl` 或 `pnpm build`）
+- 開發：`pnpm dev`（使用者自己開著，port 3000；**不要自己起 / 殺 dev server**，驗證用 `curl`；dev server 開著時不跑 `pnpm build`，見 R2）
 - 建置：`pnpm build` / `pnpm start`
 - 檢查：`pnpm typecheck`（`next typegen` + `tsc`）、`pnpm lint`、`pnpm format:check`（修正用 `pnpm format`）
 - 資料庫：`pnpm exec prisma migrate dev --name <name>`、`pnpm exec prisma validate`
@@ -141,3 +141,4 @@
 **編號規則**（每次被糾正或踩雷後新增，格式：`R<編號>. 規則（原因，日期）`）
 
 - R1. 型別檢查用 `pnpm typecheck`，不直接跑 `tsc`（乾淨環境缺 `next typegen` 產生的 `LayoutProps` 等型別，CI 曾因此失敗，2026-10-07）
+- R2. 跑 `pnpm build` 前先確認 port 3000 沒有 dev server；有在跑就只用 `pnpm typecheck`、`pnpm lint` 與 `curl` 驗證（build 與 dev 共用 `.next`，曾導致 dev server 的 CSS 停在舊版、改了配色畫面不變，2026-10-11）
