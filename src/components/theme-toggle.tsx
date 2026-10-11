@@ -23,8 +23,9 @@ export function ThemeToggle() {
 
 	return (
 		<Button
-			variant="outline"
+			variant="ghost"
 			size="icon"
+			className="hover:bg-backdrop-foreground/10 hover:text-backdrop-foreground dark:hover:bg-backdrop-foreground/10"
 			aria-label="Toggle theme"
 			onClick={toggleTheme}
 		>

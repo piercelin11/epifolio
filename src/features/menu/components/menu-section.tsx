@@ -7,11 +7,11 @@ interface MenuSectionProps {
 
 export function MenuSection({ section }: MenuSectionProps) {
 	return (
-		<section className="flex flex-col gap-6">
-			<h2 className="font-heading text-primary text-center text-2xl tracking-[0.2em] uppercase">
+		<section className="flex flex-col gap-10">
+			<h2 className="font-heading text-primary text-6xl font-bold lowercase">
 				{section.label}
 			</h2>
-			<ul className="flex flex-col gap-5">
+			<ul className="flex flex-col gap-6">
 				{section.items.map((item) => (
 					<MenuItemRow key={item.id} item={item} />
 				))}

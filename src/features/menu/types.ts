@@ -19,9 +19,3 @@ export interface Menu {
 	currency: string;
 	sections: Section[];
 }
-
-/** A two-page spread of the open menu book. */
-export interface MenuSpread {
-	left: Section[];
-	right: Section[];
-}
