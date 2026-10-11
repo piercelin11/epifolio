@@ -2,7 +2,8 @@ import mockData from "../mock-data.json";
 import type { Menu, Section } from "../types";
 
 // The mock dishes mix recipe and menu item fields; only the menu item
-// fields (name, description, price) are read here.
+// fields (name, description, price) are read here. A dish id doubles as
+// its recipe id.
 interface MockCategory {
 	id: string;
 	label: string;
@@ -36,6 +37,7 @@ export function getMockMenu(data: MockData = mockData): Menu {
 					name: dish.name,
 					description: dish.description || undefined,
 					price: dish.price,
+					recipeId: dish.id,
 				})),
 		}))
 		.filter((section) => section.items.length > 0);

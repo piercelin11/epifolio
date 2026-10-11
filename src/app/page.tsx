@@ -3,9 +3,12 @@ import { MenuSheet } from "@/features/menu/components/menu-sheet";
 import { getMockMenu } from "@/features/menu/lib/mock-menu";
 import { PaperSheet } from "@/features/paper-stack/components/paper-sheet";
 import { PaperStack } from "@/features/paper-stack/components/paper-stack";
+import { RecipeSheet } from "@/features/recipe/components/recipe-sheet";
+import { getMockRecipes } from "@/features/recipe/lib/mock-recipes";
 
 export default function Home() {
 	const menu = getMockMenu();
+	const recipes = getMockRecipes();
 
 	return (
 		<main className="bg-backdrop text-backdrop-foreground relative flex min-h-dvh justify-center pt-(--paper-top) pb-24">
@@ -22,7 +25,7 @@ export default function Home() {
 				}
 				offset={
 					<PaperSheet tone="primary" perforated>
-						<p className="p-10">Recipe</p>
+						<RecipeSheet recipe={recipes[0]} />
 					</PaperSheet>
 				}
 			/>

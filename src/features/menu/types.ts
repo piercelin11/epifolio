@@ -6,6 +6,8 @@ export interface MenuItem {
 	name: string;
 	description?: string;
 	price: number;
+	/** The recipe this item presents; a reference, not a copy. */
+	recipeId: string;
 }
 
 export interface Section {
