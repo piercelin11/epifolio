@@ -1,7 +1,7 @@
 ---
-status: draft
+status: in-progress
 branch: plan-001-menu-book-layout
-issue:
+issue: 5
 created: 2026-10-11
 ---
 
@@ -63,10 +63,10 @@ flowchart LR
 
 ## 任務拆解
 
-1. 字體：新增 `src/lib/fonts.ts`，`globals.css` 依用途對應字體
-2. 配色：淺色與深色 design tokens
-3. 資料：mock JSON 與轉換成 `MenuItem` 的函式
-4. 版面：左右兩頁、摺痕、頁首（標題與色彩模式切換）、品項列表
+1. #6 字體：新增 `src/lib/fonts.ts`，`globals.css` 依用途對應字體
+2. #7 配色：淺色與深色 design tokens
+3. #8 資料：mock JSON 與轉換成 `MenuItem` 的函式
+4. #9 版面：左右兩頁、摺痕、頁首（標題與色彩模式切換）、品項列表
 
 ## 完成後遷移清單
 

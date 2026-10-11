@@ -1,7 +1,7 @@
 # ADR-0006：字體以 next/font 載入，Tailwind 依用途命名
 
 日期：2026-10-11
-狀態：Proposed
+狀態：Accepted
 
 ## 背景
 

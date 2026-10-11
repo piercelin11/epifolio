@@ -9,7 +9,7 @@
 
 | 編號     | 標題 | 狀態 | 父 issue |
 | -------- | ---- | ---- | -------- |
-| [PLAN-001](PLAN-001-menu-book-layout.md) | 菜單書版面與視覺基礎 | draft | |
+| [PLAN-001](PLAN-001-menu-book-layout.md) | 菜單書版面與視覺基礎 | in-progress | #5 |
 
 ## 模板
 
