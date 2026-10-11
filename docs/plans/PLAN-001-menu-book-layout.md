@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-001-menu-book-layout
 issue: 5
 created: 2026-10-11
@@ -70,6 +70,6 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：docs/features/menu-book.md
-- [ ] ADR：docs/adr/0006-role-based-fonts-with-next-font.md 改為 Accepted
-- [ ] glossary 新詞（如有）
+- [x] 功能頁：docs/features/menu-book.md
+- [x] ADR：docs/adr/0006-role-based-fonts-with-next-font.md 改為 Accepted
+- [x] glossary 新詞（`MenuSpread`）
