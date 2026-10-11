@@ -164,12 +164,12 @@
 :root {
 	/* Fixed band above the scrolling sheets; holds the site header */
 	--header-height: 8.5rem;
-	/* Width of the base (menu) sheet, centred in the viewport */
+	/* Width of the base (menu) sheet, centred on screen */
 	--paper-base-width: min(48rem, 100vw - 24rem);
 	/* Inner margin between a sheet's edge and its content */
 	--paper-padding: 2.25rem;
 	/* How far the offset sheet's left edge sits inside the base sheet's */
-	--paper-inset-x: calc(var(--paper-padding) * 1.5);
+	--paper-inset-x: calc(var(--paper-padding) * 2);
 	/* How far the offset sheet's right edge sits past the base sheet's: its punched holes plus the padding */
 	--paper-offset-x: calc(
 		var(--paper-hole-inset) + var(--paper-hole-size) / 2 + var(--paper-padding)
