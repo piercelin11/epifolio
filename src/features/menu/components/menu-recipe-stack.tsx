@@ -14,6 +14,7 @@ import { MenuSheet } from "./menu-sheet";
 interface MenuRecipeStackProps {
 	group: MenuGroup;
 	recipes: Recipe[];
+	chefName: string;
 	/** Site header; the sheets scroll over it. */
 	header?: ReactNode;
 }
@@ -22,6 +23,7 @@ interface MenuRecipeStackProps {
 export function MenuRecipeStack({
 	group,
 	recipes,
+	chefName,
 	header,
 }: MenuRecipeStackProps) {
 	const stack = usePaperStack("base");
@@ -38,6 +40,7 @@ export function MenuRecipeStack({
 					<PaperSheet tone="paper">
 						<MenuSheet
 							group={group}
+							chefName={chefName}
 							onSelectItem={(item) =>
 								stack.swapTo("offset", () => setRecipeId(item.recipeId))
 							}
