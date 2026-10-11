@@ -61,7 +61,6 @@
 	--text-body--line-height: 1.5;
 	--text-title: 1.25rem;
 	--text-title--line-height: 1.3;
-	--text-title--letter-spacing: 0.04em;
 	--text-heading: 1.953125rem;
 	--text-heading--line-height: 1.15;
 	--text-heading--letter-spacing: 0.01em;
@@ -81,7 +80,7 @@
 	--card-foreground: #000000;
 	--popover: #f3ecdf;
 	--popover-foreground: #000000;
-	--primary: #ba3d2c;
+	--primary: #b03828;
 	--primary-foreground: #f2e8d8;
 	--secondary: #d8c9b0;
 	--secondary-foreground: #000000;
@@ -92,7 +91,7 @@
 	--destructive: oklch(0.577 0.245 27.325);
 	--border: #3e3e3e;
 	--input: #3e3e3e;
-	--ring: #ba3d2c;
+	--ring: #b03828;
 	--chart-1: oklch(0.87 0 0);
 	--chart-2: oklch(0.556 0 0);
 	--chart-3: oklch(0.439 0 0);
@@ -165,10 +164,18 @@
 :root {
 	/* Fixed band above the scrolling sheets; holds the site header */
 	--header-height: 8.5rem;
+	/* Width of the offset (recipe) sheet; the base (menu) sheet is narrower */
 	--paper-width: min(60rem, 100vw - 16rem);
-	/* How far the lower sheet sits to the right of and below the upper one */
+	/* Inner margin between a sheet's edge and its content */
+	--paper-padding: 2.25rem;
+	/* How far the offset sheet's right and top edges sit past the base sheet's */
 	--paper-offset-x: 6.5rem;
 	--paper-offset-y: 10.5rem;
+	/* How far the offset sheet's left edge sits past the base sheet's */
+	--paper-overhang: var(--paper-padding);
+	--paper-base-width: calc(
+		var(--paper-width) - var(--paper-offset-x) - var(--paper-overhang)
+	);
 	--paper-texture: url("/textures/paper.webp");
 	--paper-texture-opacity: 1;
 	/* Punched holes along the right edge of the recipe sheet */

@@ -14,14 +14,14 @@ export function MenuItemRow({ item, onSelect }: MenuItemRowProps) {
 				onClick={onSelect}
 				className="group grid w-full cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-10 gap-y-1 text-left"
 			>
-				<span className="text-title font-medium uppercase group-hover:underline">
+				<span className="text-title uppercase group-hover:underline">
 					{item.name}
 				</span>
 				<span className="text-body tabular-nums">
 					{formatPrice(item.price)}
 				</span>
 				{item.description && (
-					<span className="text-caption col-span-full font-light">
+					<span className="text-caption text-muted-foreground col-span-full font-light">
 						{item.description}
 					</span>
 				)}

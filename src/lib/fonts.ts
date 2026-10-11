@@ -1,4 +1,4 @@
-import { IBM_Plex_Sans, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 
 // Fonts are named by role, not by typeface (ADR-0006). To swap a typeface,
 // change the import and the loader call here; components keep using
@@ -11,7 +11,7 @@ export const headingFont = Playfair_Display({
 });
 
 /** Default font for all other text. */
-export const bodyFont = IBM_Plex_Sans({
+export const bodyFont = Inter({
 	subsets: ["latin"],
 	variable: "--font-body-src",
 });

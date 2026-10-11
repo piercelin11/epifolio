@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { PaperSheet } from "@/features/paper-stack/components/paper-sheet";
 import { PaperStack } from "@/features/paper-stack/components/paper-stack";
@@ -14,10 +14,16 @@ import { MenuSheet } from "./menu-sheet";
 interface MenuRecipeStackProps {
 	group: MenuGroup;
 	recipes: Recipe[];
+	/** Site header; the sheets scroll over it. */
+	header?: ReactNode;
 }
 
 /** The menu sheet over the recipe sheet; picking an item swaps them. */
-export function MenuRecipeStack({ group, recipes }: MenuRecipeStackProps) {
+export function MenuRecipeStack({
+	group,
+	recipes,
+	header,
+}: MenuRecipeStackProps) {
 	const stack = usePaperStack("base");
 	const [recipeId, setRecipeId] = useState<string>();
 	const recipe = recipes.find((r) => r.id === recipeId);
@@ -25,6 +31,7 @@ export function MenuRecipeStack({ group, recipes }: MenuRecipeStackProps) {
 	return (
 		<PaperStack
 			stack={stack}
+			header={header}
 			base={{
 				label: "menu",
 				content: (
