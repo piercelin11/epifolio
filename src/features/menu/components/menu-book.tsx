@@ -9,16 +9,12 @@ interface MenuBookProps {
 	rightHeader: ReactNode;
 }
 
-/** An open menu book filling the viewport, with a fold between the pages. */
+/** An open menu book filling the viewport as a two-page spread. */
 export function MenuBook({ spread, leftHeader, rightHeader }: MenuBookProps) {
 	return (
 		<main className="bg-background text-foreground grid h-dvh grid-cols-2">
 			<MenuPage header={leftHeader} sections={spread.left} />
-			<MenuPage
-				header={rightHeader}
-				sections={spread.right}
-				className="border-border border-l"
-			/>
+			<MenuPage header={rightHeader} sections={spread.right} />
 		</main>
 	);
 }
