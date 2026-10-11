@@ -10,7 +10,7 @@ export default function Home() {
 		<MenuBook
 			spread={splitIntoSpread(menu.sections)}
 			leftHeader={
-				<h1 className="font-heading text-primary text-xl font-bold">
+				<h1 className="font-heading text-primary text-2xl font-bold lowercase">
 					Epifolio
 				</h1>
 			}
