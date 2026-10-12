@@ -55,24 +55,27 @@ export function PaperStack({
 			ref={scrollRef}
 			data-paper-scroll
 			className={cn(
-				"min-h-0 flex-1 scrollbar-none overscroll-contain pt-(--header-height)",
+				// The bleed widens the area past the book on both sides without
+				// moving the sheets; it scrolls only vertically.
+				"-mx-(--paper-scroll-bleed) min-h-0 flex-1 scrollbar-none overscroll-contain px-(--paper-scroll-bleed) pt-(--header-height)",
 				// An inactive stack is clipped by the screen edge and overlaps the
 				// header band, so it must not catch clicks meant for the header.
 				// It does not scroll either; its sheets may run past the bottom of
 				// the area, but stay clipped at the top like a scrolled stack.
 				inactive
 					? "pointer-events-none overflow-visible [clip-path:inset(0_-100vw_-100vh)]"
-					: "pointer-events-auto overflow-y-auto"
+					: "pointer-events-auto overflow-x-hidden overflow-y-auto"
 			)}
 		>
 			{/*
 			 * Clipping keeps sheets that drop out of view from growing the scroll
-			 * area. The left padding, matching the offset sheet's overhang on
-			 * the right, centres the base sheet.
+			 * area; only vertically, so tilted sheets can lean into the bleed. The
+			 * left padding, matching the offset sheet's overhang on the right,
+			 * centres the base sheet.
 			 */}
 			<div
 				data-paper-content
-				className="pointer-events-none relative flex justify-center overflow-clip pb-24"
+				className="pointer-events-none relative flex justify-center overflow-x-visible overflow-y-clip pb-24"
 			>
 				<div className="box-content grid w-[calc(var(--paper-base-width)+var(--paper-offset-x))] items-start pl-(--paper-offset-x)">
 					{(["base", "offset"] as const).map((position) => {

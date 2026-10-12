@@ -180,6 +180,16 @@
 	--shelf-peek: clamp(4rem, 13.75vw - 8.5rem, 8rem);
 	/* Distance between neighbouring books in reading mode, derived from the peek */
 	--shelf-pitch: calc(50vw + var(--paper-base-width) / 2 - var(--shelf-peek));
+	/*
+	 * Room the scroll area keeps on each side of a book, so tilted sheets and
+	 * the ingredient card are not cut off at its edge. Stops short of the
+	 * neighbouring books' peeking edge so they stay clickable.
+	 */
+	--paper-scroll-bleed: clamp(
+		0rem,
+		(100vw - var(--shelf-book-width)) / 2 - var(--shelf-peek) - 0.5rem,
+		6rem
+	);
 	/* Minimum height of the offset (recipe) sheet; more content makes it taller */
 	--paper-min-height: 80rem;
 	/* Minimum height of the base (menu) sheet */
