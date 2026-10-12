@@ -53,13 +53,13 @@ stateDiagram-v2
 | 動畫中 | 忽略點食材；關閉（Esc、點外面、換紙、換書）一律生效 |
 | 減少動態效果 | 直接出現與消失 |
 | 內容 | 照片（4:3）、名稱與價格（`$金額 / 計價單位`）、營養表（每 100 g）；缺的欄位不顯示 |
-| 外觀 | 底色與文字色固定，不隨菜單主題變動；疊上卡紙材質 |
+| 外觀 | 底色與文字色固定，不隨菜單主題變動；疊上卡紙材質；左上角一個長尾夾夾在卡片上緣；沒有照片時上方留白 |
 
 ## 參數
 
 - 動畫時長、緩動曲線、位移距離、傾斜角度：見 `src/features/ingredient/card-motion.ts`。（待校準）
-- 卡片寬度、內距、與螢幕右緣的距離、顏色、材質透明度：見 `src/app/globals.css` 的 Ingredient card 區塊。（待校準）
-- 材質：`public/textures/card-stock.webp`；食材照片：`public/ingredients/<ingredientId>.webp`（4:3、960×720）。
+- 卡片寬度、內距、與螢幕右緣的距離、顏色、材質透明度、無照片時的留白、長尾夾大小與位置：見 `src/app/globals.css` 的 Ingredient card 區塊。（待校準）
+- 材質：`public/textures/card-stock.webp`；長尾夾：`public/textures/binder-clip.webp`；食材照片：`public/ingredients/<ingredientId>.webp`（4:3、960×720）。
 
 ## 已知限制
 

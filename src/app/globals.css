@@ -105,7 +105,7 @@
 	--backdrop: #1c1a12;
 	--backdrop-foreground: #ece2d0;
 	/* Ingredient card (IngredientCard); the same in every menu theme */
-	--ingredient-card: #ddd2bf;
+	--ingredient-card: #d7c9b2;
 	--ingredient-card-foreground: #2e2a24;
 }
 
@@ -221,6 +221,12 @@
 	--ingredient-card-right: calc((100vw - var(--shelf-book-width)) / 2 - 2.5rem);
 	--ingredient-card-texture: url("/textures/card-stock.webp");
 	--ingredient-card-texture-opacity: 0.35;
+	/* Blank band at the top of a card without a photo, under the clip */
+	--ingredient-card-blank: 4.5rem;
+	/* Binder clip on the card's top edge */
+	--ingredient-card-clip: url("/textures/binder-clip.webp");
+	--ingredient-card-clip-width: 5rem;
+	--ingredient-card-clip-left: 2rem;
 }
 
 [data-ingredient-card] {
