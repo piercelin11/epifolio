@@ -7,7 +7,8 @@
 		"groups": [
 			{ "id": "main", "label": "Main", "order": 1 },
 			{ "id": "dessert", "label": "Dessert", "order": 2 },
-			{ "id": "drinks", "label": "Drinks", "order": 3 }
+			{ "id": "drinks", "label": "Drinks", "order": 3 },
+			{ "id": "specials", "label": "Specials", "order": 4 }
 		],
 		"categories": [
 			{ "id": "starters", "label": "Starters", "order": 1, "group": "main" },
