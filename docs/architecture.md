@@ -60,7 +60,7 @@ erDiagram
 | `src/app/`               | 路由（App Router）                     |
 | `src/components/ui/`     | shadcn 元件                            |
 | `src/components/`        | 專案共用元件                           |
-| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`paper-stack` |
+| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`paper-stack`、`menu-theme` |
 | `public/textures/`       | 紙張材質等靜態圖片                     |
 | `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例     |
 | `src/generated/prisma/`  | Prisma 產出（gitignored）              |

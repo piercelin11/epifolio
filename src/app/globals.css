@@ -78,25 +78,7 @@
 }
 
 :root {
-	/* Menu palette: paper, ink, red accent */
-	--background: #eae0d0;
-	--foreground: #000000;
-	--card: #f0e8db;
-	--card-foreground: #000000;
-	--popover: #f3ecdf;
-	--popover-foreground: #000000;
-	--primary: #9c2e20;
-	--primary-foreground: #f2e8d8;
-	--secondary: #d8c9b0;
-	--secondary-foreground: #000000;
-	--muted: #dacdb7;
-	--muted-foreground: #5a5047;
-	--accent: #d8c9b0;
-	--accent-foreground: #000000;
 	--destructive: oklch(0.577 0.245 27.325);
-	--border: #3e3e3e;
-	--input: #3e3e3e;
-	--ring: #b03828;
 	--chart-1: oklch(0.87 0 0);
 	--chart-2: oklch(0.556 0 0);
 	--chart-3: oklch(0.439 0 0);
@@ -114,6 +96,33 @@
 	/* Page surface behind the paper stack */
 	--backdrop: #1c1a12;
 	--backdrop-foreground: #ece2d0;
+}
+
+/*
+ * Menu theme (MenuTheme). The base colours and texture opacities are set
+ * inline from src/features/menu-theme/menu-themes.ts, on <html> for the
+ * site default and on each book. The remaining tokens are derived here, so
+ * they follow the theme in scope.
+ */
+:root,
+[data-menu-theme] {
+	--card: color-mix(in oklab, var(--background) 94%, var(--foreground));
+	--card-foreground: var(--foreground);
+	--popover: color-mix(in oklab, var(--background) 92%, var(--foreground));
+	--popover-foreground: var(--foreground);
+	--secondary: color-mix(in oklab, var(--background) 85%, var(--foreground));
+	--secondary-foreground: var(--foreground);
+	--muted: color-mix(in oklab, var(--background) 88%, var(--foreground));
+	--muted-foreground: color-mix(
+		in oklab,
+		var(--foreground) 70%,
+		var(--background)
+	);
+	--accent: var(--secondary);
+	--accent-foreground: var(--foreground);
+	--border: color-mix(in oklab, var(--foreground) 75%, var(--background));
+	--input: var(--border);
+	--ring: var(--primary);
 }
 
 @layer base {
@@ -149,11 +158,9 @@
 	--paper-width: calc(
 		var(--paper-base-width) - var(--paper-inset-x) + var(--paper-offset-x)
 	);
-	/* Texture per sheet tone (PaperSheet); applied by the paper-texture utility */
+	/* Texture per sheet tone (PaperSheet); opacity comes from the menu theme */
 	--paper-texture-paper: url("/textures/fiber-paper.webp");
-	--paper-texture-paper-opacity: 1;
 	--paper-texture-primary: url("/textures/paper.webp");
-	--paper-texture-primary-opacity: 0.6;
 	/* Punched holes along the right edge of the recipe sheet */
 	--paper-hole-size: 1.875rem;
 	--paper-hole-pitch: 3.25rem;

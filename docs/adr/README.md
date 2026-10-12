@@ -13,6 +13,7 @@
 | 0005 | [文件與任務管理：Issues + git + STATUS + plans](0005-docs-and-task-management.md) | Accepted | 2026-10-07 |
 | 0006 | [字體以 next/font 載入，Tailwind 依用途命名](0006-role-based-fonts-with-next-font.md) | Accepted | 2026-10-11 |
 | 0007 | [首頁改用紙張堆疊，取代左右跨頁](0007-paper-stack-layout.md) | Accepted | 2026-10-11 |
+| 0008 | [菜單主題的配色放在 TS 設定檔，以 CSS 變數套用](0008-menu-theme-colors.md) | Accepted | 2026-10-12 |
 
 ## 模板
 

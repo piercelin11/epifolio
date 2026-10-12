@@ -11,7 +11,7 @@ paths:
 ## 技術棧
 
 - **框架**：Next.js 16（App Router、Turbopack，預設啟用 `cacheComponents`）+ React 19 + TypeScript 5
-- **樣式**：Tailwind CSS v4（`@tailwindcss/turbopack`，無 `tailwind.config`；theme token 全在 `src/app/globals.css`）
+- **樣式**：Tailwind CSS v4（`@tailwindcss/turbopack`，無 `tailwind.config`；theme token 在 `src/app/globals.css`，菜單主題的基本色在 `src/features/menu-theme/menu-themes.ts`）
 - **UI 元件**：shadcn（`base-nova` style，底層為 Base UI `@base-ui/react`，非 Radix）+ `lucide-react` 圖示 + `sonner` toast
   - 新增元件用 `pnpm dlx shadcn@latest add <name>`，放在 `src/components/ui/`（盡量不改，要客製就包一層）
   - Base UI 的組合寫法是 `render` prop（例：`<DropdownMenuTrigger render={<Button />} />`），不是 Radix 的 `asChild`
@@ -41,5 +41,5 @@ paths:
 
 - **TypeScript 型別定義**：純物件形狀（`{ key: value }` 結構，含 React props、API 資料結構）→ `interface`；其餘（union、intersection、utility types、mapped types、type alias）→ `type`。
 - **Tailwind class 條件合併**：一律用 `cn()`，禁止 template literal 或三元字串拼接 class。
-- **顏色**：元件只用語意 token（`bg-background`、`text-muted-foreground`、`bg-primary`、`text-destructive`…），不直接寫 `slate-500` / `blue-600` 等色階。新增語意色時加在 `globals.css` 的 `:root`，並在 `@theme inline` 註冊。
+- **顏色**：元件只用語意 token（`bg-background`、`text-muted-foreground`、`bg-primary`、`text-destructive`…），不直接寫 `slate-500` / `blue-600` 等色階。會隨菜單主題（`MenuTheme`）變動的顏色，在 `menu-themes.ts` 加基本色或在 `globals.css` 的 `[data-menu-theme]` 區塊由基本色推算；不隨主題變動的加在 `:root`。兩者都要在 `@theme inline` 註冊（ADR-0008）。
 - **註解**：專業、簡潔，不使用表情符號。
