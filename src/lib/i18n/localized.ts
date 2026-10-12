@@ -35,3 +35,20 @@ export function localize<T>(
 	const fallback = locales.find((other) => value[other] !== undefined);
 	return fallback && value[fallback];
 }
+
+/**
+ * Reads a stored LocalizedText field as text in `locale`; an empty string
+ * when no locale has a value.
+ */
+export function readLocalizedText(json: unknown, locale: Locale): string {
+	return localize(localizedTextSchema.parse(json), locale) ?? "";
+}
+
+/** Like readLocalizedText, but undefined for a missing or empty field. */
+export function readOptionalLocalizedText(
+	json: unknown,
+	locale: Locale
+): string | undefined {
+	if (json === null || json === undefined) return undefined;
+	return readLocalizedText(json, locale) || undefined;
+}

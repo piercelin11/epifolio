@@ -1,4 +1,5 @@
-// Fills the database with the mock menu, recipes and ingredient catalog.
+// Fills the database with the sample menu, recipes and ingredient catalog
+// from seed-data.json.
 // Run with `pnpm exec prisma db seed`. Every table is cleared first, so it
 // can be run again at any time.
 
@@ -7,14 +8,14 @@ import "dotenv/config";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 import { menuThemes } from "../src/features/menu-theme/menu-themes";
-import mockData from "../src/features/menu/mock-data.json";
+import seedData from "./seed-data.json";
 import { isUnit } from "../src/features/recipe/units";
 import { type Prisma, PrismaClient } from "../src/generated/prisma/client";
 import { defaultUserId } from "../src/lib/current-user";
 import type { LocalizedText } from "../src/lib/i18n/localized";
 import { siteConfig } from "../src/lib/site-config";
 
-interface MockLine {
+interface SeedLine {
 	name: string;
 	/** Free text, e.g. "200 g", "80-100 g", "1/2 small", "to taste". */
 	amount: string;
@@ -22,7 +23,7 @@ interface MockLine {
 	ingredientId?: string;
 }
 
-interface MockDish {
+interface SeedDish {
 	id: string;
 	name: string;
 	originalName?: string;
@@ -31,7 +32,7 @@ interface MockDish {
 	price: number;
 	serves?: number;
 	timeMinutes?: number;
-	ingredients?: { group?: string; items: MockLine[] }[];
+	ingredients?: { group?: string; items: SeedLine[] }[];
 	steps?: {
 		group?: string;
 		items: { title: string; minutes?: number; text: string }[];
@@ -39,13 +40,13 @@ interface MockDish {
 	notes?: string[];
 }
 
-const dishes: MockDish[] = mockData.dishes;
+const dishes: SeedDish[] = seedData.dishes;
 
 const prisma = new PrismaClient({
 	adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL! }),
 });
 
-/** English text as a LocalizedText; the mock data has no translations. */
+/** English text as a LocalizedText; the seed data has no translations. */
 function en(text: string): LocalizedText;
 function en(text: string | undefined): LocalizedText | undefined;
 function en(text: string | undefined): LocalizedText | undefined {
@@ -82,7 +83,7 @@ function parseNumber(text: string): number {
  * quantity that is not a unit ("1/2 small") joins the name; an amount with
  * no quantity ("to taste") becomes part of the note.
  */
-function parseLine(dish: MockDish, line: MockLine) {
+function parseLine(dish: SeedDish, line: SeedLine) {
 	const { name, amount, note, ingredientId } = line;
 	const match = amountPattern.exec(amount.trim());
 	if (!match) {
@@ -108,7 +109,7 @@ function parseLine(dish: MockDish, line: MockLine) {
 	};
 }
 
-function recipeData(dish: MockDish): Prisma.RecipeCreateInput {
+function recipeData(dish: SeedDish): Prisma.RecipeCreateInput {
 	return {
 		id: dish.id,
 		user: { connect: { id: defaultUserId } },
@@ -151,7 +152,7 @@ function recipeData(dish: MockDish): Prisma.RecipeCreateInput {
  * book has content (menu items may share a recipe).
  */
 function menuSections() {
-	const { categories } = mockData.book;
+	const { categories } = seedData.book;
 	const sectionsOf = (groupId: string) =>
 		categories
 			.filter((category) => category.group === groupId)
@@ -162,7 +163,7 @@ function menuSections() {
 			}))
 			.filter((section) => section.dishes.length > 0);
 
-	const groups = [...mockData.book.groups].sort(byOrder);
+	const groups = [...seedData.book.groups].sort(byOrder);
 	const placeholder =
 		groups.map((group) => sectionsOf(group.id)).find((s) => s.length) ?? [];
 	return groups.map((group) => {
@@ -172,7 +173,7 @@ function menuSections() {
 }
 
 function menuData(): Prisma.MenuCreateInput {
-	const { book } = mockData;
+	const { book } = seedData;
 	return {
 		user: { connect: { id: defaultUserId } },
 		title: en(book.title),
@@ -210,7 +211,7 @@ function menuData(): Prisma.MenuCreateInput {
 }
 
 function ingredientData(
-	ingredient: (typeof mockData.ingredients)[number]
+	ingredient: (typeof seedData.ingredients)[number]
 ): Prisma.IngredientCreateInput {
 	return {
 		id: ingredient.id,
@@ -235,7 +236,7 @@ async function main() {
 		await tx.user.create({
 			data: { id: defaultUserId, name: siteConfig.chefName },
 		});
-		for (const ingredient of mockData.ingredients) {
+		for (const ingredient of seedData.ingredients) {
 			await tx.ingredient.create({ data: ingredientData(ingredient) });
 		}
 		for (const dish of dishes) {

@@ -13,11 +13,6 @@ interface RecipeSheetProps {
 	onSelectIngredient?: (ingredientId: string) => void;
 }
 
-/** Identifies an ingredient line within its recipe. */
-export function ingredientKey(group: number, item: number) {
-	return `${group}-${item}`;
-}
-
 /** A section title between two rules, with optional controls on the right. */
 function RecipeSectionHeader({
 	title,
@@ -190,15 +185,13 @@ export function RecipeSheet({
 						>
 							{group.label && <GroupLabel>{group.label}</GroupLabel>}
 							<ul className="text-body flex flex-col gap-1 leading-snug">
-								{group.items.map((item, i) => (
+								{group.items.map((item) => (
 									<IngredientLine
-										key={i}
+										key={item.id}
 										item={item}
 										factor={factor}
-										checked={progress.checked.includes(ingredientKey(g, i))}
-										onCheckedChange={(checked) =>
-											setChecked(ingredientKey(g, i), checked)
-										}
+										checked={progress.checked.includes(item.id)}
+										onCheckedChange={(checked) => setChecked(item.id, checked)}
 										onSelectIngredient={onSelectIngredient}
 									/>
 								))}
@@ -220,8 +213,14 @@ export function RecipeSheet({
 										{firstStep[g] + i}.
 									</span>
 									<p>
-										<strong className="font-semibold">{step.title}.</strong>{" "}
-										{step.text}
+										{step.title && (
+											<>
+												<strong className="font-semibold">
+													{step.title}.
+												</strong>{" "}
+											</>
+										)}
+										{step.text.map((part) => part.text).join("")}
 									</p>
 								</li>
 							))}

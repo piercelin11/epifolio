@@ -136,6 +136,18 @@ export function getMenuTheme(id: MenuThemeId): MenuTheme {
 	return menuThemes.find((theme) => theme.id === id) ?? defaultMenuTheme;
 }
 
+export function isMenuThemeId(id: string): id is MenuThemeId {
+	return menuThemes.some((theme) => theme.id === id);
+}
+
+/**
+ * A stored theme id, or the default theme's when the id is no longer in
+ * the list (ADR-0016).
+ */
+export function resolveMenuThemeId(id: string): MenuThemeId {
+	return isMenuThemeId(id) ? id : menuThemes[0].id;
+}
+
 /**
  * The theme as CSS custom properties. Set them on an element marked with
  * `data-menu-theme`; globals.css derives the remaining tokens there.

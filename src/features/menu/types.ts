@@ -1,5 +1,5 @@
 // Presentation types for the menu. Components depend only on these,
-// never on the shape of a data source (mock JSON now, Prisma later).
+// never on the shape of the database rows (see the data/ modules).
 
 import type { MenuThemeId } from "@/features/menu-theme/menu-themes";
 
