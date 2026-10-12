@@ -1,26 +1,29 @@
-# ADR-0012：食材卡片放在書架上層，以捲動事件跟著紙張移動
+# ADR-0012：食材卡片放進紙張的捲動內容，開啟時依螢幕定位
 
 日期：2026-10-12
 狀態：Accepted
 
 ## 背景
 
-食材卡片要依點擊當下的螢幕位置出現，之後跟著紙張一起捲動；設計上卡片會超出食譜紙右緣。紙張在每本書自己的捲動區（`overflow-y: auto`）裡，捲動區的水平方向也會被裁切。
+食材卡片要依點擊當下的螢幕位置出現，之後跟著紙張一起捲動；設計上卡片會超出食譜紙右緣。紙張在每本書自己的捲動區（`overflow-y: auto`）裡，捲動區的水平方向也會被裁切，原本食譜紙右緣就貼著捲動區右緣。
 
 ## 決策
 
-卡片層（`IngredientCardLayer`）放在書架根元素、所有書的上層，以螢幕座標定位。卡片出現時記下當時的 `scrollTop`，之後監聽該書捲動區的 `scroll` 事件，把差值寫進卡片的 `y`（motion value）。滑鼠在卡片上滾動時，轉給捲動區。
+- 捲動區左右各多留 `--paper-scroll-bleed` 的空間（不碰到鄰書露出的部分），只在垂直方向捲動；紙張內容只在垂直方向裁切。
+- 卡片放進紙張的捲動內容（`PaperStack` 的 `overlay`），由瀏覽器原生捲動帶著走。
+- 開啟當下把「螢幕垂直中央」換算成內容座標存成卡片的 `top`；水平位置以與螢幕右緣的距離 token 換算（內容在螢幕水平置中）。
 
 ## 考慮過的替代方案
 
-- 卡片放進捲動區，以 `position: absolute` 跟著內容捲動：不用監聽事件，但超出捲動區的部分會被裁掉，卡片不能超出食譜紙右緣。
-- `position: fixed` 不跟著捲動：最簡單，但不符合「跟著紙張捲動」的需求。
+- 卡片放在書架上層、監聽 `scroll` 事件同步位移：不用動捲動區，但捲動在合成執行緒進行，`scroll` 事件晚一幀到主執行緒，卡片會落後紙張，觸控板慣性捲動時明顯。PLAN-004 初版用過，因此改掉。
+- `position: fixed` 不跟著捲動：最簡單，但不符合需求。
 
 ## 後果
 
-- 卡片與紙張的同步依賴 `scroll` 事件，正常捲動時看不出延遲。
-- 卡片層蓋在整個書架上，本身不接收點擊（`pointer-events: none`），只有卡片接收。
+- 卡片與紙張完全同步，在卡片上滾動也會捲動紙張。
+- 卡片能超出書本的距離受 `--paper-scroll-bleed` 限制；螢幕很窄時留白變小，卡片與傾斜的紙張可能被裁到。
+- 同一個留白也讓換紙時傾斜的紙張不再被裁成直線。
 
 ## 相關
 
-PLAN-004、#40、[食材卡片](../features/ingredient-card.md)、`src/features/ingredient/components/ingredient-card-layer.tsx`
+PLAN-004、#40、#43、[食材卡片](../features/ingredient-card.md)、`src/features/ingredient/components/ingredient-card-layer.tsx`、`src/features/paper-stack/components/paper-stack.tsx`

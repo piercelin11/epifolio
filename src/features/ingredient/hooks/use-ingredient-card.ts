@@ -4,8 +4,19 @@ import { useRef, useState } from "react";
 
 interface OpenCard {
 	ingredientId: string;
-	/** Scroll area the card moves with once it is up. */
-	scrollArea: HTMLElement | null;
+	/**
+	 * Where the card is centred, in px from the top of the sheets' content:
+	 * the middle of the screen when the card came up.
+	 */
+	top: number;
+}
+
+/** Middle of the visible part of `area`, measured from the top of its content. */
+function screenMiddle(area: HTMLElement): number {
+	const content = area.querySelector<HTMLElement>("[data-paper-content]");
+	const areaTop = area.getBoundingClientRect().top;
+	const contentTop = content?.getBoundingClientRect().top ?? areaTop;
+	return areaTop + area.clientHeight / 2 - contentTop;
 }
 
 /**
@@ -17,11 +28,14 @@ export function useIngredientCard() {
 	const [open, setOpen] = useState<OpenCard | null>(null);
 	const busy = useRef(false);
 
+	/** `scrollArea` is the area the sheets scroll in; the card scrolls with them. */
 	function toggle(ingredientId: string, scrollArea: HTMLElement | null) {
-		if (busy.current) return;
+		if (busy.current || !scrollArea) return;
 		busy.current = true;
 		setOpen(
-			open?.ingredientId === ingredientId ? null : { ingredientId, scrollArea }
+			open?.ingredientId === ingredientId
+				? null
+				: { ingredientId, top: screenMiddle(scrollArea) }
 		);
 	}
 

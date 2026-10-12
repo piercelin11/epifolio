@@ -4,10 +4,9 @@ import {
 	AnimatePresence,
 	motion,
 	type Transition,
-	useMotionValue,
 	useReducedMotion,
 } from "motion/react";
-import { type ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 
 import { cardMotion } from "../card-motion";
 import type { IngredientCardController } from "../hooks/use-ingredient-card";
@@ -20,40 +19,9 @@ interface IngredientCardLayerProps {
 }
 
 /**
- * Keeps the card where it was when it came up, relative to the content of
- * `area`: scrolling the sheets moves the card with them, and scrolling over
- * the card scrolls the sheets.
- */
-function FollowScroll({
-	area,
-	children,
-}: {
-	area: HTMLElement | null;
-	children: ReactNode;
-}) {
-	const y = useMotionValue(0);
-	useEffect(() => {
-		if (!area) return;
-		const start = area.scrollTop;
-		const onScroll = () => y.set(start - area.scrollTop);
-		area.addEventListener("scroll", onScroll, { passive: true });
-		return () => area.removeEventListener("scroll", onScroll);
-	}, [area, y]);
-
-	return (
-		<motion.div
-			style={{ y }}
-			onWheel={(event) => area?.scrollBy({ top: event.deltaY })}
-		>
-			{children}
-		</motion.div>
-	);
-}
-
-/**
- * Screen-wide layer over the shelf that holds the ingredient card. The card
- * comes up from below the screen to a place set by the screen, not by the
- * sheets, then moves with the sheets as they scroll. Escape or a click
+ * Holds the ingredient card inside the sheets' content, so it scrolls with
+ * them natively. The card comes up from below the screen to a place set by
+ * the screen when it was picked, not by the sheets. Escape or a click
  * anywhere but the card or an ingredient puts it away.
  */
 export function IngredientCardLayer({
@@ -87,33 +55,33 @@ export function IngredientCardLayer({
 	}, [open, close]);
 
 	return (
-		<div className="pointer-events-none absolute inset-0 z-20 flex items-center-safe justify-end overflow-hidden pr-(--ingredient-card-right)">
-			<AnimatePresence mode="wait" onExitComplete={settle}>
-				{open && ingredient && (
-					<FollowScroll key={open.ingredientId} area={open.scrollArea}>
-						<motion.div
-							className="pointer-events-auto"
-							initial={{
-								y: cardMotion.travel,
-								rotate: cardMotion.rotate.enter,
-							}}
-							animate={{
-								y: 0,
-								rotate: 0,
-								transition: timing(cardMotion.enter),
-							}}
-							exit={{
-								y: cardMotion.travel,
-								rotate: cardMotion.rotate.exit,
-								transition: timing(cardMotion.exit),
-							}}
-							onAnimationComplete={settle}
-						>
-							<IngredientCard ingredient={ingredient} />
-						</motion.div>
-					</FollowScroll>
-				)}
-			</AnimatePresence>
-		</div>
+		<AnimatePresence mode="wait" onExitComplete={settle}>
+			{open && ingredient && (
+				// The content is centred on screen, so measuring from its right edge
+				// keeps the card's distance from the screen's right edge.
+				<div
+					key={open.ingredientId}
+					className="pointer-events-auto absolute right-[calc(var(--ingredient-card-right)-(100vw-var(--shelf-book-width))/2)] z-20 -translate-y-1/2"
+					style={{ top: open.top }}
+				>
+					<motion.div
+						initial={{ y: cardMotion.travel, rotate: cardMotion.rotate.enter }}
+						animate={{
+							y: 0,
+							rotate: 0,
+							transition: timing(cardMotion.enter),
+						}}
+						exit={{
+							y: cardMotion.travel,
+							rotate: cardMotion.rotate.exit,
+							transition: timing(cardMotion.exit),
+						}}
+						onAnimationComplete={settle}
+					>
+						<IngredientCard ingredient={ingredient} />
+					</motion.div>
+				</div>
+			)}
+		</AnimatePresence>
 	);
 }

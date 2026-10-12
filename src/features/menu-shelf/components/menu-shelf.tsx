@@ -117,6 +117,11 @@ export function MenuShelf({
 							onRecipeChange={(recipeId) => update(book.id, { recipeId })}
 							onSelectIngredient={card.toggle}
 							onSwapStart={card.close}
+							overlay={
+								open && (
+									<IngredientCardLayer ingredients={ingredients} card={card} />
+								)
+							}
 							progress={progress}
 							onProgressChange={(recipeId, next) =>
 								setProgress((all) => ({ ...all, [recipeId]: next }))
@@ -138,7 +143,6 @@ export function MenuShelf({
 					</MenuThemeScope>
 				);
 			})}
-			<IngredientCardLayer ingredients={ingredients} card={card} />
 		</div>
 	);
 }

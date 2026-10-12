@@ -17,7 +17,7 @@
 | 0009 | [總覽的滾輪卡點使用 wheel-gestures](0009-shelf-wheel-snap.md) | Accepted | 2026-10-12 |
 | 0010 | [Tailwind 改用 @tailwindcss/postcss 整合](0010-tailwind-postcss.md) | Accepted | 2026-10-12 |
 | 0011 | [食材獨立成目錄，用量以 id 引用](0011-ingredient-catalog.md) | Accepted | 2026-10-12 |
-| 0012 | [食材卡片放在書架上層，以捲動事件跟著紙張移動](0012-ingredient-card-layer.md) | Accepted | 2026-10-12 |
+| 0012 | [食材卡片放進紙張的捲動內容，開啟時依螢幕定位](0012-ingredient-card-layer.md) | Accepted | 2026-10-12 |
 
 ## 模板
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import { PaperSheet } from "@/features/paper-stack/components/paper-sheet";
 import { PaperStack } from "@/features/paper-stack/components/paper-stack";
@@ -30,6 +30,8 @@ interface MenuRecipeStackProps {
 		ingredientId: string,
 		scrollArea: HTMLElement | null
 	) => void;
+	/** Laid over the sheets and scrolled with them; see PaperStack. */
+	overlay?: ReactNode;
 	/** Called as the sheets start to swap. */
 	onSwapStart?: () => void;
 	/** Servings and ready ingredients per recipe id; owned by the caller. */
@@ -54,6 +56,7 @@ export function MenuRecipeStack({
 	onRecipeChange,
 	onSelectIngredient,
 	onSwapStart,
+	overlay,
 	progress,
 	onProgressChange,
 	blankBackRecipe = false,
@@ -73,6 +76,7 @@ export function MenuRecipeStack({
 		<PaperStack
 			stack={stack}
 			inactive={inactive}
+			overlay={overlay}
 			base={{
 				label: "menu",
 				content: (

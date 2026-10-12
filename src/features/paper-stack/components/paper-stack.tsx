@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import { cn } from "@/lib/utils";
 
 import type { PaperStackController } from "../hooks/use-paper-stack";
@@ -11,6 +13,8 @@ interface PaperStackProps {
 	base: StackSheet;
 	/** Sheet shifted right and down by the paper offset tokens. */
 	offset: StackSheet;
+	/** Laid over both sheets inside the scrolled content, e.g. a card. */
+	overlay?: ReactNode;
 	/** Called when the visible part of the back sheet is clicked. */
 	onBringToFront?: (position: StackPosition) => void;
 	/**
@@ -44,6 +48,7 @@ export function PaperStack({
 	stack,
 	base,
 	offset,
+	overlay,
 	onBringToFront,
 	inactive,
 }: PaperStackProps) {
@@ -121,6 +126,7 @@ export function PaperStack({
 						);
 					})}
 				</div>
+				{overlay}
 			</div>
 		</div>
 	);
