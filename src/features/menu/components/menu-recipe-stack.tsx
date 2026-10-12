@@ -17,6 +17,8 @@ interface MenuRecipeStackProps {
 	chefName: string;
 	/** Set on a book that is shown but not open; see PaperStack. */
 	inactive?: ComponentProps<typeof PaperStack>["inactive"];
+	/** Shown as a thumbnail: fixed height and a blank recipe sheet. */
+	preview?: boolean;
 }
 
 /** The menu sheet over the recipe sheet; picking an item swaps them. */
@@ -25,6 +27,7 @@ export function MenuRecipeStack({
 	recipes,
 	chefName,
 	inactive,
+	preview = false,
 }: MenuRecipeStackProps) {
 	const stack = usePaperStack("base");
 	// Until an item is picked, the recipe sheet shows the first one on the menu.
@@ -37,6 +40,7 @@ export function MenuRecipeStack({
 		<PaperStack
 			stack={stack}
 			inactive={inactive}
+			fixedHeight={preview}
 			base={{
 				label: "menu",
 				content: (
@@ -55,7 +59,7 @@ export function MenuRecipeStack({
 				label: "recipe",
 				content: (
 					<PaperSheet tone="primary" perforated>
-						<RecipeSheet recipe={recipe} />
+						{!preview && <RecipeSheet recipe={recipe} />}
 					</PaperSheet>
 				),
 			}}

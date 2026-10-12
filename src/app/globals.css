@@ -141,6 +141,8 @@
 :root {
 	/* Fixed band above the scrolling sheets; holds the site header */
 	--header-height: 8.5rem;
+	/* Side padding of the header */
+	--page-inset: 2.5rem;
 	/* Width of the base (menu) sheet, centred on screen */
 	--paper-base-width: min(48rem, 100vw - 24rem);
 	/* Inner margin between a sheet's edge and its content */
@@ -169,6 +171,14 @@
 	--shelf-pitch: calc(
 		var(--paper-base-width) + var(--paper-offset-x) + var(--shelf-gap)
 	);
+	/* Height of every sheet when a stack shows at a fixed size (shelf overview) */
+	--paper-fixed-height: 70rem;
+	/* Shelf overview: books shrink into one row below the header */
+	--shelf-overview-scale: 0.55;
+	/* Left edge of the first book, in line with the header */
+	--shelf-overview-inset: var(--page-inset);
+	/* Space between books before scaling */
+	--shelf-overview-gap: 5rem;
 	/* Punched holes along the right edge of the recipe sheet */
 	--paper-hole-size: 1.875rem;
 	--paper-hole-pitch: 3.25rem;

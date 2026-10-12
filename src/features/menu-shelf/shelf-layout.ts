@@ -18,3 +18,45 @@ export function relativeSlot(index: number, current: number, count: number) {
 export function isVisibleSlot(slot: number) {
 	return Math.abs(slot) <= 1;
 }
+
+/**
+ * Column of book `index` in the overview row, counted from the left edge:
+ * the focused book sits in the second column, so the book before it shows
+ * in the first. Three or more books loop like `relativeSlot`; a book whose
+ * column is -1 sits just off the left edge.
+ */
+export function overviewColumn(index: number, focus: number, count: number) {
+	if (count < 3) return 1 + index - focus;
+	return (((index - focus + 1) % count) + count) % count;
+}
+
+/** Overview row metrics in px, measured from the rendered tokens. */
+export interface OverviewGeometry {
+	scale: number;
+	/** Left edge of column 0. */
+	left: number;
+	/** Distance between columns. */
+	pitch: number;
+	/** Top edge of every book's menu sheet. */
+	top: number;
+	/** Menu sheet position inside an unscaled book element. */
+	sheetX: number;
+	sheetY: number;
+}
+
+/**
+ * Transform that moves a book element, scaled from its top-left corner,
+ * into an overview column. `elementLeft` is its untransformed left edge.
+ */
+export function overviewTransform(
+	geometry: OverviewGeometry,
+	column: number,
+	elementLeft: number
+) {
+	const { scale, left, pitch, top, sheetX, sheetY } = geometry;
+	return {
+		x: left + column * pitch - scale * sheetX - elementLeft,
+		y: top - scale * sheetY,
+		scale,
+	};
+}

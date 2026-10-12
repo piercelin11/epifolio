@@ -22,6 +22,8 @@ interface PaperStackProps {
 		label: string;
 		onActivate: () => void;
 	};
+	/** Both sheets take the fixed sheet height token and clip their content. */
+	fixedHeight?: boolean;
 }
 
 const positionClasses: Record<StackPosition, string> = {
@@ -44,6 +46,7 @@ export function PaperStack({
 	offset,
 	onBringToFront,
 	inactive,
+	fixedHeight = false,
 }: PaperStackProps) {
 	const { front, scrollRef, sheetRefs } = stack;
 	const sheets: Record<StackPosition, StackSheet> = { base, offset };
@@ -55,7 +58,14 @@ export function PaperStack({
 				"min-h-0 flex-1 overscroll-contain pt-(--header-height)",
 				// An inactive stack is clipped by the screen edge and overlaps the
 				// header band, so it must not catch clicks meant for the header.
-				inactive ? "pointer-events-none overflow-hidden" : "overflow-y-auto"
+				inactive && "pointer-events-none",
+				// At a fixed height nothing scrolls, and the sheets may run past
+				// the bottom of the area.
+				fixedHeight
+					? "overflow-visible"
+					: inactive
+						? "overflow-hidden"
+						: "overflow-y-auto"
 			)}
 		>
 			{/*
@@ -70,11 +80,15 @@ export function PaperStack({
 						return (
 							<div
 								key={position}
+								data-paper-position={position}
 								ref={(el) => {
 									sheetRefs.current[position] = el;
 								}}
 								className={cn(
-									"pointer-events-auto relative col-start-1 row-start-1 flex min-h-[calc(100dvh-var(--header-height))] flex-col",
+									"pointer-events-auto relative col-start-1 row-start-1 flex flex-col",
+									fixedHeight
+										? "h-(--paper-fixed-height) overflow-clip"
+										: "min-h-[calc(100dvh-var(--header-height))]",
 									positionClasses[position],
 									inFront && "z-10"
 								)}

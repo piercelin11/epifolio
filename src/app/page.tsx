@@ -10,12 +10,10 @@ export default function Home() {
 				books={getMockBooks()}
 				recipes={getMockRecipes()}
 				chefName={siteConfig.chefName}
-				header={
-					<header className="h-(--header-height) px-10 pt-8">
-						<h1 className="font-heading text-headline font-bold lowercase">
-							Epifolio
-						</h1>
-					</header>
+				title={
+					<h1 className="font-heading text-headline font-bold lowercase">
+						Epifolio
+					</h1>
 				}
 			/>
 		</main>

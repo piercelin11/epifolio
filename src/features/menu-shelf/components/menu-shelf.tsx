@@ -8,33 +8,49 @@ import { MenuThemeScope } from "@/features/menu-theme/components/menu-theme-scop
 import type { Recipe } from "@/features/recipe/types";
 
 import { useMenuShelf } from "../hooks/use-menu-shelf";
-import { isVisibleSlot, relativeSlot } from "../shelf-layout";
+import { isVisibleSlot, overviewColumn, relativeSlot } from "../shelf-layout";
 
 interface MenuShelfProps {
 	books: MenuBook[];
 	recipes: Recipe[];
 	chefName: string;
-	/** Site header, in the band above the books; the open book scrolls over it. */
-	header: ReactNode;
+	/** Site title, at the left of the header band. */
+	title: ReactNode;
 }
 
 /**
- * All menu books side by side. The current book is open in the centre;
- * its neighbours show at the screen edges and open when clicked.
+ * All menu books side by side. In reading mode the current book is open in
+ * the centre and its neighbours show at the screen edges; the menu button
+ * shrinks every book into one row, where picking a book opens it.
  */
-export function MenuShelf({
-	books,
-	recipes,
-	chefName,
-	header,
-}: MenuShelfProps) {
-	const { current, goTo, bookRefs } = useMenuShelf(books.length);
+export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
+	const shelf = useMenuShelf(books.length);
+	const { phase, current, focus, rootRef, bookRefs } = shelf;
+	const reading = phase === "reading";
 
 	return (
-		<div className="relative min-h-0 flex-1 overflow-hidden">
-			<div className="absolute inset-x-0 top-0">{header}</div>
+		<div ref={rootRef} className="relative min-h-0 flex-1 overflow-hidden">
+			{/* The open book scrolls over the header band */}
+			<header className="absolute inset-x-0 top-0 flex h-(--header-height) items-start justify-between px-(--page-inset) pt-8">
+				{title}
+				<button
+					type="button"
+					aria-pressed={phase === "overview"}
+					className="font-heading text-heading cursor-pointer font-bold lowercase"
+					onClick={() =>
+						reading ? shelf.openOverview() : shelf.closeOverview()
+					}
+				>
+					Menu
+				</button>
+			</header>
 			{books.map((book, index) => {
 				const slot = relativeSlot(index, current, books.length);
+				const open = reading && slot === 0;
+				const onScreen =
+					phase === "overview"
+						? overviewColumn(index, focus, books.length) >= 0
+						: isVisibleSlot(slot);
 				return (
 					<MenuThemeScope
 						key={book.id}
@@ -43,22 +59,26 @@ export function MenuShelf({
 						}}
 						themeId={book.themeId}
 						// Off-screen books stay rendered so they can slide in.
-						inert={!isVisibleSlot(slot)}
+						inert={!onScreen}
 						className="absolute inset-y-0 left-[calc(50%-var(--shelf-book-width)/2+var(--shelf-slot)*var(--shelf-pitch))] flex w-(--shelf-book-width) origin-top flex-col"
 						style={{ "--shelf-slot": slot } as CSSProperties}
 					>
 						{/* Remounted on open and close, so a book always opens at the top of its menu */}
 						<MenuRecipeStack
-							key={slot === 0 ? "open" : "closed"}
+							key={open ? "open" : "closed"}
 							group={book.group}
 							recipes={recipes}
 							chefName={chefName}
+							preview={!reading}
 							inactive={
-								slot === 0
+								open
 									? undefined
 									: {
 											label: `Open ${book.group.label}`,
-											onActivate: () => goTo(index),
+											onActivate: () =>
+												reading
+													? shelf.goTo(index)
+													: shelf.closeOverview(index),
 										}
 							}
 						/>

@@ -14,4 +14,16 @@ export const shelfMotion = {
 		/** Delay in seconds between books, leading book first. */
 		stagger: 0.03,
 	},
+	/** Shrinking into the overview row and growing back out of it. */
+	overview: {
+		duration: 0.8,
+		ease: [0.65, 0, 0.35, 1] as Easing,
+		/** Delay in seconds between books, left to right. */
+		stagger: 0.04,
+		/**
+		 * A book whose place in the row changes across the loop would cross
+		 * the screen; it fades out and back in over these points in the move.
+		 */
+		wrapFade: [0, 0.25, 0.75, 1],
+	},
 };
