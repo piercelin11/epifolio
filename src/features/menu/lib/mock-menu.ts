@@ -1,5 +1,5 @@
 import mockData from "../mock-data.json";
-import type { Menu, MenuGroup, Section } from "../types";
+import type { DescriptionPart, Menu, MenuGroup, Section } from "../types";
 
 // The mock dishes mix recipe and menu item fields; only the menu item
 // fields (name, description, price) are read here. A dish id doubles as
@@ -10,7 +10,10 @@ interface MockGroup {
 	order: number;
 }
 
-interface MockCategory extends MockGroup {
+interface MockCategory {
+	id: string;
+	label?: string;
+	order: number;
 	group: string;
 }
 
@@ -18,7 +21,7 @@ interface MockDish {
 	id: string;
 	name: string;
 	category: string;
-	description?: string;
+	description?: DescriptionPart[];
 	price: number;
 }
 
@@ -49,7 +52,9 @@ export function getMockMenu(data: MockData = mockData): Menu {
 					.map((dish) => ({
 						id: dish.id,
 						name: dish.name,
-						description: dish.description || undefined,
+						description: dish.description?.length
+							? dish.description
+							: undefined,
 						price: dish.price,
 						recipeId: dish.id,
 					})),

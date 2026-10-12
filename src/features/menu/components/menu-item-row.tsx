@@ -22,7 +22,7 @@ export function MenuItemRow({ item, onSelect }: MenuItemRowProps) {
 				</span>
 				{item.description && (
 					<span className="text-caption col-span-full font-light">
-						{item.description}
+						{item.description.map((part) => part.text).join(" · ")}
 					</span>
 				)}
 			</button>

@@ -3,10 +3,18 @@
 
 import type { MenuThemeId } from "@/features/menu-theme/menu-themes";
 
+/** One phrase of a menu item description, e.g. "Golden garlic". */
+export interface DescriptionPart {
+	text: string;
+	/** The ingredient this phrase names, if any. */
+	ingredientId?: string;
+}
+
 export interface MenuItem {
 	id: string;
 	name: string;
-	description?: string;
+	/** Phrases shown joined by " · ". */
+	description?: DescriptionPart[];
 	price: number;
 	/** The recipe this item presents; a reference, not a copy. */
 	recipeId: string;
@@ -14,7 +22,7 @@ export interface MenuItem {
 
 export interface Section {
 	id: string;
-	label: string;
+	label?: string;
 	items: MenuItem[];
 }
 

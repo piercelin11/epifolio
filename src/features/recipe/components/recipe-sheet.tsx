@@ -30,7 +30,7 @@ export function RecipeSheet({ recipe }: RecipeSheetProps) {
 					<ul className="text-body flex flex-col gap-1">
 						{group.items.map((item) => (
 							<li key={item.name}>
-								{item.amount} {item.name}
+								{String(item.quantity ?? "")} {item.unit} {item.name}
 								{item.note && ` (${item.note})`}
 							</li>
 						))}
@@ -41,11 +41,13 @@ export function RecipeSheet({ recipe }: RecipeSheetProps) {
 			<section className="flex flex-col gap-2">
 				<h3 className="font-heading text-title uppercase">Steps</h3>
 				<ol className="text-body flex list-decimal flex-col gap-3 pl-5">
-					{recipe.steps.map((step) => (
-						<li key={step.title}>
-							<strong>{step.title}.</strong> {step.text}
-						</li>
-					))}
+					{recipe.stepGroups
+						.flatMap((group) => group.steps)
+						.map((step) => (
+							<li key={step.title}>
+								<strong>{step.title}.</strong> {step.text}
+							</li>
+						))}
 				</ol>
 			</section>
 
