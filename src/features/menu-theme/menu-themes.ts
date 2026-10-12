@@ -31,7 +31,7 @@ export interface MenuTheme {
  * value: `texture: { ...lightPaperTexture, paper: 0.5 }`.
  */
 const lightPaperTexture: MenuThemeTexture = { paper: 0.35, primary: 0.35 };
-const darkPaperTexture: MenuThemeTexture = { paper: 0.4, primary: 0.5 };
+const darkPaperTexture: MenuThemeTexture = { paper: 0.4, primary: 0.4 };
 
 /**
  * The menu themes a book can use. The first one is also the site default,
