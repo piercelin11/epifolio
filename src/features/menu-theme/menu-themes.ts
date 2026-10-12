@@ -30,8 +30,8 @@ export interface MenuTheme {
  * shows more on some colours than others, so a theme can override either
  * value: `texture: { ...lightPaperTexture, paper: 0.5 }`.
  */
-const lightPaperTexture: MenuThemeTexture = { paper: 0.6, primary: 0.8 };
-const darkPaperTexture: MenuThemeTexture = { paper: 0.35, primary: 0.2 };
+const lightPaperTexture: MenuThemeTexture = { paper: 0.35, primary: 0.35 };
+const darkPaperTexture: MenuThemeTexture = { paper: 0.4, primary: 0.5 };
 
 /**
  * The menu themes a book can use. The first one is also the site default,
