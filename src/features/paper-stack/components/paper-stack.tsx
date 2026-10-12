@@ -25,15 +25,16 @@ interface PaperStackProps {
 }
 
 const positionClasses: Record<StackPosition, string> = {
-	base: "w-(--paper-base-width)",
-	offset: "mt-(--paper-offset-y) ml-(--paper-inset-x) w-(--paper-width)",
+	base: "min-h-(--paper-base-min-height) w-(--paper-base-width)",
+	offset:
+		"mt-(--paper-offset-y) ml-(--paper-inset-x) min-h-(--paper-min-height) w-(--paper-width)",
 };
 
 /**
  * Two sheets in their own scroll area, which fills the space it is given.
  * The sheets start below the header band and scroll over whatever sits
  * there. They share one grid cell, so they scroll together; each is as tall
- * as its content, at least the minimum sheet height. The scroll bar is
+ * as its content, at least its minimum height token. The scroll bar is
  * hidden.
  * Only the stacking order changes. The base sheet is centred; the offset
  * sheet starts inside its left edge and sticks out past its right edge,
@@ -85,7 +86,6 @@ export function PaperStack({
 								}}
 								className={cn(
 									"pointer-events-auto relative col-start-1 row-start-1 flex flex-col",
-									"min-h-(--paper-min-height)",
 									positionClasses[position],
 									inFront && "z-10"
 								)}
