@@ -156,8 +156,15 @@
 	--header-height: 8.5rem;
 	/* Side padding of the header */
 	--page-inset: 2.5rem;
-	/* Width of the base (menu) sheet, centred on screen */
-	--paper-base-width: min(48rem, 100vw - 24rem);
+	/*
+	 * Width of the base (menu) sheet, centred on screen. 48rem up to a 90rem
+	 * (1440px) screen; past that it gains 0.3px per px of screen width, up
+	 * to 60rem. Narrower screens leave 12rem on each side.
+	 */
+	--paper-base-width: min(
+		clamp(48rem, 48rem + (100vw - 90rem) * 0.3, 60rem),
+		100vw - 24rem
+	);
 	/* Inner margin between a sheet's edge and its content */
 	--paper-padding: 2rem;
 	/* How far the offset sheet's left edge sits inside the base sheet's: one and a half paddings */
