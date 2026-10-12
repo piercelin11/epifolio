@@ -1,16 +1,13 @@
-import { MenuRecipeStack } from "@/features/menu/components/menu-recipe-stack";
-import { getMockMenu } from "@/features/menu/lib/mock-menu";
+import { getMockBooks } from "@/features/menu/lib/mock-books";
+import { MenuShelf } from "@/features/menu-shelf/components/menu-shelf";
 import { getMockRecipes } from "@/features/recipe/lib/mock-recipes";
 import { siteConfig } from "@/lib/site-config";
 
 export default function Home() {
-	const menu = getMockMenu();
-
 	return (
 		<main className="bg-backdrop text-backdrop-foreground flex h-dvh flex-col overflow-hidden">
-			{/* One group per sheet; switching between groups is #21 */}
-			<MenuRecipeStack
-				group={menu.groups[0]}
+			<MenuShelf
+				books={getMockBooks()}
 				recipes={getMockRecipes()}
 				chefName={siteConfig.chefName}
 				header={

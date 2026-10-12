@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 import { cn } from "@/lib/utils";
 
 import type { PaperStackController } from "../hooks/use-paper-stack";
@@ -15,8 +13,15 @@ interface PaperStackProps {
 	offset: StackSheet;
 	/** Called when the visible part of the back sheet is clicked. */
 	onBringToFront?: (position: StackPosition) => void;
-	/** Pinned to the top of the scroll area; the sheets scroll over it. */
-	header?: ReactNode;
+	/**
+	 * When set, the stack is shown but not usable: it does not scroll, its
+	 * content is inert, and clicking either sheet calls `onActivate`.
+	 */
+	inactive?: {
+		/** Accessible name of the click target, e.g. "Open Dessert". */
+		label: string;
+		onActivate: () => void;
+	};
 }
 
 const positionClasses: Record<StackPosition, string> = {
@@ -26,17 +31,19 @@ const positionClasses: Record<StackPosition, string> = {
 
 /**
  * Two sheets in their own scroll area, which fills the space it is given.
- * They share one grid cell, so they scroll together; each is as tall as its
- * content, at least the height of the area below the header. Only the
- * stacking order changes. The base sheet is centred; the offset sheet starts
- * inside its left edge and sticks out past its right edge, lower down.
+ * The sheets start below the header band and scroll over whatever sits
+ * there. They share one grid cell, so they scroll together; each is as tall
+ * as its content, at least the height of the area below the header band.
+ * Only the stacking order changes. The base sheet is centred; the offset
+ * sheet starts inside its left edge and sticks out past its right edge,
+ * lower down.
  */
 export function PaperStack({
 	stack,
 	base,
 	offset,
 	onBringToFront,
-	header,
+	inactive,
 }: PaperStackProps) {
 	const { front, scrollRef, sheetRefs } = stack;
 	const sheets: Record<StackPosition, StackSheet> = { base, offset };
@@ -44,16 +51,19 @@ export function PaperStack({
 	return (
 		<div
 			ref={scrollRef}
-			className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+			className={cn(
+				"min-h-0 flex-1 overscroll-contain pt-(--header-height)",
+				// An inactive stack is clipped by the screen edge and overlaps the
+				// header band, so it must not catch clicks meant for the header.
+				inactive ? "pointer-events-none overflow-hidden" : "overflow-y-auto"
+			)}
 		>
-			{header && <div className="sticky top-0">{header}</div>}
 			{/*
 			 * Clipping keeps sheets that drop out of view from growing the scroll
-			 * area. This layer covers the header once scrolled, so only the sheets
-			 * take pointer input. The left padding, matching the offset
-			 * sheet's overhang on the right, centres the base sheet.
+			 * area. The left padding, matching the offset sheet's overhang on
+			 * the right, centres the base sheet.
 			 */}
-			<div className="pointer-events-none relative z-10 flex justify-center overflow-clip pb-24">
+			<div className="pointer-events-none relative flex justify-center overflow-clip pb-24">
 				<div className="box-content grid w-[calc(var(--paper-base-width)+var(--paper-offset-x))] items-start pl-(--paper-offset-x)">
 					{(["base", "offset"] as const).map((position) => {
 						const inFront = front === position;
@@ -69,16 +79,29 @@ export function PaperStack({
 									inFront && "z-10"
 								)}
 							>
-								<div inert={!inFront} className="flex flex-1 flex-col">
+								<div
+									inert={!!inactive || !inFront}
+									className="flex flex-1 flex-col"
+								>
 									{sheets[position].content}
 								</div>
-								{!inFront && onBringToFront && (
+								{inactive ? (
 									<button
 										type="button"
-										aria-label={`Show ${sheets[position].label}`}
+										aria-label={inactive.label}
 										className="absolute inset-0 cursor-pointer"
-										onClick={() => onBringToFront(position)}
+										onClick={inactive.onActivate}
 									/>
+								) : (
+									!inFront &&
+									onBringToFront && (
+										<button
+											type="button"
+											aria-label={`Show ${sheets[position].label}`}
+											className="absolute inset-0 cursor-pointer"
+											onClick={() => onBringToFront(position)}
+										/>
+									)
 								)}
 							</div>
 						);

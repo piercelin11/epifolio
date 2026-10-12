@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ComponentProps, useState } from "react";
 
 import { PaperSheet } from "@/features/paper-stack/components/paper-sheet";
 import { PaperStack } from "@/features/paper-stack/components/paper-stack";
@@ -15,8 +15,8 @@ interface MenuRecipeStackProps {
 	group: MenuGroup;
 	recipes: Recipe[];
 	chefName: string;
-	/** Site header; the sheets scroll over it. */
-	header?: ReactNode;
+	/** Set on a book that is shown but not open; see PaperStack. */
+	inactive?: ComponentProps<typeof PaperStack>["inactive"];
 }
 
 /** The menu sheet over the recipe sheet; picking an item swaps them. */
@@ -24,7 +24,7 @@ export function MenuRecipeStack({
 	group,
 	recipes,
 	chefName,
-	header,
+	inactive,
 }: MenuRecipeStackProps) {
 	const stack = usePaperStack("base");
 	// Until an item is picked, the recipe sheet shows the first one on the menu.
@@ -36,7 +36,7 @@ export function MenuRecipeStack({
 	return (
 		<PaperStack
 			stack={stack}
-			header={header}
+			inactive={inactive}
 			base={{
 				label: "menu",
 				content: (

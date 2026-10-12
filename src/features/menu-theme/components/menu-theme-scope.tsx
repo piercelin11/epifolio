@@ -1,10 +1,12 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { getMenuTheme, type MenuThemeId, menuThemeStyle } from "../menu-themes";
 
 interface MenuThemeScopeProps {
 	themeId: MenuThemeId;
 	className?: string;
+	/** Extra inline styles, merged under the theme's variables. */
+	style?: CSSProperties;
 	children: ReactNode;
 }
 
@@ -12,12 +14,13 @@ interface MenuThemeScopeProps {
 export function MenuThemeScope({
 	themeId,
 	className,
+	style,
 	children,
 }: MenuThemeScopeProps) {
 	return (
 		<div
 			data-menu-theme={themeId}
-			style={menuThemeStyle(getMenuTheme(themeId))}
+			style={{ ...style, ...menuThemeStyle(getMenuTheme(themeId)) }}
 			className={className}
 		>
 			{children}

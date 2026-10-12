@@ -161,6 +161,14 @@
 	/* Texture per sheet tone (PaperSheet); opacity comes from the menu theme */
 	--paper-texture-paper: url("/textures/fiber-paper.webp");
 	--paper-texture-primary: url("/textures/paper.webp");
+	/* Menu shelf (MenuShelf): one book is a whole paper stack */
+	--shelf-book-width: calc(var(--paper-base-width) + var(--paper-offset-x) * 2);
+	/* Space between one book's recipe sheet and the next book's menu sheet */
+	--shelf-gap: 14rem;
+	/* Distance between neighbouring books in reading mode */
+	--shelf-pitch: calc(
+		var(--paper-base-width) + var(--paper-offset-x) + var(--shelf-gap)
+	);
 	/* Punched holes along the right edge of the recipe sheet */
 	--paper-hole-size: 1.875rem;
 	--paper-hole-pitch: 3.25rem;
