@@ -75,6 +75,12 @@
 	--text-display: clamp(3.5rem, 2rem + 3.5vw, 5.9605rem);
 	--text-display--line-height: 1;
 	--text-display--letter-spacing: -0.02em;
+	/* Site header: title and menu button, smaller on laptop-sized screens */
+	--text-masthead: clamp(2.25rem, 3.28vw - 0.125rem, 3.8125rem);
+	--text-masthead--line-height: 1.05;
+	--text-masthead--letter-spacing: -0.01em;
+	--text-masthead-nav: clamp(1.5rem, 0.85rem + 1.125vw, 2.2rem);
+	--text-masthead-nav--line-height: 1.15;
 }
 
 :root {
@@ -165,8 +171,8 @@
 	--paper-texture-primary: url("/textures/paper.webp");
 	/* Menu shelf (MenuShelf): one book is a whole paper stack */
 	--shelf-book-width: calc(var(--paper-base-width) + var(--paper-offset-x) * 2);
-	/* How much of each neighbouring book's menu sheet shows at the screen edge */
-	--shelf-peek: 8rem;
+	/* How much of each neighbouring book's menu sheet shows at the screen edge; less on laptop-sized screens */
+	--shelf-peek: clamp(5rem, 7.5vw - 1rem, 8rem);
 	/* Distance between neighbouring books in reading mode, derived from the peek */
 	--shelf-pitch: calc(50vw + var(--paper-base-width) / 2 - var(--shelf-peek));
 	/* Minimum height of the offset (recipe) sheet; more content makes it taller */
@@ -177,6 +183,8 @@
 	--shelf-overview-scale: 0.55;
 	/* Left edge of the first book, in line with the header */
 	--shelf-overview-inset: var(--page-inset);
+	/* Least space between the header band and the overview row, used when the row is too tall to centre */
+	--shelf-overview-min-top: 3rem;
 	/* Space between books before scaling */
 	--shelf-overview-gap: 5rem;
 	/* Punched holes along the right edge of the recipe sheet */

@@ -69,18 +69,22 @@ function measureOverview(
 	// A book's visible width, from its menu sheet to its recipe sheet's edge.
 	const width = scale * (book.offsetWidth - sheet.x);
 	const pitch = width + scale * cssLength(root, "--shelf-overview-gap");
-	// Centre books of the minimum height in the space below the header band;
-	// longer ones run past the bottom.
+	// Centre books of the minimum height in the space below the header band,
+	// keeping at least the minimum gap; longer ones run past the bottom.
 	const height =
 		scale *
 		(cssLength(root, "--paper-offset-y") +
 			cssLength(root, "--paper-min-height"));
+	const gap = Math.max(
+		cssLength(root, "--shelf-overview-min-top"),
+		(root.clientHeight - sheet.y - height) / 2
+	);
 	const viewport = root.clientWidth;
 	return {
 		scale,
 		left,
 		pitch,
-		top: sheet.y + (root.clientHeight - sheet.y - height) / 2,
+		top: sheet.y + gap,
 		sheetX: sheet.x,
 		sheetY: sheet.y,
 		columns: Math.ceil((viewport - left) / pitch),

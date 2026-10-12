@@ -52,7 +52,7 @@ export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
 				<button
 					type="button"
 					aria-pressed={phase === "overview"}
-					className="font-heading text-heading cursor-pointer font-bold lowercase"
+					className="font-heading text-masthead-nav cursor-pointer font-bold lowercase"
 					onClick={() =>
 						reading ? shelf.openOverview() : shelf.closeOverview()
 					}

@@ -11,7 +11,7 @@ export default function Home() {
 				recipes={getMockRecipes()}
 				chefName={siteConfig.chefName}
 				title={
-					<h1 className="font-heading text-headline font-bold lowercase">
+					<h1 className="font-heading text-masthead font-bold lowercase">
 						Epifolio
 					</h1>
 				}
