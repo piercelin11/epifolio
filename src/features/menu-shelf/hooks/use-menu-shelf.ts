@@ -12,6 +12,7 @@ import { WheelGestures } from "wheel-gestures";
 
 import {
 	bookAt,
+	isVisibleSlot,
 	loops,
 	type OverviewGeometry,
 	overviewColumn,
@@ -233,11 +234,21 @@ export function useMenuShelf(count: number) {
 				setCenter(next);
 				setPhase("closing");
 			});
-			const { stagger, ...transition } = shelfMotion.overview;
+			const { stagger, fade, ...transition } = shelfMotion.overview;
 			const animations: AnimationPlaybackControls[] = books().map(
 				({ k, el }) => {
 					const column = overviewColumn(k, focus);
 					const placed = overviewX.current.get(k);
+					const wasOnScreen =
+						placed !== undefined && column >= 0 && column < g.columns;
+					const endsOnScreen = isVisibleSlot(k - next);
+					const opacity = reduceMotion
+						? undefined
+						: wasOnScreen && !endsOnScreen
+							? { values: [1, 0, 0], times: [0, fade.out, 1] }
+							: !wasOnScreen && endsOnScreen
+								? { values: [0, 0, 1], times: [0, fade.in, 1] }
+								: undefined;
 					// Keep the book where it was while its slot changes underneath.
 					// A book that was not rendered in the row starts from the column
 					// it would have had, off-screen, and slides in like the rest.
@@ -246,26 +257,39 @@ export function useMenuShelf(count: number) {
 							? placed + before.get(k)! - el.offsetLeft
 							: overviewTransform(g, column, el.offsetLeft).x;
 					const y = g.top - g.scale * g.sheetY;
+					// A book that was not in the row has no overview place to wait
+					// in during a delay, so it starts at once from off-screen.
+					const delay =
+						reduceMotion || placed === undefined
+							? 0
+							: Math.max(0, column) * stagger;
 					return animate(
 						el,
 						{
 							x: [x, 0],
 							y: [y, 0],
 							scale: [g.scale, 1],
+							...(opacity && { opacity: opacity.values }),
 						},
 						{
 							...timing(transition),
-							// A book that was not in the row has no overview place to wait
-							// in during a delay, so it starts at once from off-screen.
-							delay:
-								reduceMotion || placed === undefined
-									? 0
-									: Math.max(0, column) * stagger,
+							delay,
+							...(opacity && {
+								opacity: {
+									...timing(transition),
+									delay,
+									times: opacity.times,
+									ease: "linear",
+								},
+							}),
 						}
 					);
 				}
 			);
 			await Promise.all(animations);
+			// Books that faded out are off-screen now; make them visible for
+			// when they slide back in.
+			for (const { el } of books()) el.style.opacity = "";
 			setPhase("reading");
 		});
 	}
