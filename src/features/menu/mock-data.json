@@ -878,6 +878,7 @@
 		{
 			"id": "garlic",
 			"name": "Garlic",
+			"image": "/ingredients/garlic.webp",
 			"price": {
 				"amount": 25,
 				"unit": "100 g"
