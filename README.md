@@ -12,7 +12,7 @@ A personal recipe book that doubles as a restaurant menu with a distinctive, ani
 
 - Next.js 16 (App Router) + React 19 + TypeScript
 - Tailwind CSS v4 + shadcn (Base UI)
-- motion for UI animation
+- motion for UI animation, wheel-gestures for wheel and trackpad snapping
 - react-hook-form + zod
 - Prisma 7 + SQLite
 

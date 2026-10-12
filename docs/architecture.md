@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-11
+updated: 2026-10-12
 ---
 
 # 架構
@@ -16,7 +16,8 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 | 資料     | Prisma 7 + SQLite，資料存取走 Server Actions           | [ADR-0001](adr/0001-prisma-with-sqlite.md) |
 | 圖片     | 本機 `public/uploads/`，DB 只存路徑                    | [ADR-0002](adr/0002-local-image-storage.md) |
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
-| 首頁版面 | 紙張堆疊（`PaperStack`），換紙動畫用 `motion`          | [ADR-0007](adr/0007-paper-stack-layout.md) |
+| 首頁版面 | 菜單書架（`MenuShelf`），每本書是一組紙張堆疊（`PaperStack`）；動畫用 `motion`，總覽滾輪用 `wheel-gestures` | [ADR-0007](adr/0007-paper-stack-layout.md) |
+| 配色     | 菜單主題（`MenuTheme`）TS 設定檔，以 CSS 變數套用到每本書 | [ADR-0008](adr/0008-menu-theme-colors.md) |
 
 ```mermaid
 flowchart LR
@@ -60,7 +61,7 @@ erDiagram
 | `src/app/`               | 路由（App Router）                     |
 | `src/components/ui/`     | shadcn 元件                            |
 | `src/components/`        | 專案共用元件                           |
-| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`paper-stack`、`menu-theme` |
+| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`paper-stack`、`menu-theme`、`menu-shelf` |
 | `public/textures/`       | 紙張材質等靜態圖片                     |
 | `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例     |
 | `src/generated/prisma/`  | Prisma 產出（gitignored）              |

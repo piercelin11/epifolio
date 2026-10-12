@@ -6,13 +6,14 @@
 
 ## 現在在做什麼
 
-規劃 [PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md)（`status: draft`），等使用者確認。內容：移除色彩模式、每本書有自己的 `MenuTheme` 配色、閱讀模式左右露出鄰書、`menu` 總覽與滾輪卡點。尚未建立分支或 issue。
+[PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md) 在分支 `plan-003-menu-books`，子 issue #24–#29 已完成，CI 通過，尚未合併。功能說明見 [菜單書架](features/menu-shelf.md)。
 
 ## 下一步
 
-- 使用者確認計畫與待決定事項 → `status: approved`，建立父 issue 與子 issue、開 `plan-003-menu-books` 分支。
+- 使用者實測總覽滾輪卡點（`wheel-gestures`，#30）：保留 → 寫 ADR-0009、關閉 #30；不保留 → 移除套件，改用自寫門檻 + 冷卻。
+- #30 決定後：PLAN-003 改 `status: done`、關閉父 issue #23，等使用者說「合併」。
+- 動畫參數（`src/features/menu-shelf/shelf-motion.ts`）與總覽 token（`globals.css`）待使用者校準。
 
 ## 卡點與待決定
 
-- 等使用者確認計畫即可開工（問題已回答：一本書 = 一個大類、TS 設定檔、食譜紙同大標色、不放新增按鈕）。
-- `wheel-gestures` 完成後交使用者測試，決定去留。
+- `wheel-gestures` 去留（#30）。
