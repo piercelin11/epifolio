@@ -28,7 +28,7 @@ function RecipeSectionHeader({
 }) {
 	return (
 		<div className="flex min-h-11 items-center justify-between gap-6 border-y border-current/40 py-2">
-			<h3 className="font-heading text-title font-bold uppercase">{title}</h3>
+			<h3 className="font-heading text-heading font-bold uppercase">{title}</h3>
 			{children}
 		</div>
 	);
@@ -71,8 +71,14 @@ function ServingsControl({
 			>
 				<Plus className="size-3.5" strokeWidth={3} />
 			</button>
-			<span className="text-caption ml-1">
-				{servings === 1 ? "serving" : "servings"}
+			{/* Sized for the plural, so the controls stay put at one serving */}
+			<span className="text-caption ml-1 inline-grid">
+				<span aria-hidden className="invisible col-start-1 row-start-1">
+					servings
+				</span>
+				<span className="col-start-1 row-start-1">
+					{servings === 1 ? "serving" : "servings"}
+				</span>
 			</span>
 		</div>
 	);
@@ -117,7 +123,8 @@ function IngredientLine({
 							type="button"
 							data-ingredient-trigger
 							onClick={() => onSelectIngredient(ingredientId)}
-							className="cursor-pointer hover:underline"
+							// Inline, not inline-block, so a ready line's strike-through reaches it
+							className="inline cursor-pointer hover:underline"
 						>
 							{item.name}
 						</button>
