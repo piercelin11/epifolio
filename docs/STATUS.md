@@ -6,14 +6,15 @@
 
 ## 現在在做什麼
 
-分支 `plan-005-database`：PLAN-005（資料庫基礎與菜單書主題切換）已確認（父 issue #44，子 issue #45–#50）；#45（資料模型 ADR 0013–0016）已完成，下一個是 #46（Prisma schema 與 migration）。
+分支 `plan-005-database`：PLAN-005（資料庫基礎與菜單書主題切換）全部完成（#45–#50），CI 通過，等使用者說「合併」。
 
 ## 下一步
 
-- 後續工作已開 issue：編輯表單 #51、LLM 匯入 #52、雙語介面 #53、步驟食材用量 #54、用量更醒目 #55；食材管理方向補在 #42。
-- dev server 重新啟動後，用 `curl` 確認送出的 CSS 含 `--text-subheading`、`--paper-scroll-bleed`、`--ingredient-card-texture-opacity: 0.7`（R2）。
+- 合併後：#44–#50 由 commit 的 `Closes` 自動關閉；用 `curl` 確認 dev server 正常（R2）。
+- 換一台機器或重建資料庫時：`pnpm exec prisma migrate dev` 後跑 `pnpm exec prisma db seed`。
+- 候選：#51（編輯表單）、#52（LLM 匯入）、#42（食材管理、價格、營養）、#53（雙語介面）、#54、#55、#10。
 - 2026-10-26 之後處理 #32。
 
 ## 卡點與待決定
 
-- LLM 自動新增食材、營養估計與修改的流程尚未定案，留到 LLM 匯入與食材管理的計畫再決定。
+- LLM 自動新增食材、營養估計與修改的流程尚未定案，見 #52、#42。

@@ -13,7 +13,7 @@
 | [PLAN-002](PLAN-002-paper-stack.md) | 紙張堆疊版面與換紙動畫 | done | #13 |
 | [PLAN-003](PLAN-003-menu-books.md) | 多本菜單書與菜單總覽 | done | #23 |
 | [PLAN-004](PLAN-004-recipe-layout-and-ingredient-card.md) | 食譜紙排版、份數換算與食材卡片 | done | #33 |
-| [PLAN-005](PLAN-005-database.md) | 資料庫基礎與菜單書主題切換 | in-progress | #44 |
+| [PLAN-005](PLAN-005-database.md) | 資料庫基礎與菜單書主題切換 | done | #44 |
 
 ## 模板
 

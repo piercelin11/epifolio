@@ -5,7 +5,7 @@ updated: 2026-10-12
 
 # 架構
 
-> 技術選擇已定案（見 [ADR 索引](adr/README.md)）；資料模型細節待後續計畫決定後補全。
+> 技術選擇與資料模型已定案（見 [ADR 索引](adr/README.md)）。
 
 ## 系統總覽
 
@@ -13,7 +13,9 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 
 | 層       | 選擇                                                   | 決策                                       |
 | -------- | ------------------------------------------------------ | ------------------------------------------ |
-| 資料     | Prisma 7 + SQLite，資料存取走 Server Actions           | [ADR-0001](adr/0001-prisma-with-sqlite.md) |
+| 資料     | Prisma 7 + SQLite；頁面以 `data/` 模組讀取，寫入走 Server Actions | [ADR-0001](adr/0001-prisma-with-sqlite.md) |
+| 內容語言 | 需要翻譯的文字存成欄位層 JSON `{ en, zh }`               | [ADR-0013](adr/0013-localized-json-fields.md) |
+| 使用者   | 一個預設使用者，使用者資料帶 `userId`；食材目錄共用       | [ADR-0014](adr/0014-default-user.md) |
 | 圖片     | 本機 `public/uploads/`，DB 只存路徑                    | [ADR-0002](adr/0002-local-image-storage.md) |
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
 | 首頁版面 | 菜單書架（`MenuShelf`），每本書是一組紙張堆疊（`PaperStack`）；動畫用 `motion`，總覽滾輪用 `wheel-gestures` | [ADR-0007](adr/0007-paper-stack-layout.md) |
@@ -21,30 +23,43 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 
 ```mermaid
 flowchart LR
-    UI[元件：PaperStack / QuickView / 表單] -->|呼叫| SA[Server Actions]
+    PAGE[頁面（Server Component）] -->|讀取| DATA[features/*/data]
+    DATA -->|zod 解析 JSON + localize| TYPES[呈現型別]
+    TYPES --> UI[元件：MenuShelf / PaperStack]
+    UI -->|呼叫| SA[features/*/actions：Server Actions]
+    DATA --> DB[(SQLite via Prisma)]
+    SA --> DB
     SA --> DOMAIN[領域邏輯：純函式]
-    SA --> DB[(SQLite via Prisma)]
     SA --> FS[public/uploads]
 ```
+
+- 首頁每次請求都讀資料庫（`<Suspense>` 內先 `connection()`），build 時不連資料庫；寫入後 Server Action 以 `refresh()` 重新整理畫面。
+- 元件只依賴 `src/features/*/types.ts` 的呈現型別，不 import Prisma 型別。
 
 ## 核心概念與關係
 
 ```mermaid
 erDiagram
+    USER ||--o{ MENU : "擁有"
+    USER ||--o{ RECIPE : "擁有"
+    MENU ||--o{ MENU_GROUP : "大類（一本菜單書）"
+    MENU_GROUP ||--o{ SECTION : "章節"
+    SECTION ||--o{ MENU_ITEM : "品項"
     RECIPE ||--o{ MENU_ITEM : "被引用"
-    MENU ||--o{ SECTION : "包含"
-    SECTION ||--o{ MENU_ITEM : "包含"
-    RECIPE ||--o{ RECIPE_INGREDIENT : "用量"
+    RECIPE ||--o{ INGREDIENT_GROUP : "用量群組"
+    INGREDIENT_GROUP ||--o{ RECIPE_INGREDIENT : "用量"
     INGREDIENT ||--o{ RECIPE_INGREDIENT : "被引用"
-    INGREDIENT ||--o{ MENU_ITEM : "描述中引用"
-    RECIPE ||--o{ STEP : "步驟"
+    RECIPE ||--o{ STEP_GROUP : "步驟群組"
+    STEP_GROUP ||--o{ STEP : "步驟"
     RECIPE ||--o{ REFERENCE_LINK : "參考"
 ```
 
 - 同一道食譜可以出現在多本菜單。
 - 菜單品項（MenuItem）有自己的顯示名稱、描述、價格，不影響底層食譜。
-- 食材（Ingredient）是獨立的目錄資料，用量與品項描述以 id 引用（[ADR-0011](adr/0011-ingredient-catalog.md)）。
-- 此關係為初始假設，資料模型計畫確認後以 ADR 記錄。
+- 食材（Ingredient）是獨立的目錄資料，用量與品項描述以 id 引用（[ADR-0011](adr/0011-ingredient-catalog.md)）；品項描述片段的引用存在 JSON 內，沒有外鍵。
+- 步驟文字分段，片段以用量行 id 引用同一道食譜的用量（[ADR-0015](adr/0015-step-text-references-lines.md)）。
+- 菜單主題 id 與用量單位存字串，合法值由程式碼清單決定（[ADR-0016](adr/0016-code-lists-as-strings.md)）。
+- 欄位定義以 `prisma/schema.prisma` 為準。
 
 ## 設計原則
 
@@ -64,12 +79,15 @@ erDiagram
 | `src/app/`               | 路由（App Router）                     |
 | `src/components/ui/`     | shadcn 元件                            |
 | `src/components/`        | 專案共用元件                           |
-| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf` |
+| `src/features/<feature>/` | 功能模組（components / hooks / lib / data / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf` |
+| `src/features/<feature>/data/` | 讀資料庫的 server-only 函式，回傳呈現型別 |
+| `src/features/<feature>/actions/` | Server Actions（寫入） |
 | `public/textures/`       | 紙張、卡紙材質等靜態圖片               |
 | `public/ingredients/`    | 食材目錄的照片（進 git）               |
-| `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例     |
+| `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例、`current-user.ts` 為目前使用者 |
+| `src/lib/i18n/`          | 雙語內容的型別與 `localize()`          |
 | `src/generated/prisma/`  | Prisma 產出（gitignored）              |
-| `prisma/`                | schema 與 migrations                   |
+| `prisma/`                | schema、migrations、`seed.ts` 與範例資料 `seed-data.json` |
 | `docs/`                  | 專案文件（MkDocs）                     |
 | `.claude/`               | Claude 規則與指令                      |
 | `.github/`               | CI workflow 與 issue 模板              |
@@ -77,6 +95,6 @@ erDiagram
 
 ## 待決定
 
-- 資料模型欄位與關係、圖片上傳細節
+- 圖片上傳細節（#51）
 
 各項待規劃時建立計畫，見 [計畫索引](plans/README.md)。

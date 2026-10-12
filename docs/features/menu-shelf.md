@@ -5,9 +5,10 @@ source:
   - src/app/page.tsx
   - src/features/menu-shelf/
   - src/features/menu-theme/
-  - src/features/menu/lib/mock-books.ts
+  - src/features/menu/data/get-menu-books.ts
+  - src/features/menu/actions/update-book-theme.ts
   - src/app/globals.css
-adr: [0008, 0009]
+adr: [0008, 0009, 0016]
 plan: PLAN-003
 ---
 
@@ -15,16 +16,18 @@ plan: PLAN-003
 
 ## 一句話
 
-首頁有多本菜單書（`MenuBook`），每本是一個大類加一組菜單主題（`MenuTheme`）；目前這本在畫面正中間，左右露出上一本與下一本，右上角的 menu 按鈕把所有書縮小排成一列（總覽）。
+首頁有多本菜單書（`MenuBook`），每本是一個大類加一組菜單主題（`MenuTheme`），主題可從菜單紙上換；目前這本在畫面正中間，左右露出上一本與下一本，右上角的 menu 按鈕把所有書縮小排成一列（總覽）。
 
 ## 流程
 
 ```mermaid
 flowchart LR
-    JSON[mock-data.json] -->|getMockBooks| BOOKS[MenuBook：大類 + themeId]
+    DB[(MenuGroup)] -->|getMenuBooks| BOOKS[MenuBook：大類 + themeId]
     BOOKS --> SHELF[MenuShelf]
     THEMES[menu-themes.ts] -->|MenuThemeScope| SHELF
     SHELF --> STACK[每本一組 MenuRecipeStack]
+    STACK -->|選主題| ACTION[updateBookTheme]
+    ACTION --> DB
 ```
 
 ```mermaid
@@ -57,6 +60,9 @@ stateDiagram-v2
 | 動畫中 | 忽略點擊與滾輪 |
 | 減少動態效果 | 直接切換位置，不播放動畫 |
 | 視窗縮放 | 總覽時重新量測並排列 |
+| 換主題 | 閱讀模式下菜單紙右上角（chef name 左邊）的調色盤按鈕開啟主題清單，列出 `menu-themes.ts` 的每一組（名稱與色塊）並勾選目前的；只有置中那本可操作，總覽不顯示。選了立即換色並存進資料庫，選單關閉；存檔失敗時換回原主題並顯示 toast |
+| 主題不存在 | 資料庫裡的主題 id 已不在 `menu-themes.ts` 時以第一組主題顯示，不改寫資料庫 |
+| 沒有書 | 資料庫沒有菜單（例如還沒跑 seed）時只顯示網站標題 |
 
 ## 參數
 
@@ -69,10 +75,10 @@ stateDiagram-v2
 
 - 窄螢幕仍使用桌面版面（#10）。
 - 只有觸控板與滑鼠滾輪，沒有觸控滑動。
-- 書與配色是 mock 資料，還不能新增菜單或自訂配色。
+- 還不能新增菜單或大類（#51）；主題只能從現有幾組挑選，不能自訂配色。
 
 ## 相關連結
 
 - ADR：[ADR-0008](../adr/0008-menu-theme-colors.md)、[ADR-0009](../adr/0009-shelf-wheel-snap.md)
-- 計畫：[PLAN-003](../plans/PLAN-003-menu-books.md)
+- 計畫：[PLAN-003](../plans/PLAN-003-menu-books.md)、[PLAN-005](../plans/PLAN-005-database.md)
 - Issue：#23

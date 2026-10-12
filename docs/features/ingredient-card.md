@@ -22,7 +22,7 @@ plan: PLAN-004
 
 ```mermaid
 flowchart LR
-    JSON[mock-data.json] -->|getMockIngredients| CAT[Ingredient 目錄]
+    DB[(Ingredient)] -->|getIngredients| CAT[Ingredient 目錄]
     MENU[品項描述片段] -->|ingredientId| PICK[點食材]
     RECIPE[RecipeIngredient] -->|ingredientId| PICK
     PICK --> HOOK[useIngredientCard]
@@ -64,7 +64,7 @@ stateDiagram-v2
 ## 已知限制
 
 - 價格只有單一值，沒有購買紀錄與平均價；營養與價格尚未用來計算料理成本（#42）。
-- 食材資料是 mock，沒有編輯介面。
+- 食材資料來自 seed，沒有編輯介面（#42）。
 
 ## 相關連結
 

@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-005-database
 issue: 44
 created: 2026-10-12
@@ -148,9 +148,9 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] ADR：0013–0016（任務 1）；ADR-0011 的「資料庫化時再確認」改為連到新 ADR
-- [ ] `docs/architecture.md`：ER 圖、資料流、「待決定」段落、目錄結構（`data/`、`src/lib/i18n/`、`prisma/seed.ts`）
-- [ ] `CLAUDE.md` 第 4 節目錄結構
-- [ ] 功能頁：`docs/features/menu-shelf.md` 加主題切換；`features/index.md`
-- [ ] glossary：使用者 `User`、雙語文字 `LocalizedText`、步驟片段、單位清單
-- [ ] README：seed 指令
+- [x] ADR：0013–0016（任務 1）；ADR-0011 的「資料庫化時再確認」補上結論（維持 `public/ingredients/`，區分留給 #42）
+- [x] `docs/architecture.md`：ER 圖、資料流、「待決定」段落、目錄結構（`data/`、`src/lib/i18n/`、`prisma/seed.ts`）
+- [x] `CLAUDE.md` 第 4 節目錄結構
+- [x] 功能頁：`docs/features/menu-shelf.md` 加主題切換；`features/index.md`
+- [x] glossary：使用者 `User`、雙語文字 `LocalizedText`、步驟片段、單位清單
+- [x] README：seed 指令
