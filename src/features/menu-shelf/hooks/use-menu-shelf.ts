@@ -246,8 +246,6 @@ export function useMenuShelf(count: number) {
 							? placed + before.get(k)! - el.offsetLeft
 							: overviewTransform(g, column, el.offsetLeft).x;
 					const y = g.top - g.scale * g.sheetY;
-					// Hold the start through any stagger delay.
-					animate(el, { x, y, scale: g.scale }, { duration: 0 });
 					return animate(
 						el,
 						{
@@ -257,7 +255,12 @@ export function useMenuShelf(count: number) {
 						},
 						{
 							...timing(transition),
-							delay: reduceMotion ? 0 : Math.max(0, column) * stagger,
+							// A book that was not in the row has no overview place to wait
+							// in during a delay, so it starts at once from off-screen.
+							delay:
+								reduceMotion || placed === undefined
+									? 0
+									: Math.max(0, column) * stagger,
 						}
 					);
 				}
@@ -278,19 +281,34 @@ export function useMenuShelf(count: number) {
 
 		return run(async () => {
 			flushSync(() => setFocus(next));
-			// A book that just came into the row starts one column further out.
-			for (const { k, el } of books()) {
-				if (overviewX.current.has(k)) continue;
-				const start = overviewTransform(
-					g,
-					overviewColumn(k, focus),
-					el.offsetLeft
-				);
-				overviewX.current.set(k, start.x);
-				animate(el, start, { duration: 0 });
-			}
 			const { duration, ease } = shelfMotion.step;
-			await Promise.all(placeOverview(g, next, timing({ duration, ease })));
+			await Promise.all(
+				books().map(({ k, el }) => {
+					const target = overviewTransform(
+						g,
+						overviewColumn(k, next),
+						el.offsetLeft
+					);
+					// A book that just came into the row starts one column further
+					// out. Its start is part of the keyframes: a separate instant
+					// animation would only apply on the next frame, and the move
+					// would start from the book's reading place instead.
+					const placed = overviewX.current.get(k);
+					const from =
+						placed ??
+						overviewTransform(g, overviewColumn(k, focus), el.offsetLeft).x;
+					overviewX.current.set(k, target.x);
+					return animate(
+						el,
+						{
+							x: [from, target.x],
+							y: [target.y, target.y],
+							scale: [target.scale, target.scale],
+						},
+						timing({ duration, ease })
+					);
+				})
+			);
 		});
 	}
 
