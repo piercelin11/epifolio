@@ -34,13 +34,16 @@ erDiagram
     RECIPE ||--o{ MENU_ITEM : "被引用"
     MENU ||--o{ SECTION : "包含"
     SECTION ||--o{ MENU_ITEM : "包含"
-    RECIPE ||--o{ INGREDIENT : "用量"
+    RECIPE ||--o{ RECIPE_INGREDIENT : "用量"
+    INGREDIENT ||--o{ RECIPE_INGREDIENT : "被引用"
+    INGREDIENT ||--o{ MENU_ITEM : "描述中引用"
     RECIPE ||--o{ STEP : "步驟"
     RECIPE ||--o{ REFERENCE_LINK : "參考"
 ```
 
 - 同一道食譜可以出現在多本菜單。
 - 菜單品項（MenuItem）有自己的顯示名稱、描述、價格，不影響底層食譜。
+- 食材（Ingredient）是獨立的目錄資料，用量與品項描述以 id 引用（[ADR-0011](adr/0011-ingredient-catalog.md)）。
 - 此關係為初始假設，資料模型計畫確認後以 ADR 記錄。
 
 ## 設計原則
@@ -61,8 +64,9 @@ erDiagram
 | `src/app/`               | 路由（App Router）                     |
 | `src/components/ui/`     | shadcn 元件                            |
 | `src/components/`        | 專案共用元件                           |
-| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`paper-stack`、`menu-theme`、`menu-shelf` |
-| `public/textures/`       | 紙張材質等靜態圖片                     |
+| `src/features/<feature>/` | 功能模組（components / hooks / lib / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf` |
+| `public/textures/`       | 紙張、卡紙材質等靜態圖片               |
+| `public/ingredients/`    | 食材目錄的照片（進 git）               |
 | `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例     |
 | `src/generated/prisma/`  | Prisma 產出（gitignored）              |
 | `prisma/`                | schema 與 migrations                   |

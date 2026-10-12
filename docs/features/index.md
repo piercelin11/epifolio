@@ -6,6 +6,7 @@
 | -------- | ---- | -------- |
 | [紙張堆疊](paper-stack.md) | draft | 2026-10-12 |
 | [菜單書架](menu-shelf.md) | draft | 2026-10-12 |
+| [食材卡片](ingredient-card.md) | draft | 2026-10-12 |
 
 ## 功能頁模板
 
