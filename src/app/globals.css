@@ -14,6 +14,8 @@
 	--color-foreground: var(--foreground);
 	--color-backdrop: var(--backdrop);
 	--color-backdrop-foreground: var(--backdrop-foreground);
+	--color-ingredient-card: var(--ingredient-card);
+	--color-ingredient-card-foreground: var(--ingredient-card-foreground);
 	/* Font roles (ADR-0006); typefaces are loaded in src/lib/fonts.ts */
 	--font-sans: var(--font-body-src), ui-sans-serif, system-ui, sans-serif;
 	--font-heading: var(--font-heading-src), ui-serif, Georgia, serif;
@@ -102,6 +104,9 @@
 	/* Page surface behind the paper stack */
 	--backdrop: #1c1a12;
 	--backdrop-foreground: #ece2d0;
+	/* Ingredient card (IngredientCard); the same in every menu theme */
+	--ingredient-card: #ddd2bf;
+	--ingredient-card-foreground: #2e2a24;
 }
 
 /*
@@ -196,6 +201,19 @@
 [data-paper-tone="paper"] {
 	--paper-texture: var(--paper-texture-paper);
 	--paper-texture-opacity: var(--paper-texture-paper-opacity);
+}
+
+/* Ingredient card surface (IngredientCard) */
+:root {
+	--ingredient-card-width: 22rem;
+	--ingredient-card-padding: 0.75rem;
+	--ingredient-card-texture: url("/textures/card-stock.webp");
+	--ingredient-card-texture-opacity: 0.35;
+}
+
+[data-ingredient-card] {
+	--paper-texture: var(--ingredient-card-texture);
+	--paper-texture-opacity: var(--ingredient-card-texture-opacity);
 }
 
 [data-paper-tone="primary"] {
