@@ -12,6 +12,7 @@
 | [PLAN-001](PLAN-001-menu-book-layout.md) | 菜單書版面與視覺基礎 | done | #5 |
 | [PLAN-002](PLAN-002-paper-stack.md) | 紙張堆疊版面與換紙動畫 | done | #13 |
 | [PLAN-003](PLAN-003-menu-books.md) | 多本菜單書與菜單總覽 | done | #23 |
+| [PLAN-004](PLAN-004-recipe-layout-and-ingredient-card.md) | 食譜紙排版、份數換算與食材卡片 | in-progress | #33 |
 
 ## 模板
 
