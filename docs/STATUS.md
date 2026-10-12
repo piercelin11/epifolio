@@ -6,13 +6,14 @@
 
 ## 現在在做什麼
 
-[PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md) 已完成並合併進 `main`。功能說明見 [菜單書架](features/menu-shelf.md)。目前沒有進行中的分支。
+分支 `fix/laptop-layout-tweaks`（未合併）：筆電尺寸版面修正——總覽列與頁首區保持最小間距、兩側露出寬度隨視窗縮放、頁首標題與 menu 按鈕改用專屬字級 token、食譜紙上移。使用者接著要在此分支手動微調其他 UI。
 
 ## 下一步
 
-- 繼續微調時從 `main` 開新分支：動畫參數在 `src/features/menu-shelf/shelf-motion.ts`；露出寬度、紙張高度、總覽縮放在 `src/app/globals.css`；配色與材質透明度在 `src/features/menu-theme/menu-themes.ts`。
+- 使用者確認畫面後說「合併」再 fast-forward 進 `main`。
+- 可調 token 都在 `src/app/globals.css`：`--shelf-overview-min-top`、`--shelf-peek`、`--text-masthead`、`--text-masthead-nav`、`--paper-offset-y`。
 - 其他候選：窄螢幕版面（#10）、新增菜單的表單與資料庫（尚未開 issue）。
 
 ## 卡點與待決定
 
-- 觀察中：改 `globals.css` 改用 Edit 工具後，dev server 是否仍會漏讀（CLAUDE.md R5）；仍漏讀就問使用者。
+- 改用 Edit 工具改 `globals.css` 後，dev server 仍漏讀一次（連續四次 Edit 只漏最後一次，再改一次就讀到）。依 R5 需請使用者決定後續做法。
