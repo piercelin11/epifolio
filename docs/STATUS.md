@@ -6,15 +6,14 @@
 
 ## 現在在做什麼
 
-沒有進行中的功能分支。PLAN-004（食譜紙排版、份數換算與勾選、選填小標、食材卡片）與後續調整（#43）已合併進 `main`。
+分支 `plan-005-database`：PLAN-005（資料庫基礎與菜單書主題切換）已確認（父 issue #44，子 issue #45–#50），接著做 #45（資料模型 ADR）。
 
 ## 下一步
 
+- 後續工作已開 issue：編輯表單 #51、LLM 匯入 #52、雙語介面 #53、步驟食材用量 #54、用量更醒目 #55；食材管理方向補在 #42。
 - dev server 重新啟動後，用 `curl` 確認送出的 CSS 含 `--text-subheading`、`--paper-scroll-bleed`、`--ingredient-card-texture-opacity: 0.7`（R2）。
-- 其他食材照片：給原圖即可，轉成 4:3、960×720 webp 放 `public/ingredients/<ingredientId>.webp`，並在 mock JSON 填 `image`。
-- 候選：#42（食材價格、成本與營養，規劃資料庫時處理）、#10（窄螢幕）。
 - 2026-10-26 之後處理 #32。
 
 ## 卡點與待決定
 
-- 無。
+- LLM 自動新增食材、營養估計與修改的流程尚未定案，留到 LLM 匯入與食材管理的計畫再決定。
