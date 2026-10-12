@@ -1,10 +1,201 @@
 // Prisma schema: https://pris.ly/d/prisma-schema
+//
+// Conventions (see docs/adr/0013 to 0016):
+// - Json fields marked LocalizedText hold { en?: string, zh?: string }; other
+//   Json fields name their shape. The data layer parses every Json field with
+//   zod before it reaches a component.
+// - themeId and unit are plain strings, checked against lists in code.
+// - Ordered rows carry a position.
 
 generator client {
-	provider = "prisma-client"
-	output   = "../src/generated/prisma"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-	provider = "sqlite"
+  provider = "sqlite"
+}
+
+/// Owner of menus and recipes. One default user until accounts exist.
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  menus     Menu[]
+  recipes   Recipe[]
+}
+
+model Menu {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// LocalizedText
+  title     Json
+  currency  String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  groups    MenuGroup[]
+
+  @@index([userId])
+}
+
+/// Top-level division of a menu; each one is shown as a menu book.
+model MenuGroup {
+  id       String    @id @default(cuid())
+  menuId   String
+  menu     Menu      @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  /// LocalizedText
+  label    Json
+  /// Id of a theme in src/features/menu-theme/menu-themes.ts
+  themeId  String
+  position Int
+  sections Section[]
+
+  @@index([menuId, position])
+}
+
+model Section {
+  id       String     @id @default(cuid())
+  groupId  String
+  group    MenuGroup  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  /// LocalizedText; optional
+  label    Json?
+  position Int
+  items    MenuItem[]
+
+  @@index([groupId, position])
+}
+
+/// A dish on the menu. Presents a recipe; never copies it.
+model MenuItem {
+  id          String  @id @default(cuid())
+  sectionId   String
+  section     Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  recipeId    String
+  recipe      Recipe  @relation(fields: [recipeId], references: [id], onDelete: Restrict)
+  /// LocalizedText
+  name        Json
+  /// { en?: DescriptionPart[], zh?: DescriptionPart[] }, a part being { text, ingredientId? }
+  description Json?
+  price       Float
+  position    Int
+
+  @@index([sectionId, position])
+  @@index([recipeId])
+}
+
+model Recipe {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// LocalizedText
+  name             Json
+  /// Servings the quantities are written for.
+  serves           Int?
+  timeMinutes      Int?
+  /// LocalizedText[]
+  notes            Json
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  ingredientGroups IngredientGroup[]
+  stepGroups       StepGroup[]
+  referenceLinks   ReferenceLink[]
+  menuItems        MenuItem[]
+
+  @@index([userId])
+}
+
+model IngredientGroup {
+  id       String             @id @default(cuid())
+  recipeId String
+  recipe   Recipe             @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  /// LocalizedText; optional
+  label    Json?
+  position Int
+  lines    RecipeIngredient[]
+
+  @@index([recipeId, position])
+}
+
+/// One line of a recipe's ingredient list. Steps reference it by id.
+model RecipeIngredient {
+  id           String          @id @default(cuid())
+  groupId      String
+  group        IngredientGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  ingredientId String?
+  ingredient   Ingredient?     @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+  /// A single amount, or the low end of a range; both empty for "to taste".
+  quantityMin  Float?
+  quantityMax  Float?
+  /// Id of a unit in src/features/recipe/units.ts
+  unit         String?
+  /// LocalizedText; the recipe's own wording, e.g. "Garlic, minced"
+  name         Json
+  /// LocalizedText; optional
+  note         Json?
+  position     Int
+
+  @@index([groupId, position])
+  @@index([ingredientId])
+}
+
+model StepGroup {
+  id       String @id @default(cuid())
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  /// LocalizedText; optional
+  label    Json?
+  position Int
+  steps    Step[]
+
+  @@index([recipeId, position])
+}
+
+model Step {
+  id       String    @id @default(cuid())
+  groupId  String
+  group    StepGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  /// LocalizedText; optional highlight, e.g. "Cold-start the garlic"
+  title    Json?
+  minutes  Int?
+  /// { en?: StepPart[], zh?: StepPart[] }, a part being { text, lineId? }
+  /// where lineId is a RecipeIngredient id of the same recipe
+  text     Json
+  position Int
+
+  @@index([groupId, position])
+}
+
+model ReferenceLink {
+  id       String @id @default(cuid())
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  url      String
+  /// LocalizedText; optional
+  label    Json?
+  position Int
+
+  @@index([recipeId, position])
+}
+
+/// Shared reference data: no owner. Recipes and menu items cite it by id.
+model Ingredient {
+  id          String             @id @default(cuid())
+  /// LocalizedText
+  name        Json
+  /// string[]; other names used to match recipe wording to this ingredient
+  aliases     Json
+  /// Path under public/, e.g. /ingredients/garlic.webp
+  image       String?
+  /// A price for priceUnit of the ingredient, e.g. 25 per "100 g"
+  priceAmount Float?
+  priceUnit   String?
+  /// Nutrition per 100 g: calories in kcal, the rest in grams.
+  calories    Float?
+  protein     Float?
+  carbs       Float?
+  fat         Float?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  lines       RecipeIngredient[]
 }
