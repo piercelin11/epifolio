@@ -6,7 +6,7 @@
 
 ## 現在在做什麼
 
-[PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md) 在分支 `plan-003-menu-books`，子 issue #24–#29 已完成，CI 通過，尚未合併。功能說明見 [菜單書架](features/menu-shelf.md)。
+[PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md) 在分支 `plan-003-menu-books`，子 issue #24–#29 已完成，並依使用者回饋調整（無限循環改為虛擬位置、露出寬度、書的狀態保留、統一紙張高度等），CI 通過，尚未合併。功能說明見 [菜單書架](features/menu-shelf.md)。
 
 ## 下一步
 
