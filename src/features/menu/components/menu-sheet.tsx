@@ -4,12 +4,19 @@ import { MenuSection } from "./menu-section";
 interface MenuSheetProps {
 	group: MenuGroup;
 	onSelectItem: (item: MenuItem) => void;
+	/** Called with the id of an ingredient named in an item description. */
+	onSelectIngredient?: (ingredientId: string) => void;
 	/** Shown in the top-right corner of the sheet. */
 	chefName: string;
 }
 
 /** One menu group as a single column, laid out for the menu sheet. */
-export function MenuSheet({ group, onSelectItem, chefName }: MenuSheetProps) {
+export function MenuSheet({
+	group,
+	onSelectItem,
+	onSelectIngredient,
+	chefName,
+}: MenuSheetProps) {
 	return (
 		// Clips the title where it runs past the top and left edges.
 		<div className="flex flex-col overflow-clip pb-24">
@@ -29,6 +36,7 @@ export function MenuSheet({ group, onSelectItem, chefName }: MenuSheetProps) {
 						key={section.id}
 						section={section}
 						onSelectItem={onSelectItem}
+						onSelectIngredient={onSelectIngredient}
 					/>
 				))}
 			</div>

@@ -4,9 +4,14 @@ import { MenuItemRow } from "./menu-item-row";
 interface MenuSectionProps {
 	section: Section;
 	onSelectItem: (item: MenuItem) => void;
+	onSelectIngredient?: (ingredientId: string) => void;
 }
 
-export function MenuSection({ section, onSelectItem }: MenuSectionProps) {
+export function MenuSection({
+	section,
+	onSelectItem,
+	onSelectIngredient,
+}: MenuSectionProps) {
 	return (
 		<section className="flex flex-col gap-4">
 			{section.label && (
@@ -20,6 +25,7 @@ export function MenuSection({ section, onSelectItem }: MenuSectionProps) {
 						key={item.id}
 						item={item}
 						onSelect={() => onSelectItem(item)}
+						onSelectIngredient={onSelectIngredient}
 					/>
 				))}
 			</ul>
