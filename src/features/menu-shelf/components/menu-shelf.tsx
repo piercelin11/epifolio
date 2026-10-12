@@ -58,9 +58,11 @@ export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
 							bookRefs.current[index] = el;
 						}}
 						themeId={book.themeId}
-						// Off-screen books stay rendered so they can slide in.
+						// Off-screen books stay rendered so they can slide in. Each book
+						// spans the full height and overlaps the header band, so only its
+						// open scroll area and sheets take pointer input.
 						inert={!onScreen}
-						className="absolute inset-y-0 left-[calc(50%-var(--shelf-book-width)/2+var(--shelf-slot)*var(--shelf-pitch))] flex w-(--shelf-book-width) origin-top flex-col"
+						className="pointer-events-none absolute inset-y-0 left-[calc(50%-var(--shelf-book-width)/2+var(--shelf-slot)*var(--shelf-pitch))] flex w-(--shelf-book-width) origin-top flex-col"
 						style={{ "--shelf-slot": slot } as CSSProperties}
 					>
 						{/* Remounted on open and close, so a book always opens at the top of its menu */}

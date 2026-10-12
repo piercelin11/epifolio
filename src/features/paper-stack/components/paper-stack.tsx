@@ -58,7 +58,7 @@ export function PaperStack({
 				"min-h-0 flex-1 overscroll-contain pt-(--header-height)",
 				// An inactive stack is clipped by the screen edge and overlaps the
 				// header band, so it must not catch clicks meant for the header.
-				inactive && "pointer-events-none",
+				inactive ? "pointer-events-none" : "pointer-events-auto",
 				// At a fixed height nothing scrolls, and the sheets may run past
 				// the bottom of the area.
 				fixedHeight
