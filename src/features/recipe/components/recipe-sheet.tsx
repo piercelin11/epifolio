@@ -28,7 +28,9 @@ function RecipeSectionHeader({
 }) {
 	return (
 		<div className="flex min-h-11 items-center justify-between gap-6 border-y border-current/40 py-2">
-			<h3 className="font-heading text-heading font-bold uppercase">{title}</h3>
+			<h3 className="font-heading text-subheading font-bold uppercase">
+				{title}
+			</h3>
 			{children}
 		</div>
 	);
