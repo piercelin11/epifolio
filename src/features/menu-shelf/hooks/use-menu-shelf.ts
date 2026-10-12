@@ -235,13 +235,17 @@ export function useMenuShelf(count: number) {
 				setPhase("closing");
 			});
 			const { stagger, fade, ...transition } = shelfMotion.overview;
-			const animations: AnimationPlaybackControls[] = books().map(
+			const animations: (AnimationPlaybackControls | null)[] = books().map(
 				({ k, el }) => {
 					const column = overviewColumn(k, focus);
 					const placed = overviewX.current.get(k);
 					const wasOnScreen =
 						placed !== undefined && column >= 0 && column < g.columns;
 					const endsOnScreen = isVisibleSlot(k - next);
+					// A spare book that was not in the row and ends off-screen already
+					// sits in its reading place; animating it from the row would show
+					// it on screens wide enough to have room past the last column.
+					if (placed === undefined && !endsOnScreen) return null;
 					const opacity = reduceMotion
 						? undefined
 						: wasOnScreen && !endsOnScreen
