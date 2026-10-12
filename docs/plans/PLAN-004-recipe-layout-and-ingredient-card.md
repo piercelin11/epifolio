@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-004-recipe-layout-and-ingredient-card
 issue: 33
 created: 2026-10-12
@@ -144,7 +144,7 @@ created: 2026-10-12
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：`docs/features/paper-stack.md`（食譜紙段落）、新增 `docs/features/ingredient-card.md`、`features/index.md`
-- [ ] ADR：食材與用量分開、用量以 `ingredientId` 引用食材（含改名 `RecipeIngredient`）
-- [ ] glossary：食材 `Ingredient`、用量改 `RecipeIngredient`、食材卡片 `IngredientCard`、步驟群組
-- [ ] `docs/architecture.md`：ER 圖加入 `INGREDIENT`，目錄表加 `ingredient` 模組
+- [x] 功能頁：`docs/features/paper-stack.md`（食譜紙段落）、新增 `docs/features/ingredient-card.md`、`features/index.md`
+- [x] ADR：食材與用量分開、用量以 `ingredientId` 引用食材（含改名 `RecipeIngredient`）
+- [x] glossary：食材 `Ingredient`、用量改 `RecipeIngredient`、食材卡片 `IngredientCard`、步驟群組
+- [x] `docs/architecture.md`：ER 圖加入 `INGREDIENT`，目錄表加 `ingredient` 模組
