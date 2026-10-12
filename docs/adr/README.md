@@ -18,6 +18,10 @@
 | 0010 | [Tailwind 改用 @tailwindcss/postcss 整合](0010-tailwind-postcss.md) | Accepted | 2026-10-12 |
 | 0011 | [食材獨立成目錄，用量以 id 引用](0011-ingredient-catalog.md) | Accepted | 2026-10-12 |
 | 0012 | [食材卡片放進紙張的捲動內容，開啟時依螢幕定位](0012-ingredient-card-layer.md) | Accepted | 2026-10-12 |
+| 0013 | [雙語內容以欄位層 JSON 存放](0013-localized-json-fields.md) | Accepted | 2026-10-12 |
+| 0014 | [先建一個預設使用者，使用者資料帶 userId](0014-default-user.md) | Accepted | 2026-10-12 |
+| 0015 | [步驟文字分段，以用量行 id 引用用量](0015-step-text-references-lines.md) | Accepted | 2026-10-12 |
+| 0016 | [主題與單位存字串，由程式碼清單驗證](0016-code-lists-as-strings.md) | Accepted | 2026-10-12 |
 
 ## 模板
 

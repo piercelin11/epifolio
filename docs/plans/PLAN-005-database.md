@@ -66,7 +66,7 @@ created: 2026-10-12
 
 | 規則 | 做法 |
 | --- | --- |
-| 雙語內容 | 欄位層 JSON `{ en?: string, zh?: string }`；畫面用 `localize(text, locale)` 取值並退回另一種語言。決策見 ADR（任務 1） |
+| 雙語內容 | 欄位層 JSON `{ en?: string, zh?: string }`；畫面用 `localize(text, locale)` 取值並退回另一種語言。決策見 [ADR-0013](../adr/0013-localized-json-fields.md) |
 | JSON 欄位的型別 | Prisma 的 `Json` 沒有型別；資料存取層一律用 zod 解析後才交給元件 |
 | 排序 | 有順序的資料用 `position Int` |
 | 多人預留 | 使用者資料（菜單、食譜）有 `userId`；食材目錄是共用資料，沒有 `userId`。`getCurrentUserId()` 目前固定回傳預設使用者 |
@@ -148,7 +148,7 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] ADR：資料模型（任務 1）；ADR-0011 的「資料庫化時再確認」改為連到新 ADR
+- [ ] ADR：0013–0016（任務 1）；ADR-0011 的「資料庫化時再確認」改為連到新 ADR
 - [ ] `docs/architecture.md`：ER 圖、資料流、「待決定」段落、目錄結構（`data/`、`src/lib/i18n/`、`prisma/seed.ts`）
 - [ ] `CLAUDE.md` 第 4 節目錄結構
 - [ ] 功能頁：`docs/features/menu-shelf.md` 加主題切換；`features/index.md`
