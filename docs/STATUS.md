@@ -6,13 +6,13 @@
 
 ## 現在在做什麼
 
-菜單版面微調（紙張蓋過頁首、菜單紙置中、食譜紙定位、各紙張材質、預設食譜、廚師名稱、Inter 字體）已合併進 `main`。功能說明見 [紙張堆疊](features/paper-stack.md)。目前沒有進行中的分支。
+規劃 [PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md)（`status: draft`），等使用者確認。內容：移除色彩模式、每本書有自己的 `MenuTheme` 配色、閱讀模式左右露出鄰書、`menu` 總覽與滾輪卡點。尚未建立分支或 issue。
 
 ## 下一步
 
-- 繼續微調 UI 時從 `main` 開新分支；紙張位置、材質與字級 token 在 `src/app/globals.css`，菜單間距在 `src/features/menu/components/`。
-- 之後的候選：大類之間的切換（#21）、窄螢幕版面（#10）。
+- 使用者確認計畫與待決定事項 → `status: approved`，建立父 issue 與子 issue、開 `plan-003-menu-books` 分支。
 
 ## 卡點與待決定
 
-目前沒有。
+- 等使用者確認計畫即可開工（問題已回答：一本書 = 一個大類、TS 設定檔、食譜紙同大標色、不放新增按鈕）。
+- `wheel-gestures` 完成後交使用者測試，決定去留。
