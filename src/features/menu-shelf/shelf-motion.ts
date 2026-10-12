@@ -23,7 +23,7 @@ export const shelfMotion = {
 		 * first point of the move, and a book coming onto it fades in from the
 		 * second, so no copy of a looping book is seen crossing the screen.
 		 */
-		fade: { out: 0.25, in: 0.75 },
+		fade: { out: 0.25, in: 0.4 },
 	},
 	/** Moving the overview row one book per wheel or trackpad gesture. */
 	step: {
