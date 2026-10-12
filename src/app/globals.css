@@ -161,7 +161,7 @@
 			var(--paper-padding) * 2
 	);
 	/* How far the offset sheet's top edge sits below the base sheet's */
-	--paper-offset-y: 10rem;
+	--paper-offset-y: 7rem;
 	/* Width of the offset (recipe) sheet */
 	--paper-width: calc(
 		var(--paper-base-width) - var(--paper-inset-x) + var(--paper-offset-x)
