@@ -2,7 +2,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * There is no dark mode. Tailwind's default dark variant follows the system
+ * setting, and shadcn components ship with dark: classes, so point the
+ * variant at a class that is never set to keep them inert.
+ */
+@custom-variant dark (&:where(.dark-mode-disabled *));
 
 @theme inline {
 	--color-background: var(--background);
@@ -73,7 +78,7 @@
 }
 
 :root {
-	/* Menu palette (light): paper, ink, red accent */
+	/* Menu palette: paper, ink, red accent */
 	--background: #eae0d0;
 	--foreground: #000000;
 	--card: #f0e8db;
@@ -109,43 +114,6 @@
 	/* Page surface behind the paper stack */
 	--backdrop: #1c1a12;
 	--backdrop-foreground: #ece2d0;
-}
-
-.dark {
-	/* Menu palette (dark): olive, cream, mustard accent */
-	--background: #2f331a;
-	--foreground: #f2e8d8;
-	--card: #484c30;
-	--card-foreground: #f2e8d8;
-	--popover: #4b4f33;
-	--popover-foreground: #f2e8d8;
-	--primary: #dbc437;
-	--primary-foreground: #2f331a;
-	--secondary: #53573a;
-	--secondary-foreground: #f2e8d8;
-	--muted: #4d5134;
-	--muted-foreground: #c9bda7;
-	--accent: #53573a;
-	--accent-foreground: #f2e8d8;
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: #e2cdac;
-	--input: #e2cdac;
-	--ring: #dbc437;
-	--chart-1: oklch(0.87 0 0);
-	--chart-2: oklch(0.556 0 0);
-	--chart-3: oklch(0.439 0 0);
-	--chart-4: oklch(0.371 0 0);
-	--chart-5: oklch(0.269 0 0);
-	--sidebar: oklch(0.205 0 0);
-	--sidebar-foreground: oklch(0.985 0 0);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.269 0 0);
-	--sidebar-accent-foreground: oklch(0.985 0 0);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.556 0 0);
-	--backdrop: #14160b;
-	--backdrop-foreground: #f2e8d8;
 }
 
 @layer base {
@@ -192,12 +160,6 @@
 	--paper-hole-inset: 2.125rem;
 }
 
-/* The dark texture swallows dark paper under overlay; soften it */
-.dark {
-	--paper-texture-paper-opacity: 0.35;
-	--paper-texture-primary-opacity: 0.2;
-}
-
 [data-paper-tone="paper"] {
 	--paper-texture: var(--paper-texture-paper);
 	--paper-texture-opacity: var(--paper-texture-paper-opacity);
@@ -227,21 +189,4 @@
 	);
 	mask-size: 100% var(--paper-hole-pitch);
 	mask-repeat: repeat-y;
-}
-
-/* Colour mode cross-fade; ThemeToggle uses the View Transitions API */
-:root {
-	--color-mode-transition-duration: 300ms;
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-	animation-duration: var(--color-mode-transition-duration);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	::view-transition-old(root),
-	::view-transition-new(root) {
-		animation: none;
-	}
 }

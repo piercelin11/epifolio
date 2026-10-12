@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { fontVariables } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
@@ -13,21 +12,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
-		<html
-			lang="en"
-			className={cn(fontVariables, "h-full antialiased")}
-			suppressHydrationWarning
-		>
+		<html lang="en" className={cn(fontVariables, "h-full antialiased")}>
 			<body className="flex min-h-full flex-col">
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
-					{children}
-					<Toaster />
-				</ThemeProvider>
+				{children}
+				<Toaster />
 			</body>
 		</html>
 	);

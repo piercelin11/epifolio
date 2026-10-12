@@ -16,7 +16,7 @@ paths:
   - 新增元件用 `pnpm dlx shadcn@latest add <name>`，放在 `src/components/ui/`（盡量不改，要客製就包一層）
   - Base UI 的組合寫法是 `render` prop（例：`<DropdownMenuTrigger render={<Button />} />`），不是 Radix 的 `asChild`
   - `cn()` 由 shadcn 官方 `cn` 套件提供（取代 clsx + tailwind-merge），專案內從 `@/lib/utils` import
-- **色彩模式**（`ColorMode`）：`next-themes`（`attribute="class"`，預設 system），切換元件 `src/components/theme-toggle.tsx` 只在 light / dark 間切換（View Transitions 淡入淡出）。與菜單主題（`MenuTheme`）是不同概念，見 `docs/glossary.md`。
+- **沒有深色模式**：全站固定一組配色。`globals.css` 把 `dark` variant 指向永遠不存在的 class，shadcn 元件附帶的 `dark:` class 因此不會生效；新增元件時順手刪掉 `dark:` class。
 - **動畫**：`motion`（`motion/react`）；可調參數集中在單一設定檔，例如 `src/features/paper-stack/swap-motion.ts`（ADR-0007）
 - **表單**：`react-hook-form` + `zod`（`@hookform/resolvers/zod`），動態清單（用量、步驟、參考連結）用 `useFieldArray`；表單 UI 用 shadcn 的 `field` 元件
 - **套件管理**：pnpm 8.15.4（`packageManager` 鎖定），Node >= 22
@@ -41,5 +41,5 @@ paths:
 
 - **TypeScript 型別定義**：純物件形狀（`{ key: value }` 結構，含 React props、API 資料結構）→ `interface`；其餘（union、intersection、utility types、mapped types、type alias）→ `type`。
 - **Tailwind class 條件合併**：一律用 `cn()`，禁止 template literal 或三元字串拼接 class。
-- **顏色**：元件只用語意 token（`bg-background`、`text-muted-foreground`、`bg-primary`、`text-destructive`…），不直接寫 `slate-500` / `blue-600` 等色階，確保 light / dark 都正確。新增語意色時在 `globals.css` 的 `:root` 與 `.dark` 各加一組，並在 `@theme inline` 註冊。
+- **顏色**：元件只用語意 token（`bg-background`、`text-muted-foreground`、`bg-primary`、`text-destructive`…），不直接寫 `slate-500` / `blue-600` 等色階。新增語意色時加在 `globals.css` 的 `:root`，並在 `@theme inline` 註冊。
 - **註解**：專業、簡潔，不使用表情符號。

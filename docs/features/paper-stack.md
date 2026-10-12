@@ -1,12 +1,11 @@
 ---
 status: draft
-updated: 2026-10-11
+updated: 2026-10-12
 source:
   - src/app/page.tsx
   - src/features/paper-stack/
   - src/features/menu/
   - src/features/recipe/
-  - src/components/theme-toggle.tsx
   - src/app/globals.css
   - src/lib/site-config.ts
   - public/textures/
@@ -51,7 +50,7 @@ stateDiagram-v2
 | 紙張高度 | 每張紙依自己的內容決定高度，最少是捲動區的高度，兩張紙底部不對齊 |
 | 紙張外觀 | 菜單紙用 `background` / `foreground`，食譜紙用 `primary` / `primary-foreground`；兩張紙各有自己的材質與透明度，以 `overlay` 疊在底色上、文字下方，文字維持純色 |
 | 打孔 | 食譜紙右側一排圓洞，是真正透明的洞，看得到下層內容 |
-| 頁首 | 固定不捲動、沒有自己的底色，在紙張下層；網站標題在左、色彩模式切換在右 |
+| 頁首 | 固定不捲動、沒有自己的底色，在紙張下層；網站標題在左 |
 | 菜單紙 | 只顯示第一個有品項的大類（切換方式見 #21）；最上方是大類名稱（大字、大寫、結尾加句點、`primary`，略超出紙張左上角、超出部分被裁掉），右上角是廚師名稱（無襯線、大寫、內文字級、`primary`，上方與右方留白都是紙張內距）；其餘內容有紙張內距；章節小標（襯線、粗體、大寫、結尾加句點、`primary`）；品項顯示菜名（無襯線、大寫、一般字重與字距、`foreground`）、價格（靠右）、描述（小字、細體，無則不顯示） |
 | 字級 | 依用途分為 caption、body、title、heading、headline、display 六級，元件不使用 `text-sm` 等預設字級 |
 | 食譜紙 | 純文字顯示份量、時間、用量、步驟、筆記；尚未選品項時顯示菜單上第一個品項的食譜 |

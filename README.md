@@ -11,7 +11,7 @@ A personal recipe book that doubles as a restaurant menu with a distinctive, ani
 ## Tech stack
 
 - Next.js 16 (App Router) + React 19 + TypeScript
-- Tailwind CSS v4 + shadcn (Base UI) + next-themes
+- Tailwind CSS v4 + shadcn (Base UI)
 - motion for UI animation
 - react-hook-form + zod
 - Prisma 7 + SQLite
