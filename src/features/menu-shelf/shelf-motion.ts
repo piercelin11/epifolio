@@ -26,4 +26,11 @@ export const shelfMotion = {
 		 */
 		wrapFade: [0, 0.25, 0.75, 1],
 	},
+	/** Moving the overview row one book per wheel or trackpad gesture. */
+	step: {
+		duration: 0.6,
+		ease: [0.33, 1, 0.68, 1] as Easing,
+		/** Distance in px a gesture must travel before the row moves. */
+		threshold: 30,
+	},
 };

@@ -56,6 +56,9 @@ dependencies:
   tw-animate-css:
     specifier: ^1.4.0
     version: 1.4.0
+  wheel-gestures:
+    specifier: ^2.3.0
+    version: 2.3.0
   zod:
     specifier: ^4.6.5
     version: 4.6.5
@@ -6702,6 +6705,11 @@ packages:
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /wheel-gestures@2.3.0:
+    resolution: {integrity: sha512-6b+PIXuKIy0ibVnF04GoijGKGIDwjlYSK7bCgicuQwPLivfjoLeCCK0bwbjyOdrStDTNPlyGFixIj0d0kZzwiQ==}
+    engines: {node: '>=18'}
     dev: false
 
   /which-boxed-primitive@1.1.1:

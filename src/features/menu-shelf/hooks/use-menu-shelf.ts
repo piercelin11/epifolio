@@ -2,6 +2,7 @@
 
 import { animate, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { WheelGestures } from "wheel-gestures";
 import { flushSync } from "react-dom";
 
 import {
@@ -228,6 +229,81 @@ export function useMenuShelf(count: number) {
 			setPhase("reading");
 		});
 	}
+
+	/** Moves the overview row one book; +1 brings the next book into focus. */
+	function stepOverview(step: 1 | -1) {
+		if (phase !== "overview") return;
+		const next =
+			count < 3
+				? Math.min(Math.max(focus + step, 0), count - 1)
+				: (focus + step + count) % count;
+		if (next === focus) return;
+
+		return run(async () => {
+			const g = geometry.current!;
+			flushSync(() => setFocus(next));
+			const { duration, ease } = shelfMotion.step;
+			await Promise.all(
+				books().map(({ el, index }) => {
+					const from = overviewX.current[index];
+					const to = overviewTransform(
+						g,
+						overviewColumn(index, next, count),
+						el.offsetLeft
+					).x;
+					overviewX.current[index] = to;
+					if (reduceMotion) return animate(el, { x: to }, { duration: 0 });
+					// A book that wraps round the loop leaves past one edge and
+					// comes back in past the other, instead of crossing the row.
+					const wraps = Math.round((to - from) / g.pitch) !== -step;
+					return animate(
+						el,
+						{
+							x: wraps
+								? [from, from - step * g.pitch, to + step * g.pitch, to]
+								: [from, to],
+						},
+						{
+							duration,
+							ease,
+							x: wraps ? { duration, times: [0, 0.5, 0.5, 1] } : undefined,
+						}
+					);
+				})
+			);
+		});
+	}
+
+	// The wheel handler outlives renders; it always calls the latest step.
+	const stepRef = useRef(stepOverview);
+	useEffect(() => {
+		stepRef.current = stepOverview;
+	});
+
+	// In the overview, each wheel or trackpad gesture moves the row one book,
+	// however far it travels; momentum after the step is ignored.
+	const overview = phase === "overview";
+	useEffect(() => {
+		const root = rootRef.current;
+		if (!overview || !root) return;
+		const gestures = WheelGestures({ preventWheelAction: true });
+		let stepped = false;
+		gestures.observe(root);
+		const off = gestures.on("wheel", (state) => {
+			if (state.isStart) stepped = false;
+			if (stepped || state.isEnding) return;
+			// Movement is reversed: scrolling down or swiping left is negative.
+			const [x, y] = state.axisMovement;
+			const movement = Math.abs(y) >= Math.abs(x) ? y : x;
+			if (Math.abs(movement) < shelfMotion.step.threshold) return;
+			stepped = true;
+			stepRef.current(movement < 0 ? 1 : -1);
+		});
+		return () => {
+			off();
+			gestures.disconnect();
+		};
+	}, [overview]);
 
 	// The overview row is measured in px, so lay it out again on resize.
 	useEffect(() => {
