@@ -5,6 +5,11 @@ import { useRef, useState } from "react";
 interface OpenCard {
 	ingredientId: string;
 	/**
+	 * The stack the card was picked in. Only that stack shows it, and it
+	 * keeps showing it while the card sinks away after the stack closes.
+	 */
+	owner: string | number;
+	/**
 	 * Where the card is centred, in px from the top of the sheets' content:
 	 * the middle of the screen when the card came up.
 	 */
@@ -29,13 +34,17 @@ export function useIngredientCard() {
 	const busy = useRef(false);
 
 	/** `scrollArea` is the area the sheets scroll in; the card scrolls with them. */
-	function toggle(ingredientId: string, scrollArea: HTMLElement | null) {
+	function toggle(
+		ingredientId: string,
+		scrollArea: HTMLElement | null,
+		owner: string | number
+	) {
 		if (busy.current || !scrollArea) return;
 		busy.current = true;
 		setOpen(
 			open?.ingredientId === ingredientId
 				? null
-				: { ingredientId, top: screenMiddle(scrollArea) }
+				: { ingredientId, owner, top: screenMiddle(scrollArea) }
 		);
 	}
 

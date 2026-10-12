@@ -115,12 +115,16 @@ export function MenuShelf({
 							onFrontChange={(front) => update(book.id, { front })}
 							recipeId={state?.recipeId}
 							onRecipeChange={(recipeId) => update(book.id, { recipeId })}
-							onSelectIngredient={card.toggle}
+							onSelectIngredient={(ingredientId, scrollArea) =>
+								card.toggle(ingredientId, scrollArea, k)
+							}
 							onSwapStart={card.close}
 							overlay={
-								open && (
-									<IngredientCardLayer ingredients={ingredients} card={card} />
-								)
+								<IngredientCardLayer
+									ingredients={ingredients}
+									card={card}
+									owner={k}
+								/>
 							}
 							progress={progress}
 							onProgressChange={(recipeId, next) =>

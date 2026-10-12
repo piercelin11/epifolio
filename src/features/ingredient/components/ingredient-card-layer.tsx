@@ -16,19 +16,24 @@ import { IngredientCard } from "./ingredient-card";
 interface IngredientCardLayerProps {
 	ingredients: Ingredient[];
 	card: IngredientCardController;
+	/** The stack this layer sits in; it shows only cards picked there. */
+	owner: string | number;
 }
 
 /**
  * Holds the ingredient card inside the sheets' content, so it scrolls with
- * them natively. The card comes up from below the screen to a place set by
+ * them natively. Every stack has a layer, so a stack that closes still
+ * plays the card's exit. The card comes up from below the screen to a place set by
  * the screen when it was picked, not by the sheets. Escape or a click
  * anywhere but the card or an ingredient puts it away.
  */
 export function IngredientCardLayer({
 	ingredients,
 	card,
+	owner,
 }: IngredientCardLayerProps) {
-	const { open, close, settle } = card;
+	const { close, settle } = card;
+	const open = card.open?.owner === owner ? card.open : null;
 	const ingredient =
 		open && ingredients.find((item) => item.id === open.ingredientId);
 	const reduceMotion = useReducedMotion();
