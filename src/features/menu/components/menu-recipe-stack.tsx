@@ -7,7 +7,7 @@ import { PaperStack } from "@/features/paper-stack/components/paper-stack";
 import { usePaperStack } from "@/features/paper-stack/hooks/use-paper-stack";
 import type { StackPosition } from "@/features/paper-stack/types";
 import { RecipeSheet } from "@/features/recipe/components/recipe-sheet";
-import type { Recipe } from "@/features/recipe/types";
+import type { Recipe, RecipeProgress } from "@/features/recipe/types";
 import { cn } from "@/lib/utils";
 
 import type { MenuGroup } from "../types";
@@ -25,6 +25,9 @@ interface MenuRecipeStackProps {
 	/** Recipe on the recipe sheet; defaults to the first item on the menu. */
 	recipeId?: string;
 	onRecipeChange: (recipeId: string) => void;
+	/** Servings and ready ingredients per recipe id; owned by the caller. */
+	progress: Record<string, RecipeProgress>;
+	onProgressChange: (recipeId: string, progress: RecipeProgress) => void;
 	/**
 	 * Leave the recipe sheet blank while it is behind the menu. The text is
 	 * hidden, not removed, so the sheet keeps its height.
@@ -42,6 +45,8 @@ export function MenuRecipeStack({
 	onFrontChange,
 	recipeId = group.sections[0]?.items[0]?.recipeId,
 	onRecipeChange,
+	progress,
+	onProgressChange,
 	blankBackRecipe = false,
 }: MenuRecipeStackProps) {
 	const stack = usePaperStack(front, onFrontChange);
@@ -72,7 +77,13 @@ export function MenuRecipeStack({
 						<div
 							className={cn(blankBackRecipe && front === "base" && "invisible")}
 						>
-							<RecipeSheet recipe={recipe} />
+							<RecipeSheet
+								recipe={recipe}
+								progress={recipe && progress[recipe.id]}
+								onProgressChange={(next) =>
+									recipe && onProgressChange(recipe.id, next)
+								}
+							/>
 						</div>
 					</PaperSheet>
 				),

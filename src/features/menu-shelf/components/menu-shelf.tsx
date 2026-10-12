@@ -6,7 +6,7 @@ import { MenuRecipeStack } from "@/features/menu/components/menu-recipe-stack";
 import type { MenuBook } from "@/features/menu/types";
 import { MenuThemeScope } from "@/features/menu-theme/components/menu-theme-scope";
 import type { StackPosition } from "@/features/paper-stack/types";
-import type { Recipe } from "@/features/recipe/types";
+import type { Recipe, RecipeProgress } from "@/features/recipe/types";
 import { cn } from "@/lib/utils";
 
 import { useMenuShelf } from "../hooks/use-menu-shelf";
@@ -38,6 +38,8 @@ export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
 	const reading = phase === "reading";
 	// Kept per book, so every copy of a book in the loop shows the same state.
 	const [states, setStates] = useState<Record<string, BookState>>({});
+	// Kept per recipe, so a recipe reached from any book shows the same state.
+	const [progress, setProgress] = useState<Record<string, RecipeProgress>>({});
 	const update = (id: string, change: Partial<BookState>) =>
 		setStates((all) => {
 			const previous: BookState = all[id] ?? { front: "base" };
@@ -100,6 +102,10 @@ export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
 							onFrontChange={(front) => update(book.id, { front })}
 							recipeId={state?.recipeId}
 							onRecipeChange={(recipeId) => update(book.id, { recipeId })}
+							progress={progress}
+							onProgressChange={(recipeId, next) =>
+								setProgress((all) => ({ ...all, [recipeId]: next }))
+							}
 							blankBackRecipe={!reading}
 							inactive={
 								open

@@ -1,10 +1,19 @@
+import { Minus, Plus } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { formatQuantity, scaleQuantity } from "../lib/quantity";
-import type { Recipe, RecipeIngredient } from "../types";
+import { clampServings, formatQuantity, scaleQuantity } from "../lib/quantity";
+import type { Recipe, RecipeIngredient, RecipeProgress } from "../types";
 
 interface RecipeSheetProps {
 	recipe?: Recipe;
+	/** Servings and ready ingredients; owned by the caller. */
+	progress?: RecipeProgress;
+	onProgressChange?: (progress: RecipeProgress) => void;
+}
+
+/** Identifies an ingredient line within its recipe. */
+export function ingredientKey(group: number, item: number) {
+	return `${group}-${item}`;
 }
 
 /** A section title between two rules, with optional controls on the right. */
@@ -27,40 +36,102 @@ function GroupLabel({ children }: { children: ReactNode }) {
 	return <h4 className="text-body font-bold uppercase">{children}</h4>;
 }
 
+function ServingsControl({
+	servings,
+	onChange,
+}: {
+	servings: number;
+	onChange: (servings: number) => void;
+}) {
+	const step = (by: number) => onChange(clampServings(servings + by));
+	const button =
+		"bg-primary-foreground text-primary grid size-5 cursor-pointer place-items-center disabled:cursor-default disabled:opacity-40";
+	return (
+		<div className="flex items-center gap-2">
+			<button
+				type="button"
+				aria-label="Fewer servings"
+				className={button}
+				disabled={clampServings(servings - 1) === servings}
+				onClick={() => step(-1)}
+			>
+				<Minus className="size-3.5" strokeWidth={3} />
+			</button>
+			<strong className="text-body min-w-[2ch] text-center font-bold tabular-nums">
+				{servings}
+			</strong>
+			<button
+				type="button"
+				aria-label="More servings"
+				className={button}
+				disabled={clampServings(servings + 1) === servings}
+				onClick={() => step(1)}
+			>
+				<Plus className="size-3.5" strokeWidth={3} />
+			</button>
+			<span className="text-caption ml-1">
+				{servings === 1 ? "serving" : "servings"}
+			</span>
+		</div>
+	);
+}
+
 function IngredientLine({
 	item,
 	factor,
+	checked,
+	onCheckedChange,
 }: {
 	item: RecipeIngredient;
 	factor: number;
+	checked: boolean;
+	onCheckedChange: (checked: boolean) => void;
 }) {
 	return (
-		<li className="flex items-baseline gap-2">
-			<span
-				aria-hidden
-				className="size-[0.8em] shrink-0 translate-y-[0.1em] border border-current"
-			/>
-			<span>
-				{item.quantity !== undefined && (
-					<strong className="font-semibold">
-						{formatQuantity(
-							scaleQuantity(item.quantity, factor),
-							item.unit
-						)}{" "}
-					</strong>
-				)}
-				{item.name}
-				{item.note && ` (${item.note})`}
-			</span>
+		<li>
+			{/* A ready ingredient is struck through */}
+			<label className="flex cursor-pointer items-baseline gap-2 has-checked:line-through has-checked:opacity-50">
+				<input
+					type="checkbox"
+					checked={checked}
+					onChange={(event) => onCheckedChange(event.target.checked)}
+					className="size-[0.8em] shrink-0 translate-y-[0.1em] cursor-pointer appearance-none border border-current checked:bg-current focus-visible:outline-2 focus-visible:outline-offset-2"
+				/>
+				<span>
+					{item.quantity !== undefined && (
+						<strong className="font-semibold">
+							{formatQuantity(
+								scaleQuantity(item.quantity, factor),
+								item.unit
+							)}{" "}
+						</strong>
+					)}
+					{item.name}
+					{item.note && ` (${item.note})`}
+				</span>
+			</label>
 		</li>
 	);
 }
 
 /** A recipe laid out for the recipe sheet of the stack. */
-export function RecipeSheet({ recipe }: RecipeSheetProps) {
+export function RecipeSheet({
+	recipe,
+	progress = { checked: [] },
+	onProgressChange,
+}: RecipeSheetProps) {
 	if (!recipe) return null;
 
-	const factor = 1;
+	const servings = progress.servings ?? recipe.serves;
+	const factor = recipe.serves && servings ? servings / recipe.serves : 1;
+	const change = (next: Partial<RecipeProgress>) =>
+		onProgressChange?.({ ...progress, ...next });
+	const setChecked = (key: string, checked: boolean) =>
+		change({
+			checked: checked
+				? [...progress.checked, key]
+				: progress.checked.filter((k) => k !== key),
+		});
 	// Steps are numbered on through every group.
 	const firstStep = recipe.stepGroups.map((_, i) =>
 		recipe.stepGroups
@@ -77,11 +148,11 @@ export function RecipeSheet({ recipe }: RecipeSheetProps) {
 
 			<section className="flex flex-col gap-6">
 				<RecipeSectionHeader title="Ingredients">
-					{recipe.serves && (
-						<p className="text-caption">
-							<strong className="text-body font-bold">{recipe.serves}</strong>{" "}
-							{recipe.serves === 1 ? "serving" : "servings"}
-						</p>
+					{servings && (
+						<ServingsControl
+							servings={servings}
+							onChange={(next) => change({ servings: next })}
+						/>
 					)}
 				</RecipeSectionHeader>
 				<div className="columns-2 gap-x-10">
@@ -93,7 +164,15 @@ export function RecipeSheet({ recipe }: RecipeSheetProps) {
 							{group.label && <GroupLabel>{group.label}</GroupLabel>}
 							<ul className="text-body flex flex-col gap-1 leading-snug">
 								{group.items.map((item, i) => (
-									<IngredientLine key={i} item={item} factor={factor} />
+									<IngredientLine
+										key={i}
+										item={item}
+										factor={factor}
+										checked={progress.checked.includes(ingredientKey(g, i))}
+										onCheckedChange={(checked) =>
+											setChecked(ingredientKey(g, i), checked)
+										}
+									/>
 								))}
 							</ul>
 						</div>
