@@ -36,7 +36,7 @@
 - 開發：`pnpm dev`（使用者自己開著，port 3000；**不要自己起 / 殺 dev server**，驗證用 `curl`；dev server 開著時不跑 `pnpm build`，見 R2）
 - 建置：`pnpm build` / `pnpm start`
 - 檢查：`pnpm typecheck`（`next typegen` + `tsc`）、`pnpm lint`、`pnpm format:check`（修正用 `pnpm format`）
-- 資料庫：`pnpm exec prisma migrate dev --name <name>`、`pnpm exec prisma validate`
+- 資料庫：`pnpm exec prisma migrate dev --name <name>`、`pnpm exec prisma validate`、`pnpm exec prisma db seed`（清空後重新寫入範例資料）
 - 文件站預覽：`pnpm docs:serve`；建置檢查：`pnpm docs:build`（需先建 `.venv`，見 `README.md`）
 - 文件健檢：`/doc-audit`（只出報告，不自動修改）
 

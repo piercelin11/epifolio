@@ -8,41 +8,49 @@
 			{
 				"id": "main",
 				"label": "Main",
+				"themeId": "classic",
 				"order": 1
 			},
 			{
 				"id": "dessert",
 				"label": "Dessert",
+				"themeId": "olive",
 				"order": 2
 			},
 			{
 				"id": "drinks",
 				"label": "Drinks",
+				"themeId": "navy",
 				"order": 3
 			},
 			{
 				"id": "specials",
 				"label": "Specials",
+				"themeId": "cocoa",
 				"order": 4
 			},
 			{
 				"id": "brunch",
 				"label": "Brunch",
+				"themeId": "sand",
 				"order": 5
 			},
 			{
 				"id": "wine",
 				"label": "Wine",
+				"themeId": "espresso",
 				"order": 6
 			},
 			{
 				"id": "tasting",
 				"label": "Tasting",
+				"themeId": "fern",
 				"order": 7
 			},
 			{
 				"id": "supper",
 				"label": "Supper",
+				"themeId": "lavender",
 				"order": 8
 			}
 		],

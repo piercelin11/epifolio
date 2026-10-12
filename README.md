@@ -24,8 +24,11 @@ Requires Node.js 22+ and pnpm 8.
 cp .env.example .env
 pnpm install                  # also runs prisma generate
 pnpm exec prisma migrate dev
+pnpm exec prisma db seed    # sample menu, recipes and ingredients
 pnpm dev
 ```
+
+`prisma db seed` clears every table and loads the sample data again, so it can be rerun at any time.
 
 ## Scripts
 
