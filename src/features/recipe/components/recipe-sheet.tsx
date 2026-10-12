@@ -9,6 +9,8 @@ interface RecipeSheetProps {
 	/** Servings and ready ingredients; owned by the caller. */
 	progress?: RecipeProgress;
 	onProgressChange?: (progress: RecipeProgress) => void;
+	/** Called with the id of an ingredient whose name is picked. */
+	onSelectIngredient?: (ingredientId: string) => void;
 }
 
 /** Identifies an ingredient line within its recipe. */
@@ -81,12 +83,15 @@ function IngredientLine({
 	factor,
 	checked,
 	onCheckedChange,
+	onSelectIngredient,
 }: {
 	item: RecipeIngredient;
 	factor: number;
 	checked: boolean;
 	onCheckedChange: (checked: boolean) => void;
+	onSelectIngredient?: (ingredientId: string) => void;
 }) {
+	const { ingredientId } = item;
 	return (
 		<li>
 			{/* A ready ingredient is struck through */}
@@ -106,7 +111,19 @@ function IngredientLine({
 							)}{" "}
 						</strong>
 					)}
-					{item.name}
+					{/* A button inside the label opens the card instead of checking the line */}
+					{ingredientId && onSelectIngredient ? (
+						<button
+							type="button"
+							data-ingredient-trigger
+							onClick={() => onSelectIngredient(ingredientId)}
+							className="cursor-pointer hover:underline"
+						>
+							{item.name}
+						</button>
+					) : (
+						item.name
+					)}
 					{item.note && ` (${item.note})`}
 				</span>
 			</label>
@@ -119,6 +136,7 @@ export function RecipeSheet({
 	recipe,
 	progress = { checked: [] },
 	onProgressChange,
+	onSelectIngredient,
 }: RecipeSheetProps) {
 	if (!recipe) return null;
 
@@ -172,6 +190,7 @@ export function RecipeSheet({
 										onCheckedChange={(checked) =>
 											setChecked(ingredientKey(g, i), checked)
 										}
+										onSelectIngredient={onSelectIngredient}
 									/>
 								))}
 							</ul>

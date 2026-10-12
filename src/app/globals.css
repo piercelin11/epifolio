@@ -207,6 +207,8 @@
 :root {
 	--ingredient-card-width: 22rem;
 	--ingredient-card-padding: 0.75rem;
+	/* Gap between the card and the right edge of the screen; by default the card overhangs the open book's recipe sheet */
+	--ingredient-card-right: calc((100% - var(--shelf-book-width)) / 2 - 2.5rem);
 	--ingredient-card-texture: url("/textures/card-stock.webp");
 	--ingredient-card-texture-opacity: 0.35;
 }

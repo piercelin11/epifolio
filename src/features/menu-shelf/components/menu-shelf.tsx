@@ -2,6 +2,9 @@
 
 import { type CSSProperties, type ReactNode, useState } from "react";
 
+import { IngredientCardLayer } from "@/features/ingredient/components/ingredient-card-layer";
+import { useIngredientCard } from "@/features/ingredient/hooks/use-ingredient-card";
+import type { Ingredient } from "@/features/ingredient/types";
 import { MenuRecipeStack } from "@/features/menu/components/menu-recipe-stack";
 import type { MenuBook } from "@/features/menu/types";
 import { MenuThemeScope } from "@/features/menu-theme/components/menu-theme-scope";
@@ -15,6 +18,7 @@ import { bookAt, isVisibleSlot, overviewColumn } from "../shelf-layout";
 interface MenuShelfProps {
 	books: MenuBook[];
 	recipes: Recipe[];
+	ingredients: Ingredient[];
 	chefName: string;
 	/** Site title, at the left of the header band. */
 	title: ReactNode;
@@ -31,8 +35,15 @@ interface BookState {
  * the centre and its neighbours show at the screen edges; the menu button
  * shrinks every book into one row, where picking a book opens it.
  */
-export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
+export function MenuShelf({
+	books,
+	recipes,
+	ingredients,
+	chefName,
+	title,
+}: MenuShelfProps) {
 	const shelf = useMenuShelf(books.length);
+	const card = useIngredientCard();
 	const { phase, center, focus, geometry, positions, rootRef, bookRefs } =
 		shelf;
 	const reading = phase === "reading";
@@ -55,9 +66,11 @@ export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
 					type="button"
 					aria-pressed={phase === "overview"}
 					className="font-heading text-masthead-nav cursor-pointer font-bold lowercase"
-					onClick={() =>
-						reading ? shelf.openOverview() : shelf.closeOverview()
-					}
+					onClick={() => {
+						card.close();
+						if (reading) shelf.openOverview();
+						else shelf.closeOverview();
+					}}
 				>
 					Menu
 				</button>
@@ -102,6 +115,8 @@ export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
 							onFrontChange={(front) => update(book.id, { front })}
 							recipeId={state?.recipeId}
 							onRecipeChange={(recipeId) => update(book.id, { recipeId })}
+							onSelectIngredient={card.toggle}
+							onSwapStart={card.close}
 							progress={progress}
 							onProgressChange={(recipeId, next) =>
 								setProgress((all) => ({ ...all, [recipeId]: next }))
@@ -112,14 +127,18 @@ export function MenuShelf({ books, recipes, chefName, title }: MenuShelfProps) {
 									? undefined
 									: {
 											label: `Open ${book.group.label}`,
-											onActivate: () =>
-												reading ? shelf.goTo(k) : shelf.closeOverview(k),
+											onActivate: () => {
+												card.close();
+												if (reading) shelf.goTo(k);
+												else shelf.closeOverview(k);
+											},
 										}
 							}
 						/>
 					</MenuThemeScope>
 				);
 			})}
+			<IngredientCardLayer ingredients={ingredients} card={card} />
 		</div>
 	);
 }

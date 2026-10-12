@@ -25,6 +25,13 @@ interface MenuRecipeStackProps {
 	/** Recipe on the recipe sheet; defaults to the first item on the menu. */
 	recipeId?: string;
 	onRecipeChange: (recipeId: string) => void;
+	/** Called with an ingredient picked on either sheet and the area the sheets scroll in. */
+	onSelectIngredient?: (
+		ingredientId: string,
+		scrollArea: HTMLElement | null
+	) => void;
+	/** Called as the sheets start to swap. */
+	onSwapStart?: () => void;
 	/** Servings and ready ingredients per recipe id; owned by the caller. */
 	progress: Record<string, RecipeProgress>;
 	onProgressChange: (recipeId: string, progress: RecipeProgress) => void;
@@ -45,12 +52,22 @@ export function MenuRecipeStack({
 	onFrontChange,
 	recipeId = group.sections[0]?.items[0]?.recipeId,
 	onRecipeChange,
+	onSelectIngredient,
+	onSwapStart,
 	progress,
 	onProgressChange,
 	blankBackRecipe = false,
 }: MenuRecipeStackProps) {
 	const stack = usePaperStack(front, onFrontChange);
 	const recipe = recipes.find((r) => r.id === recipeId);
+	const selectIngredient =
+		onSelectIngredient &&
+		((ingredientId: string) =>
+			onSelectIngredient(ingredientId, stack.scrollRef.current));
+	const swapTo: typeof stack.swapTo = (next, onHidden) => {
+		if (next !== stack.front) onSwapStart?.();
+		return stack.swapTo(next, onHidden);
+	};
 
 	return (
 		<PaperStack
@@ -64,8 +81,9 @@ export function MenuRecipeStack({
 							group={group}
 							chefName={chefName}
 							onSelectItem={(item) =>
-								stack.swapTo("offset", () => onRecipeChange(item.recipeId))
+								swapTo("offset", () => onRecipeChange(item.recipeId))
 							}
+							onSelectIngredient={selectIngredient}
 						/>
 					</PaperSheet>
 				),
@@ -80,6 +98,7 @@ export function MenuRecipeStack({
 							<RecipeSheet
 								recipe={recipe}
 								progress={recipe && progress[recipe.id]}
+								onSelectIngredient={selectIngredient}
 								onProgressChange={(next) =>
 									recipe && onProgressChange(recipe.id, next)
 								}
@@ -91,7 +110,7 @@ export function MenuRecipeStack({
 			onBringToFront={(position) => {
 				// The recipe sheet has nothing to show until an item is picked.
 				if (position === "offset" && !recipe) return;
-				stack.swapTo(position);
+				swapTo(position);
 			}}
 		/>
 	);
