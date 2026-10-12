@@ -6,14 +6,14 @@
 
 ## 現在在做什麼
 
-分支 `fix/laptop-layout-tweaks`（未合併）：筆電尺寸版面修正——總覽列與頁首區保持最小間距、兩側露出寬度隨視窗縮放、頁首標題與 menu 按鈕改用專屬字級 token、食譜紙上移。使用者接著要在此分支手動微調其他 UI。
+分支 `chore/tailwind-postcss`（#31，未合併）：Tailwind 從 `@tailwindcss/turbopack` 改用 `@tailwindcss/postcss`，解決 dev server 漏讀 `globals.css`（[ADR-0010](adr/0010-tailwind-postcss.md)）。程式與文件已完成、CI 通過。
 
 ## 下一步
 
-- 使用者確認畫面後說「合併」再 fast-forward 進 `main`。
-- 可調 token 都在 `src/app/globals.css`：`--shelf-overview-min-top`、`--shelf-peek`、`--text-masthead`、`--text-masthead-nav`、`--paper-offset-y`。
+- 使用者重啟 `pnpm dev` 後，連續修改 `globals.css` 並用 `curl` 確認每次都讀到；通過後 commit 寫 `Closes #31`，等使用者說「合併」。
+- 筆電版面微調已合併進 `main`；可調 token 在 `src/app/globals.css`。食譜相關字級 token 等使用者設計好食譜 UI 再討論。
 - 其他候選：窄螢幕版面（#10）、新增菜單的表單與資料庫（尚未開 issue）。
 
 ## 卡點與待決定
 
-- 改用 Edit 工具改 `globals.css` 後，dev server 仍漏讀一次（連續四次 Edit 只漏最後一次，再改一次就讀到）。依 R5 需請使用者決定後續做法。
+- 等使用者重啟 dev server 才能驗證 #31。
