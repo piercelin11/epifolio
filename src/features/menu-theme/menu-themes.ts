@@ -25,8 +25,13 @@ export interface MenuTheme {
 	texture: MenuThemeTexture;
 }
 
-const lightTexture: MenuThemeTexture = { paper: 1, primary: 0.6 };
-const darkTexture: MenuThemeTexture = { paper: 0.35, primary: 0.2 };
+/*
+ * Texture presets by how light a theme's menu paper is. The overlay blend
+ * shows more on some colours than others, so a theme can override either
+ * value: `texture: { ...lightPaperTexture, paper: 0.5 }`.
+ */
+const lightPaperTexture: MenuThemeTexture = { paper: 0.6, primary: 0.8 };
+const darkPaperTexture: MenuThemeTexture = { paper: 0.35, primary: 0.2 };
 
 /**
  * The menu themes a book can use. The first one is also the site default,
@@ -42,7 +47,7 @@ export const menuThemes = [
 			primary: "#9c2e20",
 			primaryForeground: "#f2e8d8",
 		},
-		texture: lightTexture,
+		texture: lightPaperTexture,
 	},
 	{
 		id: "olive",
@@ -53,7 +58,7 @@ export const menuThemes = [
 			primary: "#cab274",
 			primaryForeground: "#363b20",
 		},
-		texture: darkTexture,
+		texture: darkPaperTexture,
 	},
 	{
 		id: "navy",
@@ -64,7 +69,7 @@ export const menuThemes = [
 			primary: "#9b5b39",
 			primaryForeground: "#202c3c",
 		},
-		texture: darkTexture,
+		texture: darkPaperTexture,
 	},
 	{
 		id: "cocoa",
@@ -75,7 +80,7 @@ export const menuThemes = [
 			primary: "#a7a87f",
 			primaryForeground: "#4b3326",
 		},
-		texture: darkTexture,
+		texture: darkPaperTexture,
 	},
 	{
 		id: "sand",
@@ -86,7 +91,7 @@ export const menuThemes = [
 			primary: "#414c5e",
 			primaryForeground: "#bcb39d",
 		},
-		texture: lightTexture,
+		texture: lightPaperTexture,
 	},
 	{
 		id: "espresso",
@@ -97,7 +102,7 @@ export const menuThemes = [
 			primary: "#c1ae88",
 			primaryForeground: "#2e2a24",
 		},
-		texture: darkTexture,
+		texture: darkPaperTexture,
 	},
 	{
 		id: "fern",
@@ -108,7 +113,7 @@ export const menuThemes = [
 			primary: "#3b5131",
 			primaryForeground: "#dfc5a9",
 		},
-		texture: lightTexture,
+		texture: lightPaperTexture,
 	},
 	{
 		id: "lavender",
@@ -119,7 +124,7 @@ export const menuThemes = [
 			primary: "#56508c",
 			primaryForeground: "#e1ccd0",
 		},
-		texture: lightTexture,
+		texture: lightPaperTexture,
 	},
 ] as const satisfies readonly MenuTheme[];
 
