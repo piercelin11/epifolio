@@ -23,7 +23,7 @@ export function MenuSheet({ group, onSelectItem, chefName }: MenuSheetProps) {
 					{chefName}
 				</p>
 			</div>
-			<div className="flex flex-col gap-20 px-(--paper-padding) pt-24">
+			<div className="flex flex-col gap-10 px-(--paper-padding) pt-20">
 				{group.sections.map((section) => (
 					<MenuSection
 						key={section.id}

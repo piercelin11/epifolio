@@ -12,9 +12,9 @@ export function MenuItemRow({ item, onSelect }: MenuItemRowProps) {
 			<button
 				type="button"
 				onClick={onSelect}
-				className="group grid w-full cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-10 gap-y-0.5 text-left"
+				className="group grid w-full cursor-pointer grid-cols-[1fr_auto] items-baseline gap-x-10 text-left"
 			>
-				<span className="text-title font-medium uppercase group-hover:underline">
+				<span className="text-title uppercase group-hover:underline">
 					{item.name}
 				</span>
 				<span className="text-body tabular-nums">

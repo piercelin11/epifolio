@@ -8,11 +8,11 @@ interface MenuSectionProps {
 
 export function MenuSection({ section, onSelectItem }: MenuSectionProps) {
 	return (
-		<section className="flex flex-col gap-6">
+		<section className="flex flex-col gap-4">
 			<h3 className="font-heading text-primary text-heading font-bold uppercase">
 				{section.label}.
 			</h3>
-			<ul className="flex flex-col gap-6">
+			<ul className="flex flex-col gap-4">
 				{section.items.map((item) => (
 					<MenuItemRow
 						key={item.id}
