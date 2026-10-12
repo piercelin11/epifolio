@@ -11,7 +11,7 @@ paths:
 ## 技術棧
 
 - **框架**：Next.js 16（App Router、Turbopack，預設啟用 `cacheComponents`）+ React 19 + TypeScript 5
-- **樣式**：Tailwind CSS v4（`@tailwindcss/turbopack`，無 `tailwind.config`；theme token 在 `src/app/globals.css`，菜單主題的基本色在 `src/features/menu-theme/menu-themes.ts`）
+- **樣式**：Tailwind CSS v4（`@tailwindcss/postcss`，設定在 `postcss.config.mjs`，見 ADR-0010；無 `tailwind.config`；theme token 在 `src/app/globals.css`，菜單主題的基本色在 `src/features/menu-theme/menu-themes.ts`）
 - **UI 元件**：shadcn（`base-nova` style，底層為 Base UI `@base-ui/react`，非 Radix）+ `lucide-react` 圖示 + `sonner` toast
   - 新增元件用 `pnpm dlx shadcn@latest add <name>`，放在 `src/components/ui/`（盡量不改，要客製就包一層）
   - Base UI 的組合寫法是 `render` prop（例：`<DropdownMenuTrigger render={<Button />} />`），不是 Radix 的 `asChild`

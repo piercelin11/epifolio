@@ -15,6 +15,7 @@
 | 0007 | [首頁改用紙張堆疊，取代左右跨頁](0007-paper-stack-layout.md) | Accepted | 2026-10-11 |
 | 0008 | [菜單主題的配色放在 TS 設定檔，以 CSS 變數套用](0008-menu-theme-colors.md) | Accepted | 2026-10-12 |
 | 0009 | [總覽的滾輪卡點使用 wheel-gestures](0009-shelf-wheel-snap.md) | Accepted | 2026-10-12 |
+| 0010 | [Tailwind 改用 @tailwindcss/postcss 整合](0010-tailwind-postcss.md) | Accepted | 2026-10-12 |
 
 ## 模板
 

@@ -145,4 +145,4 @@
 - R2. 改 `src/app/globals.css` 後，以及任何會改寫該檔的 git 操作（`checkout`、`merge`、`rebase`、`pull`）後，用 `curl` 確認 dev server 送出的 CSS 已包含變更；沒有就再對該檔做一次實際內容修改，仍無效請使用者重啟 dev server。dev server 開著時不跑 `pnpm build`（dev server 曾兩次漏讀 `globals.css` 變更、畫面停在舊樣式，其中一次與 build 無關，2026-10-11；合併時 `checkout main` 讓 dev server 編譯到舊版、`merge` 換回新版又漏讀，畫面變回舊樣式，2026-10-12）
 - R3. commit 的 `style` type 只用於不影響畫面的程式碼格式調整；調整 UI 視覺（字級、顏色、間距等 token 或 class）一律用 `feat` 或 `fix`（曾把手動微調字級標成 `style`，2026-10-12）
 - R4. 用無頭瀏覽器驗證點擊時，先用 `document.elementFromPoint` 確認點擊位置最上層的元素就是目標，或送出真正的滑鼠事件；不要只呼叫 `element.click()`，它不經過點擊判斷，抓不到被其他元素蓋住的情況（menu 按鈕被全高的書本容器蓋住，測試卻通過，2026-10-12）
-- R5. 改 `src/app/globals.css` 一律用 Edit 工具直接寫入原檔，不用 `sed -i` 或腳本改寫；改完仍依 R2 用 `curl` 確認。這是觀察中的做法：這類工具以新檔取代原檔，疑似是 dev server 漏讀的原因。若改用 Edit 後仍漏讀，停下來問使用者要怎麼調整，不要只靠重複修改繞過（用 `sed` 改 `globals.css` 後 dev server 幾乎每次第一次都漏讀，2026-10-12）
+- R5. dev server 漏讀 `globals.css` 的原因是 `@tailwindcss/turbopack` 只用 mtime 判斷是否重新編譯，已改用 `@tailwindcss/postcss`（ADR-0010）；之前推測的「`sed` 以新檔取代原檔」不成立。改用後若仍漏讀，停下來問使用者，不要只靠重複修改繞過（改用 Edit 工具後仍連續漏讀，讀原始碼查明原因，2026-10-12）
