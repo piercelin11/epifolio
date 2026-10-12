@@ -9,6 +9,10 @@ const mockBooks: { groupId: string; themeId: MenuThemeId }[] = [
 	{ groupId: "dessert", themeId: "olive" },
 	{ groupId: "drinks", themeId: "navy" },
 	{ groupId: "specials", themeId: "cocoa" },
+	{ groupId: "brunch", themeId: "sand" },
+	{ groupId: "wine", themeId: "espresso" },
+	{ groupId: "tasting", themeId: "fern" },
+	{ groupId: "supper", themeId: "lavender" },
 ];
 
 /**

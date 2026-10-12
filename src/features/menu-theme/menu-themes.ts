@@ -77,6 +77,50 @@ export const menuThemes = [
 		},
 		texture: darkTexture,
 	},
+	{
+		id: "sand",
+		label: "Sand",
+		colors: {
+			background: "#bcb39d",
+			foreground: "#3a3b2d",
+			primary: "#414c5e",
+			primaryForeground: "#bcb39d",
+		},
+		texture: lightTexture,
+	},
+	{
+		id: "espresso",
+		label: "Espresso",
+		colors: {
+			background: "#2e2a24",
+			foreground: "#a49c92",
+			primary: "#c1ae88",
+			primaryForeground: "#2e2a24",
+		},
+		texture: darkTexture,
+	},
+	{
+		id: "fern",
+		label: "Fern",
+		colors: {
+			background: "#dfc5a9",
+			foreground: "#594c4a",
+			primary: "#3b5131",
+			primaryForeground: "#dfc5a9",
+		},
+		texture: lightTexture,
+	},
+	{
+		id: "lavender",
+		label: "Lavender",
+		colors: {
+			background: "#e1ccd0",
+			foreground: "#655455",
+			primary: "#56508c",
+			primaryForeground: "#e1ccd0",
+		},
+		texture: lightTexture,
+	},
 ] as const satisfies readonly MenuTheme[];
 
 export type MenuThemeId = (typeof menuThemes)[number]["id"];

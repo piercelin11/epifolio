@@ -169,8 +169,8 @@
 	--shelf-peek: 8rem;
 	/* Distance between neighbouring books in reading mode, derived from the peek */
 	--shelf-pitch: calc(50vw + var(--paper-base-width) / 2 - var(--shelf-peek));
-	/* Minimum height of every sheet; longer content makes it taller */
-	--paper-min-height: 70rem;
+	/* Minimum height of every sheet; longer content makes the sheet taller */
+	--paper-min-height: 80rem;
 	/* Shelf overview: books shrink into one row below the header */
 	--shelf-overview-scale: 0.55;
 	/* Left edge of the first book, in line with the header */

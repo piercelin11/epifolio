@@ -236,19 +236,23 @@ export function useMenuShelf(count: number) {
 			const { stagger, ...transition } = shelfMotion.overview;
 			const animations: AnimationPlaybackControls[] = books().map(
 				({ k, el }) => {
-					const placed = overviewX.current.get(k);
-					// A book that was not in the row fades in where it belongs.
-					if (placed === undefined || !before.has(k)) {
-						return animate(el, { opacity: [0, 1] }, timing(transition));
-					}
-					// Keep the book where it was while its slot changes underneath.
-					const x = placed + before.get(k)! - el.offsetLeft;
 					const column = overviewColumn(k, focus);
+					const placed = overviewX.current.get(k);
+					// Keep the book where it was while its slot changes underneath.
+					// A book that was not rendered in the row starts from the column
+					// it would have had, off-screen, and slides in like the rest.
+					const x =
+						placed !== undefined && before.has(k)
+							? placed + before.get(k)! - el.offsetLeft
+							: overviewTransform(g, column, el.offsetLeft).x;
+					const y = g.top - g.scale * g.sheetY;
+					// Hold the start through any stagger delay.
+					animate(el, { x, y, scale: g.scale }, { duration: 0 });
 					return animate(
 						el,
 						{
 							x: [x, 0],
-							y: [g.top - g.scale * g.sheetY, 0],
+							y: [y, 0],
 							scale: [g.scale, 1],
 						},
 						{

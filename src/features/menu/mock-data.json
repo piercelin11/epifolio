@@ -8,7 +8,11 @@
 			{ "id": "main", "label": "Main", "order": 1 },
 			{ "id": "dessert", "label": "Dessert", "order": 2 },
 			{ "id": "drinks", "label": "Drinks", "order": 3 },
-			{ "id": "specials", "label": "Specials", "order": 4 }
+			{ "id": "specials", "label": "Specials", "order": 4 },
+			{ "id": "brunch", "label": "Brunch", "order": 5 },
+			{ "id": "wine", "label": "Wine", "order": 6 },
+			{ "id": "tasting", "label": "Tasting", "order": 7 },
+			{ "id": "supper", "label": "Supper", "order": 8 }
 		],
 		"categories": [
 			{ "id": "starters", "label": "Starters", "order": 1, "group": "main" },
