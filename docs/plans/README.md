@@ -11,7 +11,7 @@
 | -------- | ---- | ---- | -------- |
 | [PLAN-001](PLAN-001-menu-book-layout.md) | 菜單書版面與視覺基礎 | done | #5 |
 | [PLAN-002](PLAN-002-paper-stack.md) | 紙張堆疊版面與換紙動畫 | done | #13 |
-| [PLAN-003](PLAN-003-menu-books.md) | 多本菜單書與菜單總覽 | in-progress | #23 |
+| [PLAN-003](PLAN-003-menu-books.md) | 多本菜單書與菜單總覽 | done | #23 |
 
 ## 模板
 

@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-003-menu-books
 issue: 23
 created: 2026-10-12
@@ -152,10 +152,10 @@ CSS `scroll-snap` 只適用原生捲動軸，但這裡是「垂直滾輪 → 水
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：新增 `docs/features/menu-shelf.md`；`paper-stack.md` 移除色彩模式、更新頁首
-- [ ] ADR：`0008-menu-theme-colors.md`、`0009-shelf-wheel-snap.md`（若保留套件）；ADR-0003 加註不再支援 dark
-- [ ] glossary：新增 `MenuBook`、`MenuShelf`；更新 `MenuTheme`；移除 `ColorMode`
-- [ ] `docs/architecture.md`：新增 `src/features/menu-theme/`、`src/features/menu-shelf/`，移除 `next-themes`
-- [ ] `.claude/rules/coding.md`：顏色規範改寫（不再有 `.dark`）
-- [ ] `README.md`：技術棧移除 next-themes
-- [ ] #21 以本計畫結案
+- [x] 功能頁：新增 `docs/features/menu-shelf.md`；`paper-stack.md` 移除色彩模式、更新頁首
+- [x] ADR：`0008-menu-theme-colors.md`、`0009-shelf-wheel-snap.md`；ADR-0003 加註不再支援 dark
+- [x] glossary：新增 `MenuBook`、`MenuShelf`；更新 `MenuTheme`；移除 `ColorMode`
+- [x] `docs/architecture.md`：新增 `src/features/menu-theme/`、`src/features/menu-shelf/`，移除 `next-themes`
+- [x] `.claude/rules/coding.md`：顏色規範改寫（不再有 `.dark`）
+- [x] `README.md`：技術棧移除 next-themes
+- [x] #21 以本計畫結案

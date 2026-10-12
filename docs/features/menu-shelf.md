@@ -7,7 +7,7 @@ source:
   - src/features/menu-theme/
   - src/features/menu/lib/mock-books.ts
   - src/app/globals.css
-adr: [0008]
+adr: [0008, 0009]
 plan: PLAN-003
 ---
 
@@ -53,7 +53,7 @@ stateDiagram-v2
 | 紙張高度 | 兩種模式共用最小高度 token，內容較多時更長；總覽只縮放，不改變高度與比例；超出畫面的部分不能捲動查看 |
 | 總覽 | 所有書以頂端左角縮小排成一列，第一格對齊頁首內距；原本中間那本在左數第二格；壓在菜單紙下的食譜紙空白（保留高度），食譜在上的書照常顯示食譜 |
 | 總覽滾輪 | 所有書都放得下時不能移動。否則一次手勢（含觸控板慣性）只移動一本；垂直滾動與水平滑動都可以；書數 ≥ 3 無限循環；書數 = 2 時到頭就停 |
-| 離開總覽 | 點某一本：放大回閱讀模式，該本置中。再點 menu：回到進入總覽前的那本（取總覽中最靠左的那一個位置）。原本不在總覽列中的書在途中淡入 |
+| 離開總覽 | 點某一本：放大回閱讀模式，該本置中。再點 menu：回到進入總覽前的那本（取總覽中最靠左的那一個位置）。原本不在總覽列中的書從它在列中應有的位置（畫面外）滑入 |
 | 動畫中 | 忽略點擊與滾輪 |
 | 減少動態效果 | 直接切換位置，不播放動畫 |
 | 視窗縮放 | 總覽時重新量測並排列 |
@@ -63,7 +63,7 @@ stateDiagram-v2
 - 書寬、兩側露出寬度（`--shelf-peek`，書距由它推算）、紙張最小高度、總覽縮放比例、總覽左側內距與書距：見 `src/app/globals.css`。（待校準）
 - 平移、傾斜角度、總覽縮放、滾輪門檻與時長：見 `src/features/menu-shelf/shelf-motion.ts`。（待校準）
 - 配色：見 `src/features/menu-theme/menu-themes.ts`。（待校準）
-- 滾輪手勢辨識用 `wheel-gestures`，試用中（#30）。
+- 滾輪手勢辨識用 `wheel-gestures`，見 [ADR-0009](../adr/0009-shelf-wheel-snap.md)。
 
 ## 已知限制
 
@@ -73,6 +73,6 @@ stateDiagram-v2
 
 ## 相關連結
 
-- ADR：[ADR-0008](../adr/0008-menu-theme-colors.md)
+- ADR：[ADR-0008](../adr/0008-menu-theme-colors.md)、[ADR-0009](../adr/0009-shelf-wheel-snap.md)
 - 計畫：[PLAN-003](../plans/PLAN-003-menu-books.md)
 - Issue：#23

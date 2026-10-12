@@ -6,14 +6,14 @@
 
 ## 現在在做什麼
 
-[PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md) 在分支 `plan-003-menu-books`，子 issue #24–#29 已完成，並依使用者回饋調整（無限循環改為虛擬位置、露出寬度、書的狀態保留、統一紙張高度等），CI 通過，尚未合併。功能說明見 [菜單書架](features/menu-shelf.md)。
+[PLAN-003 多本菜單書與菜單總覽](plans/PLAN-003-menu-books.md) 已完成（`status: done`），在分支 `plan-003-menu-books`，CI 通過，等使用者說「合併」。合併進 `main` 後 #21、#23–#30 會由 commit 的 `Closes` 自動關閉。功能說明見 [菜單書架](features/menu-shelf.md)。
 
 ## 下一步
 
-- 使用者實測總覽滾輪卡點（`wheel-gestures`，#30）：保留 → 寫 ADR-0009、關閉 #30；不保留 → 移除套件，改用自寫門檻 + 冷卻。
-- #30 決定後：PLAN-003 改 `status: done`、關閉父 issue #23，等使用者說「合併」。
-- 動畫參數（`src/features/menu-shelf/shelf-motion.ts`）與總覽 token（`globals.css`）待使用者校準。
+- 使用者說「合併」→ 依 `.claude/rules/git.md` 合併並確認 issue 已關閉。
+- 動畫參數（`src/features/menu-shelf/shelf-motion.ts`）、露出寬度與紙張高度（`globals.css`）、新配色的材質透明度（`menu-themes.ts`）待使用者校準。
+- 其他候選：窄螢幕版面（#10）、新增菜單的表單與資料庫（尚未開 issue）。
 
 ## 卡點與待決定
 
-- `wheel-gestures` 去留（#30）。
+目前沒有。
