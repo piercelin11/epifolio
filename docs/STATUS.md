@@ -6,7 +6,7 @@
 
 ## 現在在做什麼
 
-分支 `plan-005-database`：PLAN-005（資料庫基礎與菜單書主題切換）已確認（父 issue #44，子 issue #45–#50），接著做 #45（資料模型 ADR）。
+分支 `plan-005-database`：PLAN-005（資料庫基礎與菜單書主題切換）已確認（父 issue #44，子 issue #45–#50）；#45（資料模型 ADR 0013–0016）已完成，下一個是 #46（Prisma schema 與 migration）。
 
 ## 下一步
 
