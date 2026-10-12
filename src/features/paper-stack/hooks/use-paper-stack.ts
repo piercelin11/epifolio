@@ -1,7 +1,7 @@
 "use client";
 
 import { animate, useReducedMotion } from "motion/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { flushSync } from "react-dom";
 
 import { swapMotion } from "../swap-motion";
@@ -18,12 +18,15 @@ function exitDistance(area: HTMLElement, topInView: number) {
 }
 
 /**
- * Owns which sheet is in front and animates the swap: both sheets drop out
- * of view with a tilt, the order changes off-screen, and they rise back
- * upright to the same place. Calls made mid-swap are ignored.
+ * Animates swapping the front sheet: both sheets drop out of view with a
+ * tilt, the order changes off-screen, and they rise back upright to the same
+ * place. Which sheet is in front is owned by the caller, so it can outlive
+ * this stack. Calls made mid-swap are ignored.
  */
-export function usePaperStack(initialFront: StackPosition = "base") {
-	const [front, setFront] = useState(initialFront);
+export function usePaperStack(
+	front: StackPosition,
+	setFront: (front: StackPosition) => void
+) {
 	const swapping = useRef(false);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const sheetRefs = useRef<Record<StackPosition, HTMLDivElement | null>>({

@@ -165,14 +165,12 @@
 	--paper-texture-primary: url("/textures/paper.webp");
 	/* Menu shelf (MenuShelf): one book is a whole paper stack */
 	--shelf-book-width: calc(var(--paper-base-width) + var(--paper-offset-x) * 2);
-	/* Space between one book's recipe sheet and the next book's menu sheet */
-	--shelf-gap: 14rem;
-	/* Distance between neighbouring books in reading mode */
-	--shelf-pitch: calc(
-		var(--paper-base-width) + var(--paper-offset-x) + var(--shelf-gap)
-	);
-	/* Height of every sheet when a stack shows at a fixed size (shelf overview) */
-	--paper-fixed-height: 70rem;
+	/* How much of each neighbouring book's menu sheet shows at the screen edge */
+	--shelf-peek: 8rem;
+	/* Distance between neighbouring books in reading mode, derived from the peek */
+	--shelf-pitch: calc(50vw + var(--paper-base-width) / 2 - var(--shelf-peek));
+	/* Minimum height of every sheet; longer content makes it taller */
+	--paper-min-height: 70rem;
 	/* Shelf overview: books shrink into one row below the header */
 	--shelf-overview-scale: 0.55;
 	/* Left edge of the first book, in line with the header */
@@ -202,6 +200,14 @@
 	background-size: 100% auto;
 	mix-blend-mode: overlay;
 	opacity: var(--paper-texture-opacity);
+}
+
+/* Scrolls with the scroll bar hidden */
+@utility scrollbar-none {
+	scrollbar-width: none;
+	&::-webkit-scrollbar {
+		display: none;
+	}
 }
 
 /* Cuts real, see-through holes down the right edge of the sheet */

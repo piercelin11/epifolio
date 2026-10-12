@@ -1,22 +1,30 @@
 "use client";
 
-import { animate, useReducedMotion } from "motion/react";
+import {
+	animate,
+	type AnimationPlaybackControls,
+	type Transition,
+	useReducedMotion,
+} from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { WheelGestures } from "wheel-gestures";
 import { flushSync } from "react-dom";
+import { WheelGestures } from "wheel-gestures";
 
 import {
+	bookAt,
+	loops,
 	type OverviewGeometry,
 	overviewColumn,
 	overviewTransform,
-	relativeSlot,
+	overviewWindow,
+	readingWindow,
 } from "../shelf-layout";
 import { shelfMotion } from "../shelf-motion";
 
 /**
  * `reading`: the current book is open in the centre. `overview`: every
- * book is shrunk into one row. `closing`: laid out for reading but still
- * shown as previews while growing back.
+ * book is shrunk into one row. `closing`: laid out for reading while the
+ * books grow back from the row.
  */
 export type ShelfPhase = "reading" | "overview" | "closing";
 
@@ -43,10 +51,11 @@ function offsetWithin(node: HTMLElement, ancestor: HTMLElement) {
 	return { x, y };
 }
 
-/** Measures the overview row from one book shown as a preview. */
+/** Measures the overview row from any book element. */
 function measureOverview(
 	root: HTMLElement,
-	book: HTMLElement
+	book: HTMLElement,
+	count: number
 ): OverviewGeometry {
 	const scale = parseFloat(
 		getComputedStyle(root).getPropertyValue("--shelf-overview-scale")
@@ -54,48 +63,79 @@ function measureOverview(
 	const front = book.querySelector<HTMLElement>(
 		'[data-paper-position="base"]'
 	)!;
-	const back = book.querySelector<HTMLElement>(
-		'[data-paper-position="offset"]'
-	)!;
 	const sheet = offsetWithin(front, book);
-	const bottom = offsetWithin(back, book).y + back.offsetHeight;
-	const gap = cssLength(root, "--shelf-overview-gap");
-	// Centre the shrunk books in the space below the header band.
-	const height = scale * (bottom - sheet.y);
+	const left = cssLength(root, "--shelf-overview-inset");
+	// A book's visible width, from its menu sheet to its recipe sheet's edge.
+	const width = scale * (book.offsetWidth - sheet.x);
+	const pitch = width + scale * cssLength(root, "--shelf-overview-gap");
+	// Centre books of the minimum height in the space below the header band;
+	// longer ones run past the bottom.
+	const height =
+		scale *
+		(cssLength(root, "--paper-offset-y") +
+			cssLength(root, "--paper-min-height"));
+	const viewport = root.clientWidth;
 	return {
 		scale,
-		left: cssLength(root, "--shelf-overview-inset"),
-		pitch: scale * (book.offsetWidth - sheet.x + gap),
+		left,
+		pitch,
 		top: sheet.y + (root.clientHeight - sheet.y - height) / 2,
 		sheetX: sheet.x,
 		sheetY: sheet.y,
+		columns: Math.ceil((viewport - left) / pitch),
+		fits: left + (count - 1) * pitch + width <= viewport - left,
 	};
 }
 
 /**
- * Owns the shelf: which book is current, the reading and overview phases,
- * and the animations between them. Books are placed for reading by slot in
- * CSS; every move jumps them to their new place and animates them back
- * from where they were (FLIP). Calls made mid-animation are ignored.
+ * Turns a book's scroll position into an offset on its content and animates
+ * that back to 0, so a move starts from what is on screen and the book ends
+ * at the top.
+ */
+function settleScroll(book: HTMLElement, transition: Transition) {
+	const area = book.querySelector<HTMLElement>("[data-paper-scroll]");
+	const content = book.querySelector<HTMLElement>("[data-paper-content]");
+	const top = area?.scrollTop ?? 0;
+	if (!area || !content || top === 0) return;
+	area.scrollTop = 0;
+	return animate(content, { y: [-top, 0] }, transition);
+}
+
+/**
+ * Owns the shelf: which position is in the centre, the reading and overview
+ * phases, and the animations between them. Books are placed for reading by
+ * slot in CSS; every move changes the slots and animates each book back from
+ * where it was (FLIP). Calls made mid-animation are ignored.
  */
 export function useMenuShelf(count: number) {
 	const [phase, setPhase] = useState<ShelfPhase>("reading");
-	const [current, setCurrent] = useState(0);
-	/** Book in the overview's second column. */
+	/** Virtual position of the current book. */
+	const [center, setCenter] = useState(0);
+	/** Virtual position in the overview's second column. */
 	const [focus, setFocus] = useState(0);
+	const [geometry, setGeometry] = useState<OverviewGeometry | null>(null);
 	const moving = useRef(false);
 	const rootRef = useRef<HTMLDivElement>(null);
-	const bookRefs = useRef<(HTMLElement | null)[]>([]);
-	/** Overview x offset per book, as last placed. */
-	const overviewX = useRef<number[]>([]);
-	const geometry = useRef<OverviewGeometry | null>(null);
+	const bookRefs = useRef(new Map<number, HTMLElement>());
+	/** Overview x offset per position, as last placed. */
+	const overviewX = useRef(new Map<number, number>());
 	const reduceMotion = useReducedMotion();
 
+	const reading = readingWindow(center, count);
+	const overview = geometry ? overviewWindow(focus, count, geometry) : [];
+	/** Virtual positions to render, in order. */
+	const positions =
+		phase === "reading"
+			? reading
+			: phase === "overview"
+				? overview
+				: [...new Set([...overview, ...reading])].sort((a, b) => a - b);
+
 	function books() {
-		return bookRefs.current.flatMap((el, index) => (el ? [{ el, index }] : []));
+		return [...bookRefs.current].map(([k, el]) => ({ k, el }));
 	}
 
-	async function run(task: () => Promise<void>) {
+	async function run(task: () => Promise<unknown>) {
 		if (moving.current) return;
 		moving.current = true;
 		try {
@@ -105,172 +145,148 @@ export function useMenuShelf(count: number) {
 		}
 	}
 
-	/** Makes a neighbour of the current book current. */
-	function goTo(next: number) {
-		if (phase !== "reading" || next === current) return;
-		if (reduceMotion) {
-			setCurrent(next);
-			return;
-		}
+	const timing = (transition: Transition) =>
+		reduceMotion ? { ...transition, duration: 0 } : transition;
 
+	/** Makes a neighbouring position current. */
+	function goTo(k: number) {
+		if (phase !== "reading" || k === center) return;
 		return run(async () => {
-			// +1 when the row moves left (the right neighbour opens), -1 otherwise.
-			const step = Math.sign(relativeSlot(next, current, count));
-			const all = books();
-			const before = all.map(({ el }) => el.getBoundingClientRect().left);
-			flushSync(() => setCurrent(next));
-			const after = all.map(({ el }) => el.getBoundingClientRect().left);
-			// The previous current book never wraps, so it measures one slot.
-			const old = all.findIndex(({ index }) => index === current);
-			const pitch = (before[old] - after[old]) / step;
-
-			const { tilt, stagger, ...timing } = shelfMotion.slide;
-			await Promise.all(
-				all.map(({ el, index }, i) => {
-					const from = before[i] - after[i];
-					// A book that wraps round the loop keeps going off-screen.
-					const to = from - step * pitch;
-					// The book furthest along the direction of travel leads.
-					const order = step * relativeSlot(index, next, count);
-					return animate(
+			const step = Math.sign(k - center);
+			const { tilt, ...transition } = shelfMotion.slide;
+			const old = bookRefs.current.get(center)!;
+			const settling = settleScroll(old, timing(transition));
+			const before = old.offsetLeft;
+			flushSync(() => setCenter(k));
+			// Every book moves by the same distance, so gaps stay even.
+			const from = before - old.offsetLeft;
+			await Promise.all([
+				settling,
+				...books().map(({ el }) =>
+					animate(
 						el,
-						{ x: [from, to], rotate: [0, step * tilt, 0] },
-						{ ...timing, delay: Math.max(0, order + 1) * stagger }
-					).then(() => animate(el, { x: 0 }, { duration: 0 }));
-				})
-			);
+						{ x: [from, 0], rotate: [0, step * tilt, 0] },
+						timing(transition)
+					)
+				),
+			]);
 		});
 	}
 
-	/** Places every book in its overview column for `focusIndex`. */
-	function placeOverview(focusIndex: number, duration: number) {
-		const root = rootRef.current!;
-		const all = books();
-		const reference = all.find(({ index }) => index === focusIndex)!.el;
-		const g = measureOverview(root, reference);
-		geometry.current = g;
-		const { stagger, wrapFade, ...timing } = shelfMotion.overview;
-		return Promise.all(
-			all.map(({ el, index }) => {
-				const column = overviewColumn(index, focusIndex, count);
-				const target = overviewTransform(g, column, el.offsetLeft);
-				const wraps = column - 1 !== relativeSlot(index, focusIndex, count);
-				overviewX.current[index] = target.x;
-				el.style.transformOrigin = "0 0";
-				return animate(
-					el,
-					{ ...target, opacity: wraps && duration ? [1, 0, 0, 1] : 1 },
-					{
-						...timing,
-						duration,
-						delay: duration ? Math.max(0, column) * stagger : 0,
-						opacity: { duration, times: wrapFade, ease: "linear" },
-					}
-				);
-			})
-		);
+	/** Moves every rendered book to its overview column for `focusAt`. */
+	function placeOverview(
+		g: OverviewGeometry,
+		focusAt: number,
+		transition: Transition,
+		stagger = 0
+	) {
+		return books().map(({ k, el }) => {
+			const column = overviewColumn(k, focusAt);
+			const target = overviewTransform(g, column, el.offsetLeft);
+			overviewX.current.set(k, target.x);
+			return animate(el, target, {
+				...transition,
+				delay: Math.max(0, column) * stagger,
+			});
+		});
 	}
 
 	/** Shrinks every book into the overview row. */
 	function openOverview() {
 		if (phase !== "reading") return;
 		return run(async () => {
+			const root = rootRef.current!;
+			const current = bookRefs.current.get(center)!;
+			const g = measureOverview(root, current, count);
+			const { stagger, ...transition } = shelfMotion.overview;
+			const settling = settleScroll(current, timing(transition));
+			overviewX.current.clear();
 			flushSync(() => {
+				setGeometry(g);
+				setFocus(center);
 				setPhase("overview");
-				setFocus(current);
 			});
-			await placeOverview(
-				current,
-				reduceMotion ? 0 : shelfMotion.overview.duration
-			);
+			await Promise.all([
+				settling,
+				...placeOverview(g, center, timing(transition), stagger),
+			]);
 		});
 	}
 
-	/** Grows back to reading with `next` as the current book. */
-	function closeOverview(next = current) {
-		if (phase !== "overview") return;
+	/**
+	 * Grows back to reading. `k` is the position picked; without one, the
+	 * book that was open before the overview, in the column nearest the left.
+	 */
+	function closeOverview(k?: number) {
+		if (phase !== "overview" || !geometry) return;
+		const g = geometry;
+		const book = bookAt(center, count);
+		const next =
+			k ??
+			(loops(count)
+				? focus - 1 + bookAt(book - bookAt(focus - 1, count), count)
+				: center);
+
 		return run(async () => {
-			const g = geometry.current!;
-			const all = books();
-			const before = all.map(({ el }) => el.offsetLeft);
+			const before = new Map(books().map(({ k, el }) => [k, el.offsetLeft]));
 			flushSync(() => {
+				setCenter(next);
 				setPhase("closing");
-				setCurrent(next);
 			});
-			const { stagger, wrapFade, ...timing } = shelfMotion.overview;
-			const duration = reduceMotion ? 0 : timing.duration;
-			const nextColumn = overviewColumn(next, focus, count);
-			await Promise.all(
-				all.map(({ el, index }, i) => {
+			const { stagger, ...transition } = shelfMotion.overview;
+			const animations: AnimationPlaybackControls[] = books().map(
+				({ k, el }) => {
+					const placed = overviewX.current.get(k);
+					// A book that was not in the row fades in where it belongs.
+					if (placed === undefined || !before.has(k)) {
+						return animate(el, { opacity: [0, 1] }, timing(transition));
+					}
 					// Keep the book where it was while its slot changes underneath.
-					const x = overviewX.current[index] + before[i] - el.offsetLeft;
-					const column = overviewColumn(index, focus, count);
-					const wraps =
-						column - nextColumn !== relativeSlot(index, next, count);
+					const x = placed + before.get(k)! - el.offsetLeft;
+					const column = overviewColumn(k, focus);
 					return animate(
 						el,
 						{
 							x: [x, 0],
 							y: [g.top - g.scale * g.sheetY, 0],
 							scale: [g.scale, 1],
-							opacity: wraps && duration ? [1, 0, 0, 1] : 1,
 						},
 						{
-							...timing,
-							duration,
-							delay: duration ? Math.max(0, column) * stagger : 0,
-							opacity: { duration, times: wrapFade, ease: "linear" },
+							...timing(transition),
+							delay: reduceMotion ? 0 : Math.max(0, column) * stagger,
 						}
-					).then(() => {
-						el.style.transformOrigin = "";
-					});
-				})
+					);
+				}
 			);
+			await Promise.all(animations);
 			setPhase("reading");
 		});
 	}
 
 	/** Moves the overview row one book; +1 brings the next book into focus. */
 	function stepOverview(step: 1 | -1) {
-		if (phase !== "overview") return;
-		const next =
-			count < 3
-				? Math.min(Math.max(focus + step, 0), count - 1)
-				: (focus + step + count) % count;
+		if (phase !== "overview" || !geometry || geometry.fits) return;
+		const next = loops(count)
+			? focus + step
+			: Math.min(Math.max(focus + step, 0), count - 1);
 		if (next === focus) return;
+		const g = geometry;
 
 		return run(async () => {
-			const g = geometry.current!;
 			flushSync(() => setFocus(next));
+			// A book that just came into the row starts one column further out.
+			for (const { k, el } of books()) {
+				if (overviewX.current.has(k)) continue;
+				const start = overviewTransform(
+					g,
+					overviewColumn(k, focus),
+					el.offsetLeft
+				);
+				overviewX.current.set(k, start.x);
+				animate(el, start, { duration: 0 });
+			}
 			const { duration, ease } = shelfMotion.step;
-			await Promise.all(
-				books().map(({ el, index }) => {
-					const from = overviewX.current[index];
-					const to = overviewTransform(
-						g,
-						overviewColumn(index, next, count),
-						el.offsetLeft
-					).x;
-					overviewX.current[index] = to;
-					if (reduceMotion) return animate(el, { x: to }, { duration: 0 });
-					// A book that wraps round the loop leaves past one edge and
-					// comes back in past the other, instead of crossing the row.
-					const wraps = Math.round((to - from) / g.pitch) !== -step;
-					return animate(
-						el,
-						{
-							x: wraps
-								? [from, from - step * g.pitch, to + step * g.pitch, to]
-								: [from, to],
-						},
-						{
-							duration,
-							ease,
-							x: wraps ? { duration, times: [0, 0.5, 0.5, 1] } : undefined,
-						}
-					);
-				})
-			);
+			await Promise.all(placeOverview(g, next, timing({ duration, ease })));
 		});
 	}
 
@@ -280,12 +296,19 @@ export function useMenuShelf(count: number) {
 		stepRef.current = stepOverview;
 	});
 
+	// Forget overview offsets of books that left the row.
+	useEffect(() => {
+		for (const k of overviewX.current.keys()) {
+			if (!bookRefs.current.has(k)) overviewX.current.delete(k);
+		}
+	});
+
 	// In the overview, each wheel or trackpad gesture moves the row one book,
 	// however far it travels; momentum after the step is ignored.
-	const overview = phase === "overview";
+	const inOverview = phase === "overview";
 	useEffect(() => {
 		const root = rootRef.current;
-		if (!overview || !root) return;
+		if (!inOverview || !root) return;
 		const gestures = WheelGestures({ preventWheelAction: true });
 		let stepped = false;
 		gestures.observe(root);
@@ -303,13 +326,18 @@ export function useMenuShelf(count: number) {
 			off();
 			gestures.disconnect();
 		};
-	}, [overview]);
+	}, [inOverview]);
 
 	// The overview row is measured in px, so lay it out again on resize.
 	useEffect(() => {
-		if (phase !== "overview") return;
+		if (!inOverview) return;
 		const onResize = () => {
-			if (!moving.current) placeOverview(focus, 0);
+			if (moving.current) return;
+			const any = bookRefs.current.values().next().value;
+			if (!any) return;
+			const g = measureOverview(rootRef.current!, any, count);
+			flushSync(() => setGeometry(g));
+			placeOverview(g, focus, { duration: 0 });
 		};
 		window.addEventListener("resize", onResize);
 		return () => window.removeEventListener("resize", onResize);
@@ -317,8 +345,10 @@ export function useMenuShelf(count: number) {
 
 	return {
 		phase,
-		current,
+		center,
 		focus,
+		geometry,
+		positions,
 		goTo,
 		openOverview,
 		closeOverview,
@@ -326,5 +356,3 @@ export function useMenuShelf(count: number) {
 		bookRefs,
 	};
 }
-
-export type MenuShelfController = ReturnType<typeof useMenuShelf>;
