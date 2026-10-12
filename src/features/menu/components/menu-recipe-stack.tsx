@@ -17,6 +17,8 @@ interface MenuRecipeStackProps {
 	group: MenuGroup;
 	recipes: Recipe[];
 	chefName: string;
+	/** Controls shown beside the chef name on the menu sheet. */
+	menuActions?: ReactNode;
 	/** Set on a book that is shown but not open; see PaperStack. */
 	inactive?: ComponentProps<typeof PaperStack>["inactive"];
 	/** Sheet in front; owned by the caller so it survives remounting. */
@@ -49,6 +51,7 @@ export function MenuRecipeStack({
 	group,
 	recipes,
 	chefName,
+	menuActions,
 	inactive,
 	front,
 	onFrontChange,
@@ -84,6 +87,7 @@ export function MenuRecipeStack({
 						<MenuSheet
 							group={group}
 							chefName={chefName}
+							actions={menuActions}
 							onSelectItem={(item) =>
 								swapTo("offset", () => onRecipeChange(item.recipeId))
 							}

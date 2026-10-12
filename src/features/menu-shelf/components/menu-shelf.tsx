@@ -1,13 +1,23 @@
 "use client";
 
-import { type CSSProperties, type ReactNode, useState } from "react";
+import {
+	type CSSProperties,
+	type ReactNode,
+	startTransition,
+	useOptimistic,
+	useState,
+} from "react";
+import { toast } from "sonner";
 
 import { IngredientCardLayer } from "@/features/ingredient/components/ingredient-card-layer";
 import { useIngredientCard } from "@/features/ingredient/hooks/use-ingredient-card";
 import type { Ingredient } from "@/features/ingredient/types";
+import { updateBookTheme } from "@/features/menu/actions/update-book-theme";
 import { MenuRecipeStack } from "@/features/menu/components/menu-recipe-stack";
 import type { MenuBook } from "@/features/menu/types";
+import { MenuThemePicker } from "@/features/menu-theme/components/menu-theme-picker";
 import { MenuThemeScope } from "@/features/menu-theme/components/menu-theme-scope";
+import type { MenuThemeId } from "@/features/menu-theme/menu-themes";
 import type { StackPosition } from "@/features/paper-stack/types";
 import type { Recipe, RecipeProgress } from "@/features/recipe/types";
 import { cn } from "@/lib/utils";
@@ -51,6 +61,20 @@ export function MenuShelf({
 	const [states, setStates] = useState<Record<string, BookState>>({});
 	// Kept per recipe, so a recipe reached from any book shows the same state.
 	const [progress, setProgress] = useState<Record<string, RecipeProgress>>({});
+	// A picked theme shows at once; it reverts if saving fails.
+	const [themes, showTheme] = useOptimistic(
+		Object.fromEntries(books.map((book) => [book.id, book.themeId])),
+		(all, change: { bookId: string; themeId: MenuThemeId }) => ({
+			...all,
+			[change.bookId]: change.themeId,
+		})
+	);
+	const changeTheme = (bookId: string, themeId: MenuThemeId) =>
+		startTransition(async () => {
+			showTheme({ bookId, themeId });
+			const result = await updateBookTheme({ bookId, themeId });
+			if (!result.ok) toast.error(result.error);
+		});
 	const update = (id: string, change: Partial<BookState>) =>
 		setStates((all) => {
 			const previous: BookState = all[id] ?? { front: "base" };
@@ -95,7 +119,7 @@ export function MenuShelf({
 								bookRefs.current.delete(k);
 							};
 						}}
-						themeId={book.themeId}
+						themeId={themes[book.id] ?? book.themeId}
 						// Off-screen books stay rendered so they can slide in. Each book
 						// spans the full height and overlaps the header band, so only its
 						// open scroll area and sheets take pointer input.
@@ -111,6 +135,14 @@ export function MenuShelf({
 							group={book.group}
 							recipes={recipes}
 							chefName={chefName}
+							menuActions={
+								reading && (
+									<MenuThemePicker
+										themeId={themes[book.id] ?? book.themeId}
+										onChange={(themeId) => changeTheme(book.id, themeId)}
+									/>
+								)
+							}
 							front={state?.front ?? "base"}
 							onFrontChange={(front) => update(book.id, { front })}
 							recipeId={state?.recipeId}

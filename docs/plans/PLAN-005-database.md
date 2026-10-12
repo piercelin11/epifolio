@@ -133,7 +133,7 @@ flowchart LR
 
 ### 5. 主題切換
 
-- Server Action `updateBookTheme(groupId, themeId)`：zod 驗證、確認該大類屬於目前使用者、寫入、`revalidatePath("/")`。
+- Server Action `updateBookTheme(groupId, themeId)`：zod 驗證、確認該大類屬於目前使用者、寫入、`refresh()`（首頁資料沒有快取，只需重新整理 client router）。
 - 畫面先換色（`useOptimistic`），失敗時還原並顯示 toast。
 - 選單位置：閱讀模式下目前這本書的菜單紙右上角（chef name 旁）放一個小按鈕，點開是 `DropdownMenu`，每個選項顯示主題名稱與色塊。只有置中的那本可操作；總覽模式不顯示。**待使用者確認。**
 
