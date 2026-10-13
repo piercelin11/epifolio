@@ -1,5 +1,5 @@
 ---
-status: draft
+status: in-progress
 branch: plan-007-llm-import
 issue: 52
 created: 2026-10-13
@@ -146,7 +146,7 @@ flowchart LR
 - 列的排版沿用食譜卡的用量行：寫法在左、對應結果在右；狀態用小型大寫標籤；編輯中只顯示欄位底線。
 - 對應選單用 shadcn 既有的 `select` / `dropdown-menu`。
 
-### 5. 待確認（以 ADR 草稿提出，確認後寫成 ADR）
+### 5. 取捨（已寫成 ADR-0022 到 ADR-0025）
 
 | 決定 | 提案 | 替代方案 |
 | --- | --- | --- |
@@ -158,14 +158,14 @@ flowchart LR
 
 ## 任務拆解
 
-1. ADR：LLM 套件與模型、網頁抽取、單位清單、營養估計值與食材寫入時機
-2. 單位清單擴充與食譜紙的 To taste
-3. 草稿 schema 與 `createDish` 擴充：明確食材連結、暫時 key、步驟片段、新食材與別名（含 `nutritionEstimated` migration）
-4. LLM 匯入服務：SDK、設定檔、prompt、輸出 schema、轉換成草稿、Route Handler、錯誤對應
-5. URL 抽取：抓網頁、JSON-LD、正文抽取、安全限制
-6. 匯入卡：Text、Photo、URL 表單、載入狀態與取消、結果填回
-7. 食材卡：狀態機新卡、列的狀態與修改、新食材表單、跳過規則、轉場
-8. 文件：`editor.md`、`data-sources.md`、`vision.md`、`README.md`、`.env.example`、glossary、architecture、STATUS
+1. ADR：LLM 套件與模型、網頁抽取、單位清單、營養估計值與食材寫入時機（#74）
+2. 單位清單擴充與食譜紙的 To taste（#75）
+3. 草稿 schema 與 `createDish` 擴充：明確食材連結、暫時 key、步驟片段、新食材與別名（含 `nutritionEstimated` migration）（#76）
+4. LLM 匯入服務：SDK、設定檔、prompt、輸出 schema、轉換成草稿、Route Handler、錯誤對應（#77）
+5. URL 抽取：抓網頁、JSON-LD、正文抽取、安全限制（#78）
+6. 匯入卡：Text、Photo、URL 表單、載入狀態與取消、結果填回（#79）
+7. 食材卡：狀態機新卡、列的狀態與修改、新食材表單、跳過規則、轉場（#80）
+8. 文件：`editor.md`、`data-sources.md`、`vision.md`、`README.md`、`.env.example`、glossary、architecture、STATUS（#81）
 
 ## 完成後遷移清單
 
