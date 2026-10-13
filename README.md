@@ -36,7 +36,7 @@ pnpm dev
 | ------------------- | ------------------------------------ |
 | `pnpm dev`          | Start the dev server                 |
 | `pnpm build`        | Production build                     |
-| `pnpm lint`         | Run ESLint                           |
+| `pnpm lint`         | Run ESLint, including canonical Tailwind classes |
 | `pnpm typecheck`    | Generate route types and run tsc     |
 | `pnpm format`       | Format with Prettier                 |
 | `pnpm format:check` | Check formatting                     |

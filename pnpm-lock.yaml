@@ -19,7 +19,7 @@ dependencies:
     version: 3.2.2(react@19.3.0)
   '@hookform/resolvers':
     specifier: ^5.9.1
-    version: 5.9.1(react-hook-form@7.89.0)(zod@4.6.5)
+    version: 5.9.1(react-hook-form@7.89.0)(valibot@1.5.0)(zod@4.6.5)
   '@prisma/adapter-better-sqlite3':
     specifier: ^7.10.0
     version: 7.10.0
@@ -94,6 +94,9 @@ devDependencies:
   eslint-config-next:
     specifier: 16.4.0
     version: 16.4.0(@typescript-eslint/parser@8.71.1)(eslint@9.39.5)(typescript@5.9.3)
+  eslint-plugin-better-tailwindcss:
+    specifier: ^4.9.0
+    version: 4.9.0(eslint@9.39.5)(tailwindcss@4.3.3)(typescript@5.9.3)
   prettier:
     specifier: ^3.9.9
     version: 3.9.9
@@ -846,6 +849,14 @@ packages:
       '@types/json-schema': 7.0.15
     dev: true
 
+  /@eslint/css-tree@4.1.1:
+    resolution: {integrity: sha512-A+s89eP+yDAPkKjnIOfjlkGifg5J7GPn01nWx14UjBVWktfkxOU4975F9ZZ13xNxkGiblNcBaAqgKhnQrW6SWA==}
+    engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+    dependencies:
+      mdn-data: 2.35.0
+      source-map-js: 1.2.2
+    dev: true
+
   /@eslint/eslintrc@3.3.7:
     resolution: {integrity: sha512-F42g89Qd5oAWtp0k0nnSrjziAKza7w8SVT4mStc18LZMaRb4J1HQAHLCalEtDCxrTuksx7NU9qsmeLwpOfPqWw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -918,7 +929,7 @@ packages:
       hono: 4.13.13
     dev: false
 
-  /@hookform/resolvers@5.9.1(react-hook-form@7.89.0)(zod@4.6.5):
+  /@hookform/resolvers@5.9.1(react-hook-form@7.89.0)(valibot@1.5.0)(zod@4.6.5):
     resolution: {integrity: sha512-7b7vsbraJxKgjVSA1Nur9tLwj539WGJUBLA7QNvXnFoT2pM5Z7G+6rlukk4B2/QrTZy6huRtH6wKeESPKuIr6w==}
     peerDependencies:
       '@sinclair/typebox': '>=0.25.24'
@@ -998,6 +1009,7 @@ packages:
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.89.0(@types/react@19.3.0)(react@19.3.0)
+      valibot: 1.5.0(typescript@5.9.3)
       zod: 4.6.5
     dev: false
 
@@ -1461,6 +1473,11 @@ packages:
   /@nolyfill/is-core-module@1.0.39:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+    dev: true
+
+  /@pkgr/core@0.3.6:
+    resolution: {integrity: sha512-SEeaJLb3qBNF/OaXnaR1NmmBbFYk1zC0ZH/52fATcRPLFg/p791YrcyFFy44Bo9sLaGuSuLp5Q6axbb/O+v/RA==}
+    engines: {node: ^14.18.0 || >=16.0.0}
     dev: true
 
   /@prisma/adapter-better-sqlite3@7.10.0:
@@ -2345,6 +2362,14 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@valibot/to-json-schema@1.8.0(valibot@1.5.0):
+    resolution: {integrity: sha512-a0M+uwCuQZEPAo65NYkFSJ14O5c213KoSZmPdoCfuFvUhfULi4T2Z6Tpjv6lTVMW9RoLm74RpRAjNEa43KcN+g==}
+    peerDependencies:
+      valibot: ^1.5.0
+    dependencies:
+      valibot: 1.5.0(typescript@5.9.3)
+    dev: true
 
   /@visx/curve@4.0.1-alpha.0:
     resolution: {integrity: sha512-jRu61Uz274pV1zyioXmboyrLutYbnKsgjj4njSGCnhdXj5GkZvZbg+ThDb6oOzoAnJOBRLz4rzPlWvNJOzuVMg==}
@@ -3599,6 +3624,34 @@ packages:
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.5)
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /eslint-plugin-better-tailwindcss@4.9.0(eslint@9.39.5)(tailwindcss@4.3.3)(typescript@5.9.3):
+    resolution: {integrity: sha512-L8z5Wpdzji/qYS4Dz27LZAKVk9ZQ3yTvUbvRtyFhefu6g6T7ZnRqyWkNBiHDD7Pm1vHJW/KcV8oo3ehdoNZ1JA==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=23.0.0}
+    peerDependencies:
+      eslint: ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+      oxlint: ^1.35.0
+      tailwindcss: ^3.3.0 || ^4.1.17
+    peerDependenciesMeta:
+      eslint:
+        optional: true
+      oxlint:
+        optional: true
+    dependencies:
+      '@eslint/css-tree': 4.1.1
+      '@valibot/to-json-schema': 1.8.0(valibot@1.5.0)
+      enhanced-resolve: 5.26.0
+      eslint: 9.39.5
+      jiti: 2.7.0
+      synckit: 0.11.13
+      tailwind-csstree: 0.3.3
+      tailwindcss: 4.3.3
+      tsconfig-paths-webpack-plugin: 4.2.0
+      valibot: 1.5.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - '@eslint/css'
+      - typescript
     dev: true
 
   /eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.71.1)(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.5):
@@ -5028,6 +5081,10 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
+  /mdn-data@2.35.0:
+    resolution: {integrity: sha512-k+1+dEIm2z/BEfdvYzT/fIyAGeDBo/1AJNJI4ilFXJRYoxP/3Ds+GP8shAOIq8jYXY9N5nGB3Ag104NsagmLAA==}
+    dev: true
+
   /media-typer@1.1.1:
     resolution: {integrity: sha512-yz3xRaG20c6/BOzvYoDaGtPmGscs7YivItZEEqe6GbwNfHuxu9YNmvnEkMzKldAGY4/80pRcQRZSEnhquk9XuQ==}
     engines: {node: '>= 0.8'}
@@ -6444,12 +6501,29 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
+  /synckit@0.11.13:
+    resolution: {integrity: sha512-eNRKgb3z66Yp3D2CixVujOUvXLFUTij/zVnV8KRyvFdQwpz7I5DS8UfRkTeLzb64u+dkzDSdelE24izu+zSSUg==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    dependencies:
+      '@pkgr/core': 0.3.6
+    dev: true
+
   /systeminformation@5.33.15:
     resolution: {integrity: sha512-s5RloL0F7xhN0ZjfHtLGnbf7EW74EI0N8NFL+1xR7Oxz9QA33obNZsl7lyfnJOhN04E/kGFPoJPlvY7TZ5fzmw==}
     engines: {node: '>=10.0.0'}
     os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
     hasBin: true
     dev: false
+
+  /tailwind-csstree@0.3.3:
+    resolution: {integrity: sha512-je9J5UYRsTJqAjYrIBMMlge8T/rreRd44pJxgG5Zx/zeo4kAC/liUKqzztRZrGlYRJLvIf2Cb1DVJMTXSzEShA==}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      '@eslint/css': '>=1.0.0'
+    peerDependenciesMeta:
+      '@eslint/css':
+        optional: true
+    dev: true
 
   /tailwindcss@4.3.3:
     resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
@@ -6519,6 +6593,16 @@ packages:
       code-block-writer: 13.0.3
     dev: false
 
+  /tsconfig-paths-webpack-plugin@4.2.0:
+    resolution: {integrity: sha512-zbem3rfRS8BgeNK50Zz5SIQgXzLafiHjOwUAvk/38/o1jHn/V5QAgVUcz884or7WYcPaH3N2CIfUc2u0ul7UcA==}
+    engines: {node: '>=10.13.0'}
+    dependencies:
+      chalk: 4.1.2
+      enhanced-resolve: 5.26.0
+      tapable: 2.3.3
+      tsconfig-paths: 4.2.0
+    dev: true
+
   /tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
     dependencies:
@@ -6535,7 +6619,6 @@ packages:
       json5: 2.2.3
       minimist: 1.2.8
       strip-bom: 3.0.0
-    dev: false
 
   /tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
@@ -6740,6 +6823,16 @@ packages:
 
   /valibot@1.4.2(typescript@5.9.3):
     resolution: {integrity: sha512-gjdCvJ6d3RyHAneqxMYMW9QMCwYMb3jpOO0IyHZV1bnRHFBHrX3VkIILt5XYR0WhwHiH7Mty8ovuPZ/O3gamrg==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.9.3
+
+  /valibot@1.5.0(typescript@5.9.3):
+    resolution: {integrity: sha512-nil6AkP2TChWL43Z5uJ6GTxX01CUA+g8LWUM+N/rB9NBbkUMaUsi9PUNzlUPgoKASgmx9f7eGOYpJ04/fSa6FQ==}
     peerDependencies:
       typescript: '>=5'
     peerDependenciesMeta:

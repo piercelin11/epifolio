@@ -50,7 +50,7 @@ export function RemoveButton({
 			onClick={onClick}
 			// Centred on the row's first line, not the whole row (rows have py-1.5).
 			// Shown for keyboard focus only: after a drag the row keeps focus.
-			className="absolute top-[calc(0.375rem+0.5lh)] -left-5 grid -translate-y-1/2 cursor-pointer place-items-center opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100"
+			className="absolute top-[calc(0.375rem+0.5lh)] -left-5 grid -translate-y-1/2 cursor-pointer place-items-center opacity-0 group-hover:opacity-100 group-has-focus-visible:opacity-100"
 		>
 			<SquareIcon sign="minus" />
 		</button>

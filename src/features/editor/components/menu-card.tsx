@@ -150,7 +150,7 @@ function ItemRow({
 						type="button"
 						aria-label="Edit recipe"
 						onClick={() => onOpenRecipe(recipeId)}
-						className="cursor-pointer opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100"
+						className="cursor-pointer opacity-0 group-hover:opacity-100 group-has-focus-visible:opacity-100"
 					>
 						<ArrowUpRight className="size-[1.1em]" strokeWidth={1.5} />
 					</button>

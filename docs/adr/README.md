@@ -26,6 +26,7 @@
 | 0018 | [拖曳排序使用 @dnd-kit/core 與 @dnd-kit/sortable](0018-dnd-kit-sortable.md) | Accepted | 2026-10-13 |
 | 0019 | [從菜單移除品項時保留食譜](0019-remove-from-menu-keeps-recipe.md) | Accepted | 2026-10-13 |
 | 0020 | [文具圖片放 public/stationery，與材質分開](0020-stationery-assets.md) | Accepted | 2026-10-13 |
+| 0021 | [以 eslint-plugin-better-tailwindcss 檢查 Tailwind class 的標準寫法](0021-tailwind-eslint-plugin.md) | Accepted | 2026-10-13 |
 
 ## 模板
 

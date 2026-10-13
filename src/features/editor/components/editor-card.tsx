@@ -61,7 +61,7 @@ export function EditorCard({
 				<div
 					aria-hidden
 					className={cn(
-						"pointer-events-none absolute top-(--editor-paper-clip-top) right-(--editor-paper-clip-right) aspect-[160/700] w-(--editor-paper-clip-width) rotate-(--editor-paper-clip-rotate) bg-(image:--editor-paper-clip) bg-contain bg-no-repeat",
+						"pointer-events-none absolute top-(--editor-paper-clip-top) right-(--editor-paper-clip-right) aspect-160/700 w-(--editor-paper-clip-width) rotate-(--editor-paper-clip-rotate) bg-(image:--editor-paper-clip) bg-contain bg-no-repeat",
 						// Mirrored, angle included: scale applies before rotate, so the
 						// angle has to be flipped as well.
 						reverse &&

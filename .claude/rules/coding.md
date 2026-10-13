@@ -41,5 +41,6 @@ paths:
 
 - **TypeScript 型別定義**：純物件形狀（`{ key: value }` 結構，含 React props、API 資料結構）→ `interface`；其餘（union、intersection、utility types、mapped types、type alias）→ `type`。
 - **Tailwind class 條件合併**：一律用 `cn()`，禁止 template literal 或三元字串拼接 class。
+- **Tailwind class 寫法**：用標準寫法（`group-has-focus-visible:` 而不是 `group-has-[:focus-visible]:`），由 ESLint 的 `better-tailwindcss/enforce-canonical-classes` 檢查，`pnpm lint --fix` 可自動修正（ADR-0021）。
 - **顏色**：元件只用語意 token（`bg-background`、`text-muted-foreground`、`bg-primary`、`text-destructive`…），不直接寫 `slate-500` / `blue-600` 等色階。會隨菜單主題（`MenuTheme`）變動的顏色，在 `menu-themes.ts` 加基本色或在 `globals.css` 的 `[data-menu-theme]` 區塊由基本色推算；不隨主題變動的加在 `:root`。兩者都要在 `@theme inline` 註冊（ADR-0008）。
 - **註解**：專業、簡潔，不使用表情符號。
