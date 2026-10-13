@@ -10,7 +10,6 @@
 
 ## 下一步
 
-- **請使用者重啟 dev server**（R6）：`MenuItem.price` 改選填後，執行中的 dev server 仍用舊的 Prisma client，新增品項（createDish）在瀏覽器會失敗；同樣的寫入在資料庫副本上成功。重啟後在瀏覽器補測「+ Dish → Scratch → Next → 食譜 → Save」，通過後關閉 #68。
 - 合併後用 `curl` 確認 dev server 的 CSS 含 `--editor-menu-card`（R2）。
 - 瀏覽器實測會寫入資料庫時，先 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`；使用者改過的主題在資料庫裡，不要用 seed 覆蓋。
 - 使用者確認 #72 的調整後關閉 #72。
