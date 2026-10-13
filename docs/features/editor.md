@@ -31,6 +31,8 @@ stateDiagram-v2
     菜單卡 --> 匯入卡: + Dish（翻面）
     匯入卡 --> 菜單卡: Cancel（翻回）
     匯入卡 --> 新食譜卡: Next（Scratch）
+    匯入卡 --> 食材確認卡: Next（Text / Photo / URL）
+    食材確認卡 --> 新食譜卡: Next
     新食譜卡 --> 菜單卡: Save（建立食譜與品項）
     新食譜卡 --> 匯入卡: Cancel
     菜單卡 --> 食譜卡: ↗
@@ -49,7 +51,7 @@ flowchart LR
 
 - 目前的卡記在網址 `?edit=`，每次換卡以 `pushState` 加一筆紀錄；上一頁回到前一張卡，重新整理會回到同一張卡（[ADR-0017](../adr/0017-editor-cards-with-push-state.md)）。
 - 菜單卡的草稿與匯入卡填的菜名由 `EditorLayer` 保管，翻面、去食譜卡再回來都還在；關閉編輯器就丟棄。
-- 表單、Server Action 共用 `src/features/menu/schema.ts` 與 `src/features/recipe/schema.ts`；之後的 LLM 匯入（#52）也用同一份。
+- 表單、Server Action 共用 `src/features/menu/schema.ts` 與 `src/features/recipe/schema.ts`；[食譜匯入](recipe-import.md)的結果也通過同一份 schema。
 
 ## 規則 / 狀態
 
@@ -63,7 +65,7 @@ flowchart LR
 | 新增 | `+ Section` 新增空章節並直接編輯；`+ Dish` 翻面到匯入卡，尚未存檔的新章節不能加品項 |
 | 移除 | 滑過或用鍵盤移到該列時，左側與第一行對齊處出現 `−`；品項只移出菜單、食譜留在資料庫（[ADR-0019](../adr/0019-remove-from-menu-keeps-recipe.md)）。移除章節或用量、步驟的 group 時內容保留：併到上一組的最後，沒有上一組就併到下一組的最前面；只剩一組時只清掉名稱 |
 | 拖曳 | 沒有把手，按住移動幾個像素才算拖曳；品項可跨章節、章節整組移動、兩者不能互換；正在輸入的列不能拖；Esc 取消拖曳但不關卡（[ADR-0018](../adr/0018-dnd-kit-sortable.md)） |
-| 匯入卡 | 左上角 Import from 與右上角語言切換同一列；Scratch（預設）填菜名（必填）與描述；Text、Photo 標示 Coming soon、不能按 Next（#52） |
+| 匯入卡 | 左上角 Import from 與右上角語言切換同一列；Scratch（預設）填菜名（必填）與描述；Text、Photo、URL 交給 LLM 讀取，之後經食材確認卡到食譜卡，見[食譜匯入](recipe-import.md) |
 | 食譜卡 | 標題是食譜名；`Ingredients` 右側是份數；用量行四欄 Qty / Unit / Ingredient / Note，照輸入的大小寫顯示；步驟兩欄 Highlight（選填）/ Instruction；`References` 是網址清單，與 group 同一層。編輯中的列只顯示各欄位的底線 |
 | 空白列 | 用量行或步驟什麼都沒填就結束編輯時自動移除 |
 | Instruction 換行 | Enter 結束編輯，Shift+Enter 換行；食譜紙照樣換行 |

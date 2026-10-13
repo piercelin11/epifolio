@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-11
+updated: 2026-10-13
 ---
 
 # 願景
@@ -25,7 +25,7 @@ updated: 2026-10-11
 - 社群分享、公開發佈
 - 訂位、點餐、付款
 - 多人協作與帳號系統
-- 外部 API 整合、排程
+- 排程；LLM 以外的外部 API 整合（食譜匯入使用 Claude API，見 [資料來源](data-sources.md)）
 - 書本式翻頁（改以獨特的 UI 與動畫為特色，見 [ADR-0007](adr/0007-paper-stack-layout.md)）
 
 ## 設計取向

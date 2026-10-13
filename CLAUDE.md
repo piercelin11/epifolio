@@ -42,8 +42,8 @@
 
 ## 4. 目錄結構
 
-- `src/app/`：路由；`src/components/ui/`：shadcn 元件；`src/components/`：共用元件
-- `src/features/<feature>/`：功能模組（`data/` 讀資料庫、`actions/` 為 Server Actions）；`src/lib/`：共用函式庫（`db.ts` 為 Prisma 單例、`current-user.ts`、`i18n/` 雙語內容）
+- `src/app/`：路由（`api/recipe-import/` 為食譜匯入的 Route Handler）；`src/components/ui/`：shadcn 元件；`src/components/`：共用元件
+- `src/features/<feature>/`：功能模組（`data/` 讀資料庫、`actions/` 為 Server Actions；`recipe-import/server/` 呼叫 LLM 與抓網頁）；`src/lib/`：共用函式庫（`db.ts` 為 Prisma 單例、`current-user.ts`、`i18n/` 雙語內容）
 - `src/generated/prisma/`：Prisma 產出（gitignored）；`prisma/`：schema、migrations、`seed.ts` 與 `seed-data.json`
 - `public/`：靜態檔（`textures/` 紙張與卡紙材質；`stationery/` 長尾夾、迴紋針等文具；`ingredients/` 食材目錄照片；`uploads/` 上傳圖片，gitignored）
 - `docs/`：專案文件（MkDocs）；`.claude/`：Claude 規則與指令；`.github/`：CI 與 issue 模板；`scripts/`：工具腳本

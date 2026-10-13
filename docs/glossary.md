@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # 詞彙表
@@ -35,7 +35,10 @@ updated: 2026-10-12
 | 使用者   | `User`          | 菜單與食譜的擁有者。目前只有一個預設使用者，由 `getCurrentUserId()` 取得。           |
 | 編輯卡   | `EditorCard`    | 在書上打開、用來編輯的卡片：菜單編輯卡、匯入卡、食譜編輯卡；由 `EditorLayer` 管理，目前的卡記在網址 `?edit=`。 |
 | 菜單編輯卡 | `MenuCard`    | 編輯一本菜單書的書名、章節與品項的打孔卡片。                                   |
-| 匯入卡   | `ImportCard`    | 菜單編輯卡的背面，新增品項的起點：Scratch（手填），之後還有 Text、Photo。       |
+| 匯入卡   | `ImportCard`    | 菜單編輯卡的背面，新增品項的起點：Scratch（手填）、Text、Photo、URL（交給 LLM 讀取）。 |
+| 食譜匯入 | `recipe-import` | 由 LLM 把文字、照片、PDF 或網頁整理成品項與食譜草稿；只產生草稿，Save 才寫入。 |
+| 食材確認卡 | `IngredientReviewCard` | 匯入後決定每行用量對應哪個食材的卡片：Matched、Alias、New、Not linked。     |
+| 估計營養 | `nutritionEstimated` | 食材的營養是 LLM 估計、尚未確認的值。                                   |
 | 食譜編輯卡 | `RecipeCard`  | 編輯一份食譜的票券形卡片：名稱、份數、用量、步驟、參考連結。                   |
 | 草稿     | `draft`         | 編輯卡上尚未存檔的內容；格式由 zod schema 定義（`MenuBookDraft`、`RecipeDraft`），Save 時一次寫入。 |
 | 雙語文字 | `LocalizedText` | 一段可有中英兩種語言的文字 `{ en, zh }`；顯示時用 `localize()` 取值，缺的語言退回另一種。 |

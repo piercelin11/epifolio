@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # 架構
@@ -20,6 +20,7 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
 | 首頁版面 | 菜單書架（`MenuShelf`），每本書是一組紙張堆疊（`PaperStack`）；動畫用 `motion`，總覽滾輪用 `wheel-gestures` | [ADR-0007](adr/0007-paper-stack-layout.md) |
 | 配色     | 菜單主題（`MenuTheme`）TS 設定檔，以 CSS 變數套用到每本書 | [ADR-0008](adr/0008-menu-theme-colors.md) |
+| 食譜匯入 | Claude API（Haiku 5.5）經 Route Handler 產生草稿；網址由伺服器抓取 | [ADR-0022](adr/0022-llm-import-with-haiku.md)、[ADR-0023](adr/0023-url-import-extraction.md) |
 
 ```mermaid
 flowchart LR
@@ -35,6 +36,7 @@ flowchart LR
 
 - 首頁每次請求都讀資料庫（`<Suspense>` 內先 `connection()`），build 時不連資料庫；寫入後 Server Action 以 `refresh()` 重新整理畫面。
 - 編輯在書上的[編輯卡](features/editor.md)進行：卡片以 Server Action 讀取雙語草稿，Save 時把草稿交給同一份 zod schema 驗證後在一個 transaction 內寫入；目前的卡記在網址 `?edit=`（[ADR-0017](adr/0017-editor-cards-with-push-state.md)）。
+- [食譜匯入](features/recipe-import.md)是唯一的 Route Handler（`POST /api/recipe-import`）：要收大檔案，也要能中止 LLM 請求。它只回傳草稿，寫入仍走 `createDish`。外部服務見[資料來源](data-sources.md)。
 - 元件只依賴 `src/features/*/types.ts` 的呈現型別，不 import Prisma 型別。
 
 ## 核心概念與關係
@@ -77,10 +79,10 @@ erDiagram
 
 | 路徑                     | 內容                                   |
 | ------------------------ | -------------------------------------- |
-| `src/app/`               | 路由（App Router）                     |
+| `src/app/`               | 路由（App Router）；`api/recipe-import/` 為匯入的 Route Handler |
 | `src/components/ui/`     | shadcn 元件                            |
 | `src/components/`        | 專案共用元件                           |
-| `src/features/<feature>/` | 功能模組（components / hooks / lib / data / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf`、`editor` |
+| `src/features/<feature>/` | 功能模組（components / hooks / lib / data / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf`、`editor`、`recipe-import`（`server/` 為呼叫 LLM 與抓網頁的 server-only 程式） |
 | `src/features/<feature>/data/` | 讀資料庫的 server-only 函式，回傳呈現型別 |
 | `src/features/<feature>/actions/` | Server Actions（寫入） |
 | `public/textures/`       | 紙張、卡紙材質等鋪滿表面的圖片         |

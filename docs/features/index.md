@@ -8,6 +8,7 @@
 | [菜單書架](menu-shelf.md) | draft | 2026-10-13 |
 | [食材卡片](ingredient-card.md) | draft | 2026-10-12 |
 | [編輯卡](editor.md) | draft | 2026-10-13 |
+| [食譜匯入](recipe-import.md) | draft | 2026-10-13 |
 
 ## 功能頁模板
 

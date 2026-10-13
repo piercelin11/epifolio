@@ -28,7 +28,7 @@ paths:
 - `src/lib/db.ts` 檔頭有 `import "server-only"`，只能在 Server Component / Server Action import。
 - Prisma model 單數命名（`Recipe` 不是 `Recipes`），欄位 camelCase，名稱對齊 `docs/glossary.md`。
 - 修改 schema 後：`pnpm exec prisma migrate dev --name <name>`，再跑 `pnpm exec prisma generate`（Prisma 7 的 `migrate dev` 不會自動 generate，見 R6）。
-- **資料存取用 Server Actions**（不建 REST API），回傳可序列化的 plain object（`Date` 先轉字串）。
+- **資料存取用 Server Actions**（不建 REST API），回傳可序列化的 plain object（`Date` 先轉字串）。唯一例外是食譜匯入的 Route Handler `src/app/api/recipe-import/route.ts`（收大檔案、可中止 LLM 請求，ADR-0022），它只回傳草稿，不寫資料庫。
 - `cacheComponents` 啟用時，讀 DB 的元件需要 `<Suspense>` 包裹或 `"use cache"`，**不要用 `export const dynamic`**（與 `cacheComponents` 不相容）。寫之前先讀 `node_modules/next/dist/docs/01-app/01-getting-started/08-caching.md`。
 
 ## 圖片上傳（ADR-0002）
