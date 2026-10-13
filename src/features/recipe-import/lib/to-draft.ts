@@ -5,7 +5,7 @@ import type { RecipeDraft } from "@/features/recipe/schema";
 import { scalingConfig } from "@/features/recipe/scaling";
 import type { Localized, LocalizedText } from "@/lib/i18n/localized";
 
-import type { LlmOutput } from "../llm-output";
+import type { LlmLineIngredient, LlmOutput } from "../llm-output";
 
 // Turns the model's answer into the editor's drafts. The answer already has
 // the right shape; this cleans its values so the drafts pass the same zod
@@ -71,35 +71,66 @@ export function toImportedRecipe(
 ): ImportedRecipe {
 	if (!output.isRecipe) throw new Error("No recipe found.");
 
-	// New ingredients with a name; ones named alike are merged into the first.
-	const keyFor = new Map<string, string>();
-	const byName = new Map<string, NewIngredientDraft>();
-	for (const item of output.newIngredients) {
-		const name = localized(item.name);
-		if (isBlank(name) || keyFor.has(item.key)) continue;
-		const same = byName.get(nameKey(item.name));
+	// New ingredients by name; lines naming the same one share it.
+	const created = new Map<string, NewIngredientDraft>();
+	function newIngredient(
+		ingredient: Extract<LlmLineIngredient, { kind: "new" }> | null,
+		lineName: Bilingual
+	): string {
+		const source =
+			ingredient && !isBlank(localized(ingredient.name))
+				? ingredient.name
+				: lineName;
+		const id = nameKey(source);
+		const same = created.get(id);
+		const aliases = (ingredient?.aliases ?? [])
+			.map((alias) => alias.trim())
+			.filter(Boolean);
 		if (same) {
-			keyFor.set(item.key, same.key);
-			continue;
+			same.aliases = [...new Set([...same.aliases, ...aliases])];
+			return same.key;
 		}
 		const nutrition = {
-			calories: nutrient(item.calories),
-			protein: nutrient(item.protein),
-			carbs: nutrient(item.carbs),
-			fat: nutrient(item.fat),
+			calories: nutrient(ingredient?.calories ?? null),
+			protein: nutrient(ingredient?.protein ?? null),
+			carbs: nutrient(ingredient?.carbs ?? null),
+			fat: nutrient(ingredient?.fat ?? null),
 		};
-		const ingredient: NewIngredientDraft = {
-			key: item.key,
-			name,
-			aliases: [...new Set(item.aliases.map((a) => a.trim()).filter(Boolean))],
+		const key = `new-${created.size + 1}`;
+		created.set(id, {
+			key,
+			name: localized(source),
+			aliases: [...new Set(aliases)],
 			nutrition,
 			nutritionEstimated: Object.values(nutrition).some((v) => v !== null),
-		};
-		keyFor.set(item.key, item.key);
-		byName.set(nameKey(item.name), ingredient);
+		});
+		return key;
 	}
 
-	const usedKeys = new Set<string>();
+	/**
+	 * Where a line links. A catalog id the catalog lacks becomes a new
+	 * ingredient named after the line, so it shows up for review instead
+	 * of silently losing its ingredient.
+	 */
+	function linkTo(
+		line: LlmOutput["recipe"]["ingredientGroups"][number]["lines"][number]
+	) {
+		const { ingredient } = line;
+		switch (ingredient.kind) {
+			case "catalog":
+				return catalogIds.has(ingredient.id)
+					? { kind: "catalog" as const, ingredientId: ingredient.id }
+					: { kind: "new" as const, key: newIngredient(null, line.name) };
+			case "new":
+				return {
+					kind: "new" as const,
+					key: newIngredient(ingredient, line.name),
+				};
+			case "none":
+				return { kind: "none" as const };
+		}
+	}
+
 	const refs = new Set<string>();
 	const ingredientGroups = output.recipe.ingredientGroups.map((group) => ({
 		label: localized(group.label),
@@ -107,14 +138,7 @@ export function toImportedRecipe(
 			const name = localized(line.name);
 			if (isBlank(name)) return [];
 			const ref = line.ref.trim();
-			const newKey = line.ingredient ? keyFor.get(line.ingredient) : undefined;
-			const to =
-				line.ingredient && catalogIds.has(line.ingredient)
-					? { kind: "catalog" as const, ingredientId: line.ingredient }
-					: newKey
-						? { kind: "new" as const, key: newKey }
-						: { kind: "none" as const };
-			if (to.kind === "new") usedKeys.add(to.key);
+			const to = linkTo(line);
 			const unique = ref && !refs.has(ref);
 			if (unique) refs.add(ref);
 			return [
@@ -184,8 +208,6 @@ export function toImportedRecipe(
 				.filter(isWebAddress)
 				.map((url) => ({ url })),
 		},
-		newIngredients: [...byName.values()].filter((item) =>
-			usedKeys.has(item.key)
-		),
+		newIngredients: [...created.values()],
 	};
 }

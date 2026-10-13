@@ -24,15 +24,19 @@ Ingredient lines
 - quantity: a number, fraction, mixed number or range, e.g. "2", "1/2", "1 1/2", "80-100". Use "" when there is no amount.
 - unit: one of ${units.map((u) => `"${u}"`).join(", ")}, or "". Keep the source's unit when it is in the list (a pinch is "pinch"). For a unit not in the list, such as "1 onion", keep the number and use "".
 - name: the ingredient as the recipe words it, e.g. "Garlic, minced". note: preparation or remarks that are not part of the name, else empty.
+- Alternatives ("parsley or celery leaves", "芹菜葉或巴西里"): name the first one only, put "or <the other>" in note (in both languages), and choose the ingredient for the first one only. Never name an ingredient line or a new ingredient with "or", "/" or "或" joining two foods.
 - ref: a unique id per line, "L1", "L2", ...
 
 Steps cite lines
 - Write each step's text as runs. When a run names an ingredient from the ingredient list, make that run just the ingredient's words and set its line to that line's ref; all other runs have line null. The runs joined must read as the full sentence.
 
 Ingredient catalog
-- For every line, set ingredient to the id of the catalog ingredient it is, a new ingredient's key, or null when it is not a food ingredient (e.g. water for boiling, ice).
-- Match by meaning, not spelling: "minced garlic" and "golden garlic" are garlic. Treat items as different ingredients only when their price or nutrition clearly differ: garlic powder is not garlic; "chicken thigh" is not "chicken breast".
-- Only when no catalog ingredient fits, add a new ingredient with a key "N1", "N2", ... Give its plain name in both languages (no preparation words), any common other names as aliases, and your best estimate of calories (kcal), protein, carbs and fat (g) per 100 g of the raw ingredient; use null when you cannot estimate. Reuse one key for every line of the same new ingredient.
+- For every line, choose its ingredient:
+  - {"kind": "catalog", "id": ...} with the id of the catalog ingredient it is;
+  - {"kind": "new", ...} when no catalog ingredient fits;
+  - {"kind": "none"} only for things that are not food ingredients (e.g. water for boiling, ice).
+- Match by meaning, not spelling: "minced garlic" and "golden garlic" are garlic. Treat items as different ingredients only when their price or nutrition clearly differ: garlic powder is not garlic; "chicken thigh" is not "chicken breast"; whole peppercorns are not ground pepper.
+- For a new ingredient, give the plain name of the product as bought, in both languages, keeping the form the recipe uses (e.g. "Black peppercorns" / "黑胡椒粒", not just "Black pepper"); no preparation words. Add common other names as aliases, and your best estimate of calories (kcal), protein, carbs and fat (g) per 100 g of the raw ingredient; use null when you cannot estimate. Give the same name every time the same new ingredient appears.
 
 Dish and references
 - dish.name: a menu name for the dish. dish.description: two to four short phrases for a menu, naming key ingredients or techniques, in each language.
