@@ -11,3 +11,11 @@ export const editorMotion = {
 	/** The scrim over the book fades with the card. */
 	scrim: { duration: 0.3 },
 };
+
+/** Tuning for dragging rows on the editor cards. */
+export const editorDrag = {
+	/** How far the pointer must move before a press becomes a drag, in px. */
+	activationDistance: 6,
+	/** Opacity of the row being dragged. */
+	draggingOpacity: 0.6,
+};

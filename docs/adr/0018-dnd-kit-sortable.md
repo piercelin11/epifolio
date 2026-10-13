@@ -24,6 +24,8 @@ PLAN-006 的編輯卡要能拖曳排序：菜單卡的品項可在章節內與�
 
 - 新增兩個相依套件。`@dnd-kit/core` 最後一次發版是 2024-12；若之後不再維護，改用 `@dnd-kit/react` 時拖曳邏輯要改寫，資料與 Server Action 不受影響。
 - 拖曳中的位移由 dnd-kit 的 transform 處理，與卡片本身的 `motion` 動畫分開。
+- 在可捲動的卡片內，跟著游標走的是 `DragOverlay`（以 portal 放到 `body`，因為卡片的 `drop-shadow` 濾鏡會讓 fixed 定位改為相對卡片），原本那一列只留在排序位置當佔位。若讓原列跟著游標，跨章節後的位移會撐大捲動範圍，自動捲動停不下來。
+- 列的高度不一、會跨章節移動，droppable 用 `MeasuringStrategy.Always` 持續重新量測。
 
 ## 相關
 

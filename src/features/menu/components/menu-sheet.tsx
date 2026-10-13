@@ -44,14 +44,17 @@ export function MenuSheet({
 				</div>
 			</div>
 			<div className="flex flex-col gap-10 px-(--paper-padding) pt-20">
-				{group.sections.map((section) => (
-					<MenuSection
-						key={section.id}
-						section={section}
-						onSelectItem={onSelectItem}
-						onSelectIngredient={onSelectIngredient}
-					/>
-				))}
+				{group.sections
+					// A section left with no name and no dishes would only add a gap.
+					.filter((section) => section.label || section.items.length > 0)
+					.map((section) => (
+						<MenuSection
+							key={section.id}
+							section={section}
+							onSelectItem={onSelectItem}
+							onSelectIngredient={onSelectIngredient}
+						/>
+					))}
 			</div>
 		</div>
 	);
