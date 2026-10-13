@@ -7,6 +7,8 @@ source:
   - src/features/menu-theme/
   - src/features/menu/data/get-menu-books.ts
   - src/features/menu/actions/update-book-theme.ts
+  - src/features/menu/actions/delete-menu-book.ts
+  - src/features/menu/components/delete-book-button.tsx
   - src/app/globals.css
 adr: [0008, 0009, 0016]
 plan: PLAN-003
@@ -60,8 +62,9 @@ stateDiagram-v2
 | 動畫中 | 忽略點擊與滾輪 |
 | 減少動態效果 | 直接切換位置，不播放動畫 |
 | 視窗縮放 | 總覽時重新量測並排列 |
-| 編輯 | 閱讀模式下菜單紙右上角（主題按鈕左邊）的 Edit 按鈕打開[編輯卡](editor.md)；編輯卡開著時書架不可操作 |
-| 換主題 | 閱讀模式下菜單紙右上角（chef name 左邊）的調色盤按鈕開啟主題清單，列出 `menu-themes.ts` 的每一組（名稱與色塊）並勾選目前的；只有置中那本可操作，總覽不顯示。選了立即換色並存進資料庫，選單關閉；存檔失敗時換回原主題並顯示 toast |
+| 編輯 | 閱讀模式下菜單紙右上角的編輯按鈕打開[菜單編輯卡](editor.md)，食譜紙右上角的編輯按鈕打開該食譜的食譜編輯卡；編輯卡開著時書架不可操作 |
+| 換主題 | 閱讀模式下菜單紙右上角（編輯按鈕右邊）的調色盤按鈕開啟主題清單，列出 `menu-themes.ts` 的每一組（名稱與色塊）並勾選目前的；只有置中那本可操作，總覽不顯示。選了立即換色並存進資料庫，選單關閉；存檔失敗時換回原主題並顯示 toast |
+| 刪除 | 菜單紙右上角最右邊的垃圾桶：確認後刪除整本書（大類、章節、品項），食譜留在資料庫（[ADR-0019](../adr/0019-remove-from-menu-keeps-recipe.md)）；刪除後原位置換成下一本，失敗時顯示 toast |
 | 主題不存在 | 資料庫裡的主題 id 已不在 `menu-themes.ts` 時以第一組主題顯示，不改寫資料庫 |
 | 沒有書 | 資料庫沒有菜單（例如還沒跑 seed）時只顯示網站標題 |
 

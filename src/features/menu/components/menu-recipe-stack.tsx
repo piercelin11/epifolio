@@ -16,9 +16,10 @@ import { MenuSheet } from "./menu-sheet";
 interface MenuRecipeStackProps {
 	group: MenuGroup;
 	recipes: Recipe[];
-	chefName: string;
-	/** Controls shown beside the chef name on the menu sheet. */
+	/** Controls in the menu sheet's top-right corner. */
 	menuActions?: ReactNode;
+	/** Controls in the recipe sheet's top-right corner, for the recipe shown. */
+	recipeActions?: (recipeId: string) => ReactNode;
 	/** Set on a book that is shown but not open; see PaperStack. */
 	inactive?: ComponentProps<typeof PaperStack>["inactive"];
 	/** Sheet in front; owned by the caller so it survives remounting. */
@@ -50,8 +51,8 @@ interface MenuRecipeStackProps {
 export function MenuRecipeStack({
 	group,
 	recipes,
-	chefName,
 	menuActions,
+	recipeActions,
 	inactive,
 	front,
 	onFrontChange,
@@ -86,7 +87,6 @@ export function MenuRecipeStack({
 					<PaperSheet tone="paper">
 						<MenuSheet
 							group={group}
-							chefName={chefName}
 							actions={menuActions}
 							onSelectItem={(item) =>
 								swapTo("offset", () => onRecipeChange(item.recipeId))
@@ -105,6 +105,7 @@ export function MenuRecipeStack({
 						>
 							<RecipeSheet
 								recipe={recipe}
+								actions={recipe && recipeActions?.(recipe.id)}
 								progress={recipe && progress[recipe.id]}
 								onSelectIngredient={selectIngredient}
 								onProgressChange={(next) =>

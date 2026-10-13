@@ -6,7 +6,6 @@ import { getMenuBooks } from "@/features/menu/data/get-menu-books";
 import { MenuShelf } from "@/features/menu-shelf/components/menu-shelf";
 import { getRecipes } from "@/features/recipe/data/get-recipes";
 import { getCurrentUserId } from "@/lib/current-user";
-import { siteConfig } from "@/lib/site-config";
 
 // A component, not a shared element: React keeps per-element state while it
 // renders, so one element object reused across requests can carry it over.
@@ -38,7 +37,6 @@ async function Shelf() {
 			books={books}
 			recipes={recipes}
 			ingredients={ingredients}
-			chefName={siteConfig.chefName}
 			title={<Title />}
 		/>
 	);

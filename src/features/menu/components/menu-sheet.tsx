@@ -8,9 +8,7 @@ interface MenuSheetProps {
 	onSelectItem: (item: MenuItem) => void;
 	/** Called with the id of an ingredient named in an item description. */
 	onSelectIngredient?: (ingredientId: string) => void;
-	/** Shown in the top-right corner of the sheet. */
-	chefName: string;
-	/** Controls placed just left of the chef name, e.g. a theme picker. */
+	/** Controls in the top-right corner, e.g. a theme picker. */
 	actions?: ReactNode;
 }
 
@@ -19,7 +17,6 @@ export function MenuSheet({
 	group,
 	onSelectItem,
 	onSelectIngredient,
-	chefName,
 	actions,
 }: MenuSheetProps) {
 	return (
@@ -30,18 +27,12 @@ export function MenuSheet({
 				<h2 className="font-heading text-primary text-display mt-[-0.06em] ml-[-0.06em] font-bold uppercase [text-box:trim-both_cap_alphabetic]">
 					{group.label}.
 				</h2>
-				<div className="relative pt-(--paper-padding) pr-(--paper-padding)">
-					{/* Out of the flow, so the chef name stays where it is */}
-					{actions && (
-						<div className="absolute top-(--paper-padding) right-full mr-2 flex -translate-y-1/4 items-center gap-1">
-							{actions}
-						</div>
-					)}
-					{/* Trimmed to the cap height, so the top margin matches the right one */}
-					<p className="text-body text-primary uppercase [text-box:trim-both_cap_alphabetic]">
-						{chefName}
-					</p>
-				</div>
+				{actions && (
+					// Pulled up by the icons' inner space, so they line up with the margin.
+					<div className="text-primary -mt-1 -mr-1 flex items-center gap-1 pt-(--paper-padding) pr-(--paper-padding)">
+						{actions}
+					</div>
+				)}
 			</div>
 			<div className="flex flex-col gap-10 px-(--paper-padding) pt-20">
 				{group.sections

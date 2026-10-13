@@ -13,7 +13,6 @@ import { isUnit } from "../src/features/recipe/units";
 import { type Prisma, PrismaClient } from "../src/generated/prisma/client";
 import { defaultUserId } from "../src/lib/current-user";
 import type { LocalizedText } from "../src/lib/i18n/localized";
-import { siteConfig } from "../src/lib/site-config";
 
 interface SeedLine {
 	name: string;
@@ -52,6 +51,9 @@ function en(text: string | undefined): LocalizedText | undefined;
 function en(text: string | undefined): LocalizedText | undefined {
 	return text === undefined ? undefined : { en: text };
 }
+
+/** Name of the one user until accounts exist. */
+const defaultUserName = "Pierce Lin";
 
 const byOrder = (a: { order: number }, b: { order: number }) =>
 	a.order - b.order;
@@ -234,7 +236,7 @@ async function main() {
 		await tx.user.deleteMany();
 
 		await tx.user.create({
-			data: { id: defaultUserId, name: siteConfig.chefName },
+			data: { id: defaultUserId, name: defaultUserName },
 		});
 		for (const ingredient of seedData.ingredients) {
 			await tx.ingredient.create({ data: ingredientData(ingredient) });

@@ -6,6 +6,8 @@ import type { Recipe, RecipeIngredient, RecipeProgress } from "../types";
 
 interface RecipeSheetProps {
 	recipe?: Recipe;
+	/** Controls in the top-right corner, e.g. an edit button. */
+	actions?: ReactNode;
 	/** Servings and ready ingredients; owned by the caller. */
 	progress?: RecipeProgress;
 	onProgressChange?: (progress: RecipeProgress) => void;
@@ -138,6 +140,7 @@ function IngredientLine({
 /** A recipe laid out for the recipe sheet of the stack. */
 export function RecipeSheet({
 	recipe,
+	actions,
 	progress = { checked: [] },
 	onProgressChange,
 	onSelectIngredient,
@@ -164,9 +167,12 @@ export function RecipeSheet({
 	return (
 		// The right padding clears the punched holes.
 		<article className="flex flex-col gap-8 pt-(--paper-padding) pr-[calc(var(--paper-hole-inset)+var(--paper-hole-size)/2+var(--paper-padding))] pb-24 pl-(--paper-padding)">
-			<h2 className="font-heading text-headline font-bold uppercase">
-				{recipe.name}
-			</h2>
+			<div className="flex items-start justify-between gap-4">
+				<h2 className="font-heading text-headline font-bold uppercase">
+					{recipe.name}
+				</h2>
+				{actions && <div className="flex shrink-0 gap-1">{actions}</div>}
+			</div>
 
 			<section className="flex flex-col gap-6">
 				<RecipeSectionHeader title="Ingredients">
@@ -212,7 +218,8 @@ export function RecipeSheet({
 									<span className="font-heading font-bold">
 										{firstStep[g] + i}.
 									</span>
-									<p>
+									{/* Keeps the line breaks typed with Shift+Enter */}
+									<p className="whitespace-pre-line">
 										{step.title && (
 											<>
 												<strong className="font-semibold">

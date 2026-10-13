@@ -12,10 +12,12 @@ import { toast } from "sonner";
 import { IngredientCardLayer } from "@/features/ingredient/components/ingredient-card-layer";
 import { useIngredientCard } from "@/features/ingredient/hooks/use-ingredient-card";
 import type { Ingredient } from "@/features/ingredient/types";
+import { deleteMenuBook } from "@/features/menu/actions/delete-menu-book";
 import { updateBookTheme } from "@/features/menu/actions/update-book-theme";
+import { DeleteBookButton } from "@/features/menu/components/delete-book-button";
 import { MenuRecipeStack } from "@/features/menu/components/menu-recipe-stack";
 import type { MenuBook } from "@/features/menu/types";
-import { EditBookButton } from "@/features/editor/components/edit-book-button";
+import { EditButton } from "@/features/editor/components/edit-button";
 import { EditorLayer } from "@/features/editor/components/editor-layer";
 import { useEditorView } from "@/features/editor/hooks/use-editor-view";
 import { MenuThemePicker } from "@/features/menu-theme/components/menu-theme-picker";
@@ -32,7 +34,6 @@ interface MenuShelfProps {
 	books: MenuBook[];
 	recipes: Recipe[];
 	ingredients: Ingredient[];
-	chefName: string;
 	/** Site title, at the left of the header band. */
 	title: ReactNode;
 }
@@ -52,7 +53,6 @@ export function MenuShelf({
 	books,
 	recipes,
 	ingredients,
-	chefName,
 	title,
 }: MenuShelfProps) {
 	const shelf = useMenuShelf(books.length);
@@ -143,11 +143,11 @@ export function MenuShelf({
 						<MenuRecipeStack
 							group={book.group}
 							recipes={recipes}
-							chefName={chefName}
 							menuActions={
 								reading && (
 									<>
-										<EditBookButton
+										<EditButton
+											label="Edit menu"
 											onClick={() => {
 												card.close();
 												editor.go({ card: "menu", bookId: book.id });
@@ -157,7 +157,29 @@ export function MenuShelf({
 											themeId={themes[book.id] ?? book.themeId}
 											onChange={(themeId) => changeTheme(book.id, themeId)}
 										/>
+										<DeleteBookButton
+											label={book.group.label}
+											onDelete={async () => {
+												card.close();
+												const result = await deleteMenuBook({
+													bookId: book.id,
+												});
+												if (!result.ok) toast.error(result.error);
+												return result.ok;
+											}}
+										/>
 									</>
+								)
+							}
+							recipeActions={(recipeId) =>
+								reading && (
+									<EditButton
+										label="Edit recipe"
+										onClick={() => {
+											card.close();
+											editor.go({ card: "recipe", recipeId });
+										}}
+									/>
 								)
 							}
 							front={state?.front ?? "base"}
