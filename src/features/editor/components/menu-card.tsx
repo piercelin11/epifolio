@@ -34,6 +34,7 @@ import {
 	type MenuItemModel,
 	type MenuModel,
 	moveItem,
+	removeSection,
 	type SectionModel,
 } from "../menu-model";
 import { newKey } from "../keys";
@@ -142,14 +143,14 @@ function ItemRow({
 					}
 					placeholder="Dish name"
 					onEditingChange={(editing) => onEditing(item.key, editing)}
-					className="w-auto uppercase"
+					className="w-auto font-medium uppercase"
 				/>
 				{recipeId && (
 					<button
 						type="button"
 						aria-label="Edit recipe"
 						onClick={() => onOpenRecipe(recipeId)}
-						className="cursor-pointer opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
+						className="cursor-pointer opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100"
 					>
 						<ArrowUpRight className="size-[1.1em]" strokeWidth={1.5} />
 					</button>
@@ -402,7 +403,7 @@ export function MenuCard({
 									})
 								}
 								placeholder="Menu name"
-								className="text-title font-bold uppercase"
+								className="text-subheading font-bold uppercase"
 							/>
 						) : (
 							<span />
@@ -455,12 +456,7 @@ export function MenuCard({
 										key={section.key}
 										section={section}
 										onChange={(next) => updateSection(s, next)}
-										onRemove={() =>
-											onChange({
-												...model,
-												sections: model.sections.filter((_, i) => i !== s),
-											})
-										}
+										onRemove={() => onChange(removeSection(model, s))}
 										onAddDish={() => section.id && onAddDish(section.id)}
 										{...rowProps}
 									>

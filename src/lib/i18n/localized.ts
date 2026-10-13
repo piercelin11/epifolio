@@ -50,11 +50,15 @@ function trimLocalizedText(text: LocalizedText): LocalizedText {
 }
 
 /** Text written in at least one locale; blank locales are dropped. */
-export const requiredLocalizedTextSchema = localizedTextSchema
-	.transform(trimLocalizedText)
-	.refine((text) => Object.keys(text).length > 0, {
-		message: "Enter text in at least one language.",
-	});
+/** Text filled in for at least one locale; `message` names what is missing. */
+export const requiredLocalizedText = (
+	message = "Enter text in at least one language."
+) =>
+	localizedTextSchema
+		.transform(trimLocalizedText)
+		.refine((text) => Object.keys(text).length > 0, { message });
+
+export const requiredLocalizedTextSchema = requiredLocalizedText();
 
 /** Text that may be blank in every locale, in which case it becomes null. */
 export const optionalLocalizedTextSchema = localizedTextSchema

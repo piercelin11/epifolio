@@ -57,3 +57,26 @@ export function moveItem(
 	sections[to] = { ...sections[to], items };
 	return { ...model, sections };
 }
+
+/**
+ * Removes section `index`, keeping its items: they go to the end of the
+ * section above, else the start of the one below. The only section just
+ * loses its name.
+ */
+export function removeSection(model: MenuModel, index: number): MenuModel {
+	const removed = model.sections[index];
+	if (!removed) return model;
+	if (model.sections.length === 1) {
+		return { ...model, sections: [{ ...removed, label: {} }] };
+	}
+	const sections = model.sections.map((section, i) => {
+		if (i === index - 1) {
+			return { ...section, items: [...section.items, ...removed.items] };
+		}
+		if (index === 0 && i === 1) {
+			return { ...section, items: [...removed.items, ...section.items] };
+		}
+		return section;
+	});
+	return { ...model, sections: sections.filter((_, i) => i !== index) };
+}

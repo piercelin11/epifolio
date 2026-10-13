@@ -3,7 +3,7 @@ import { type Locale, localize } from "@/lib/i18n/localized";
 
 import type { MenuModel } from "../menu-model";
 import { CardButton, EditorCardLayout } from "./editor-card";
-import { ImportForm } from "./import-card";
+import { ImportForm, ImportHeading } from "./import-card";
 
 // Still pictures of each face, shown mirrored through the other face of
 // the card (EditorCard's ghost). They take no input.
@@ -23,7 +23,7 @@ export function MenuGhost({
 		<EditorCardLayout
 			variant="menu"
 			header={
-				<p className="text-title font-bold uppercase">
+				<p className="text-subheading font-bold uppercase">
 					{model && text(model.label)}
 				</p>
 			}
@@ -43,7 +43,7 @@ export function MenuGhost({
 						{section.items.map((item) => (
 							<p
 								key={item.key}
-								className="border-editor-card-foreground ml-8 border-b py-1.5"
+								className="border-editor-card-foreground ml-8 border-b py-1.5 font-medium"
 							>
 								{text(item.name)}
 							</p>
@@ -65,7 +65,7 @@ export function ImportGhost({
 	return (
 		<EditorCardLayout
 			variant="menu"
-			header={<span />}
+			header={<ImportHeading />}
 			footer={
 				<div className="flex gap-3">
 					<CardButton variant="primary">Next</CardButton>

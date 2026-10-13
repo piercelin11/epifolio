@@ -65,3 +65,21 @@ export function groupBlock<E>(rows: OutlineRow<E>[], key: string) {
 	while (end < rows.length && rows[end].kind === "entry") end++;
 	return { start, end };
 }
+
+/**
+ * Removes the heading `key`, keeping its entries: they join the group
+ * above, else the start of the group below. The only heading just loses
+ * its label.
+ */
+export function removeGroup<E>(
+	rows: OutlineRow<E>[],
+	key: string
+): OutlineRow<E>[] {
+	const { start, end } = groupBlock(rows, key);
+	const heading = rows[start];
+	if (heading?.kind !== "group") return rows;
+	if (start > 0) return [...rows.slice(0, start), ...rows.slice(end)];
+	const next = rows[end];
+	if (!next) return [{ ...heading, label: {} }, ...rows.slice(1)];
+	return [next, ...rows.slice(1, end), ...rows.slice(end + 1)];
+}

@@ -79,6 +79,18 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	const [dish, setDish] = useState<DishDraft>(emptyDish);
 	const menuModel = menu && menu.bookId === bookId ? menu.model : null;
 
+	// The drafts are dropped once the editor has closed, not when closing
+	// starts: the view only changes after the history entry is popped, and
+	// until then the card would show its loading state.
+	const [wasOpen, setWasOpen] = useState(Boolean(open));
+	if (wasOpen !== Boolean(open)) {
+		setWasOpen(Boolean(open));
+		if (!open) {
+			setMenu(undefined);
+			setDish(emptyDish);
+		}
+	}
+
 	useEffect(() => {
 		if (!bookId || menu?.bookId === bookId) return;
 		let current = true;
@@ -92,10 +104,8 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		};
 	}, [bookId, menu?.bookId]);
 
-	/** Leaves the editor and forgets the draft. */
+	/** Leaves the editor; the drafts go once it has closed. */
 	function close() {
-		setMenu(undefined);
-		setDish(emptyDish);
 		editor.close();
 	}
 

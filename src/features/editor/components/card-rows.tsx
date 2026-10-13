@@ -48,7 +48,9 @@ export function RemoveButton({
 			type="button"
 			aria-label={label}
 			onClick={onClick}
-			className="absolute top-1/2 -left-5 grid -translate-y-1/2 cursor-pointer place-items-center opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
+			// Centred on the row's first line, not the whole row (rows have py-1.5).
+			// Shown for keyboard focus only: after a drag the row keeps focus.
+			className="absolute top-[calc(0.375rem+0.5lh)] -left-5 grid -translate-y-1/2 cursor-pointer place-items-center opacity-0 group-hover:opacity-100 group-has-[:focus-visible]:opacity-100"
 		>
 			<SquareIcon sign="minus" />
 		</button>

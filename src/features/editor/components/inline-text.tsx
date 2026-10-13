@@ -73,7 +73,12 @@ export function InlineText({
 			onChange={(event) => onChange(event.target.value)}
 			onBlur={() => setEditing(false)}
 			onKeyDown={onKeyDown}
-			className={cn(text, "placeholder:opacity-50 focus:outline-none")}
+			// Sized to its text, so a field narrower than the text does not
+			// scroll its first letters out of view.
+			className={cn(
+				text,
+				"field-sizing-content placeholder:opacity-50 focus:outline-none"
+			)}
 		/>
 	) : (
 		<button

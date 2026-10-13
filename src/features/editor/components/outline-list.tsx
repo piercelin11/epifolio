@@ -29,6 +29,7 @@ import {
 import { createPortal } from "react-dom";
 
 import type { Locale, LocalizedText } from "@/lib/i18n/localized";
+import { cn } from "@/lib/utils";
 
 import { editorDrag } from "../editor-motion";
 import { newKey } from "../keys";
@@ -37,6 +38,7 @@ import {
 	type OutlineEntry,
 	type OutlineGroup,
 	type OutlineRow,
+	removeGroup,
 } from "../outline";
 import { AddRow, RemoveButton, rowListeners, sortableStyle } from "./card-rows";
 import { InlineText } from "./inline-text";
@@ -46,7 +48,10 @@ export interface EntryEditor<E> {
 	update: (entry: OutlineEntry<E>) => void;
 	/** For the first field: Shift+Tab there turns the entry into a heading. */
 	onFirstFieldKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
-	/** For every field: Enter finishes, Esc restores the entry. */
+	/**
+	 * For every field: Enter finishes (Shift+Enter is a new line in a text
+	 * area), Esc restores the entry.
+	 */
 	onFieldKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
 }
 
@@ -57,6 +62,8 @@ interface OutlineListProps<E> {
 	/** "Ingredient" or "Step", for the add buttons. */
 	entryLabel: string;
 	newEntry: () => E;
+	/** An entry with nothing filled in; it is dropped when editing ends. */
+	isEmptyEntry: (entry: E) => boolean;
 	/** Heading text for an entry turned into a heading. */
 	entryToHeading: (entry: E) => LocalizedText;
 	/** Entry fields for a heading turned into an entry. */
@@ -128,6 +135,7 @@ export function OutlineList<E>({
 	locale,
 	entryLabel,
 	newEntry,
+	isEmptyEntry,
 	entryToHeading,
 	headingToEntry,
 	renderEntry,
@@ -206,12 +214,17 @@ export function OutlineList<E>({
 	}
 
 	function remove(row: OutlineRow<E>) {
-		if (row.kind === "entry") {
-			onChange(rows.filter((r) => r.key !== row.key));
-			return;
+		if (row.kind === "entry") onChange(rows.filter((r) => r.key !== row.key));
+		else onChange(removeGroup(rows, row.key));
+	}
+
+	/** Ends editing; an entry left empty is dropped. */
+	function finishEditing() {
+		const entry = rows.find((r) => r.key === editingKey);
+		setEditingKey(null);
+		if (entry?.kind === "entry" && isEmptyEntry(entry)) {
+			onChange(rows.filter((r) => r.key !== entry.key));
 		}
-		const { start, end } = groupBlock(rows, row.key);
-		onChange([...rows.slice(0, start), ...rows.slice(end)]);
 	}
 
 	function onDragEnd({ active, over }: DragEndEvent) {
@@ -262,13 +275,18 @@ export function OutlineList<E>({
 			onFieldKeyDown: (event) => {
 				if (
 					event.key === "Enter" &&
-					!(event.target instanceof HTMLTextAreaElement)
+					!(event.shiftKey && event.target instanceof HTMLTextAreaElement)
 				) {
 					event.preventDefault();
-					setEditingKey(null);
+					finishEditing();
 				} else if (event.key === "Escape") {
 					event.preventDefault();
-					if (snapshot?.key === entry.key) replaceRow(entry.key, snapshot);
+					if (snapshot?.key === entry.key) {
+						// A new entry restored to empty is dropped like any other.
+						if (isEmptyEntry(snapshot)) {
+							onChange(rows.filter((r) => r.key !== entry.key));
+						} else replaceRow(entry.key, snapshot);
+					}
 					setEditingKey(null);
 				}
 			},
@@ -277,11 +295,11 @@ export function OutlineList<E>({
 
 	/** Leaving the row's fields for somewhere else ends editing. */
 	const onRowBlur = (event: FocusEvent<HTMLElement>) => {
-		if (!event.currentTarget.contains(event.relatedTarget)) setEditingKey(null);
+		if (!event.currentTarget.contains(event.relatedTarget)) finishEditing();
 	};
 
 	return (
-		<div className="text-caption pl-6 uppercase">
+		<div className="text-body pl-6">
 			<DndContext
 				sensors={sensors}
 				collisionDetection={collision}
@@ -365,7 +383,11 @@ export function OutlineList<E>({
 									id={row.key}
 									kind="entry"
 									disabled={editing}
-									className="group border-editor-card-foreground relative ml-8 border-b py-1.5 outline-none focus-visible:outline-2"
+									// While editing, the fields' own underlines replace the row's.
+									className={cn(
+										"group border-editor-card-foreground relative ml-8 border-b py-1.5 outline-none focus-visible:outline-2",
+										editing && "border-transparent"
+									)}
 								>
 									<RemoveButton
 										label={`Remove ${entryLabel.toLowerCase()}`}
@@ -385,7 +407,7 @@ export function OutlineList<E>({
 													entryToGroup(row);
 												}
 											}}
-											className="w-full cursor-text text-left uppercase"
+											className="w-full cursor-text text-left"
 										>
 											{renderEntry(row)}
 										</button>
@@ -400,7 +422,12 @@ export function OutlineList<E>({
 					createPortal(
 						<DragOverlay dropAnimation={null}>
 							{active && (
-								<div className="bg-editor-recipe-card text-editor-card-foreground text-caption cursor-grabbing px-3 py-1.5 uppercase shadow-lg">
+								<div
+									className={cn(
+										"bg-editor-recipe-card text-editor-card-foreground text-body cursor-grabbing px-3 py-1.5 shadow-lg",
+										active.kind === "group" && "font-bold uppercase"
+									)}
+								>
 									{rowText(active)}
 								</div>
 							)}

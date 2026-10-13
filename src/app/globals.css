@@ -255,27 +255,28 @@
 
 /* Editor cards (EditorCard): same card stock as the ingredient card */
 :root {
-	--editor-menu-card-width: 36rem;
-	--editor-menu-card-height: min(28rem, 100dvh - 4rem);
-	--editor-recipe-card-width: 40rem;
-	--editor-recipe-card-height: min(56rem, 100dvh - 4rem);
+	--editor-menu-card-width: 42rem;
+	--editor-menu-card-height: min(30rem, 100dvh - 4rem);
+	--editor-recipe-card-width: 50rem;
+	--editor-recipe-card-height: min(60rem, 100dvh - 3rem);
 	--editor-card-padding: 1.75rem;
 	/* Punched holes along the top of the menu card */
-	--editor-hole-size: 1.75rem;
-	--editor-hole-pitch: 2.75rem;
-	--editor-hole-top: 1.25rem;
+	--editor-hole-size: 1.25rem;
+	--editor-hole-pitch: 2.25rem;
+	--editor-hole-top: 1.125rem;
 	/* Radius of the ticket card's cut-out corners */
 	--editor-ticket-notch: 3rem;
 	/* The other face of a card, mirrored, showing faintly through the stock */
-	--editor-ghost-opacity: 0.12;
+	--editor-ghost-opacity: 0.07;
 	/* Paper clip over the menu card's top-right corner */
 	--editor-paper-clip: url("/stationery/paper-clip.webp");
-	--editor-paper-clip-width: 1.5rem;
-	--editor-paper-clip-top: -1.25rem;
-	--editor-paper-clip-right: 1.5rem;
-	--editor-paper-clip-rotate: -32deg;
-	/* Scroll bar inside a card */
+	--editor-paper-clip-width: 1.875rem;
+	--editor-paper-clip-top: -1.5rem;
+	--editor-paper-clip-right: 0.75rem;
+	--editor-paper-clip-rotate: -42deg;
+	/* Scroll bar inside a card, and its distance from the card's right edge */
 	--editor-scrollbar-width: 0.375rem;
+	--editor-scrollbar-inset: 1.5rem;
 }
 
 [data-editor-card] {

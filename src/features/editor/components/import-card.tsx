@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useId, useState } from "react";
 
 import type { DishDraft } from "@/features/menu/schema";
 import { defaultLocale, type Locale } from "@/lib/i18n/localized";
@@ -48,6 +48,15 @@ function Field({
 	);
 }
 
+/** The import card's heading, level with the language toggle. */
+export function ImportHeading({ id }: { id?: string }) {
+	return (
+		<p id={id} className="text-subheading font-bold uppercase">
+			Import from
+		</p>
+	);
+}
+
 /** The import card's body: pick a source, then fill it in. */
 export function ImportForm({
 	dish,
@@ -55,17 +64,22 @@ export function ImportForm({
 	locale,
 	source,
 	onSourceChange,
+	labelledBy,
 }: {
 	dish: DishDraft;
 	onChange: (dish: DishDraft) => void;
 	locale: Locale;
 	source: Source;
 	onSourceChange: (source: Source) => void;
+	/** Id of the heading that names the source choice. */
+	labelledBy?: string;
 }) {
+	// Unique per form: the mirrored copy on the menu card's back has its own
+	// radios, and one shared name would make them a single group.
+	const name = useId();
 	return (
 		<div className="text-body flex flex-col gap-4">
-			<fieldset className="flex flex-col gap-2">
-				<legend className="mb-2 font-bold uppercase">Import from</legend>
+			<fieldset aria-labelledby={labelledBy}>
 				<div className="flex gap-6">
 					{sources.map(({ id, label }) => (
 						<label
@@ -74,7 +88,7 @@ export function ImportForm({
 						>
 							<input
 								type="radio"
-								name="import-source"
+								name={name}
 								value={id}
 								checked={source === id}
 								onChange={() => onSourceChange(id)}
@@ -134,12 +148,14 @@ export function ImportCard({
 	const [locale, setLocale] = useState<Locale>(defaultLocale);
 	const [source, setSource] = useState<Source>("scratch");
 	const ready = sources.find((s) => s.id === source)?.ready;
+	const headingId = useId();
 	return (
 		<EditorCard variant="menu" ghost={ghost} reverse>
 			<EditorCardLayout
 				variant="menu"
 				header={
-					<div className="flex justify-end">
+					<div className="flex items-baseline justify-between gap-6">
+						<ImportHeading id={headingId} />
 						<LanguageToggle value={locale} onChange={setLocale} />
 					</div>
 				}
@@ -161,6 +177,7 @@ export function ImportCard({
 						locale={locale}
 						source={source}
 						onSourceChange={setSource}
+						labelledBy={headingId}
 					/>
 				</div>
 			</EditorCardLayout>

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
 	optionalLocalizedTextSchema,
+	requiredLocalizedText,
 	requiredLocalizedTextSchema,
 } from "@/lib/i18n/localized";
 
@@ -35,7 +36,7 @@ export const ingredientLineDraftSchema = z.object({
 		.optional()
 		.transform((unit) => unit || null),
 	/** The recipe's wording, e.g. "Garlic, minced". */
-	name: requiredLocalizedTextSchema,
+	name: requiredLocalizedText("Each ingredient line needs an ingredient."),
 	note: optionalLocalizedTextSchema,
 });
 
@@ -49,7 +50,7 @@ export const stepDraftSchema = z.object({
 	id: z.string().min(1).optional(),
 	/** Optional highlight, e.g. "Emulsify". */
 	title: optionalLocalizedTextSchema,
-	text: requiredLocalizedTextSchema,
+	text: requiredLocalizedText("Each step needs an instruction."),
 });
 
 export const stepGroupDraftSchema = z.object({

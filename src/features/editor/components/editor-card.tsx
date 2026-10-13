@@ -95,7 +95,8 @@ export function EditorCardLayout({
 			)}
 		>
 			{header}
-			<div className="editor-scrollbar -mr-4 min-h-0 flex-1 overflow-y-auto pr-4">
+			{/* Reaches into the right padding, up to where the scroll bar sits */}
+			<div className="editor-scrollbar mr-[calc(var(--editor-scrollbar-inset)-var(--editor-card-padding))] min-h-0 flex-1 overflow-y-auto pr-4">
 				{children}
 			</div>
 			{footer}

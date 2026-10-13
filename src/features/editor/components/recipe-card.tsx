@@ -7,7 +7,12 @@ import { loadRecipeDraft } from "@/features/recipe/actions/recipe-editor";
 import type { RecipeDraft } from "@/features/recipe/schema";
 import { scalingConfig } from "@/features/recipe/scaling";
 import { units } from "@/features/recipe/units";
-import { defaultLocale, type Locale, localize } from "@/lib/i18n/localized";
+import {
+	defaultLocale,
+	type Locale,
+	type LocalizedText,
+	localize,
+} from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 
 import { newKey } from "../keys";
@@ -39,7 +44,7 @@ interface RecipeCardProps {
 }
 
 const fieldClass =
-	"border-editor-card-foreground placeholder:text-editor-card-foreground/50 min-w-0 border-b bg-transparent py-0.5 uppercase focus:outline-none";
+	"border-editor-card-foreground placeholder:text-editor-card-foreground/50 min-w-0 border-b bg-transparent py-0.5 focus:outline-none";
 
 function SectionTitle({
 	title,
@@ -51,7 +56,8 @@ function SectionTitle({
 	return (
 		<div className="border-editor-card-foreground mt-6 mb-2 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-y-2 py-1.5 first:mt-0">
 			<span />
-			<h3 className="text-title font-semibold uppercase">{title}</h3>
+			{/* Sized like the section titles on the recipe sheet */}
+			<h3 className="text-subheading font-bold uppercase">{title}</h3>
 			<div className="justify-self-end">{children}</div>
 		</div>
 	);
@@ -98,6 +104,10 @@ function ServingsField({
 
 const text = (value: Parameters<typeof localize<string>>[0], locale: Locale) =>
 	localize(value, locale) ?? "";
+
+/** Whether any language has more than white space. */
+const hasText = (value: LocalizedText | null | undefined) =>
+	Object.values(value ?? {}).some((v) => v?.trim());
 
 /** Edits one recipe: name, servings, ingredients, steps and references. */
 export function RecipeCard({
@@ -187,6 +197,12 @@ export function RecipeCard({
 							locale={locale}
 							entryLabel="Ingredient"
 							newEntry={emptyLine}
+							isEmptyEntry={(line) =>
+								!line.quantity.trim() &&
+								!line.unit &&
+								!hasText(line.name) &&
+								!hasText(line.note)
+							}
 							entryToHeading={(line) => line.name}
 							headingToEntry={(label) => ({ ...emptyLine(), name: label })}
 							rowText={(row) =>
@@ -275,10 +291,13 @@ export function RecipeCard({
 							locale={locale}
 							entryLabel="Step"
 							newEntry={emptyStep}
+							isEmptyEntry={(step) =>
+								!hasText(step.title) && !hasText(step.text)
+							}
 							entryToHeading={(step) =>
 								Object.keys(step.title ?? {}).length ? step.title! : step.text
 							}
-							headingToEntry={(label) => ({ ...emptyStep(), text: label })}
+							headingToEntry={(label) => ({ ...emptyStep(), title: label })}
 							rowText={(row) =>
 								row.kind === "group"
 									? text(row.label, locale)
@@ -286,7 +305,7 @@ export function RecipeCard({
 							}
 							renderEntry={(step) => <StepText step={step} locale={locale} />}
 							renderEditor={(step, editor) => (
-								<div className="flex items-start gap-2 normal-case">
+								<div className="flex items-start gap-2">
 									<input
 										autoFocus
 										value={step.title?.[locale] ?? ""}
@@ -302,7 +321,7 @@ export function RecipeCard({
 										}}
 										placeholder="Highlight (optional)"
 										aria-label="Highlight"
-										className={cn(fieldClass, "w-1/3 normal-case")}
+										className={cn(fieldClass, "w-1/3")}
 									/>
 									<textarea
 										value={step.text[locale] ?? ""}
@@ -318,7 +337,7 @@ export function RecipeCard({
 										rows={1}
 										className={cn(
 											fieldClass,
-											"field-sizing-content flex-1 resize-none normal-case"
+											"field-sizing-content flex-1 resize-none"
 										)}
 									/>
 								</div>
@@ -326,11 +345,12 @@ export function RecipeCard({
 						/>
 
 						<SectionTitle title="References" />
-						<div className="text-caption pl-6">
+						{/* Level with the group headings: links have no groups */}
+						<div className="text-body pl-6">
 							{model.references.map((link, i) => (
 								<div
 									key={link.key}
-									className="group border-editor-card-foreground relative ml-8 border-b py-1.5"
+									className="group border-editor-card-foreground relative border-b py-1.5"
 								>
 									<RemoveButton
 										label="Remove reference"
@@ -361,7 +381,6 @@ export function RecipeCard({
 									setAutoEditUrl(key);
 									set({ references: [...model.references, { key, url: "" }] });
 								}}
-								className="ml-8 w-[calc(100%-2rem)]"
 							/>
 						</div>
 					</div>
@@ -392,7 +411,7 @@ function StepText({
 	const body = text(step.text, locale);
 	if (!title && !body) return <span className="opacity-50">Empty step</span>;
 	return (
-		<span className="normal-case">
+		<span className="whitespace-pre-line">
 			{title && <strong className="font-semibold">{title}. </strong>}
 			{body}
 		</span>
