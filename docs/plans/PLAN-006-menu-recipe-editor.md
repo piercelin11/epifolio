@@ -1,7 +1,7 @@
 ---
-status: draft
+status: in-progress
 branch: plan-006-menu-recipe-editor
-issue:
+issue: 61
 created: 2026-10-13
 ---
 
@@ -147,15 +147,15 @@ flowchart LR
 
 ## 任務拆解
 
-1. ADR：編輯器用狀態機 + `pushState`（不用攔截路由）；拖曳套件 dnd-kit；品項「移出菜單」不刪食譜；`public/stationery/`
-2. 素材與資料：`public/stationery/`（迴紋針、長尾夾）；`MenuItem.price` 選填（migration）與菜單不顯示空價格
-3. 共用 zod schema（菜單、食譜、Scratch、數量解析、雙語）與 Server Actions（讀取雙語資料、`saveMenuBook`、`saveRecipe`、`createDish`）
-4. 編輯器外殼：Edit 按鈕、遮罩、卡片元件（打孔卡、票券卡、迴紋針、捲軸）、狀態機與網址同步、開關動畫、`EN | ZH`
-5. 菜單編輯卡：inline 編輯、新增、移出、拖曳排序、`↗`
-6. 匯入卡與翻面：Scratch 表單、停用的 Text / Photo、背面透視
-7. 食譜編輯卡：各區塊、四欄用量、Tab / Shift+Tab、拖曳、存檔
-8. 卡片之間的轉場與減少動態效果
-9. 文件：功能頁（新增「編輯卡」）、glossary、architecture、STATUS
+1. ADR：編輯器用狀態機 + `pushState`（不用攔截路由）；拖曳套件 dnd-kit；品項「移出菜單」不刪食譜；`public/stationery/`（#62）
+2. 素材與資料：`public/stationery/`（迴紋針、長尾夾）；`MenuItem.price` 選填（migration）與菜單不顯示空價格（#63）
+3. 共用 zod schema（菜單、食譜、Scratch、數量解析、雙語）與 Server Actions（讀取雙語資料、`saveMenuBook`、`saveRecipe`、`createDish`）（#64）
+4. 編輯器外殼：Edit 按鈕、遮罩、卡片元件（打孔卡、票券卡、迴紋針、捲軸）、狀態機與網址同步、開關動畫、`EN | ZH`（#65）
+5. 菜單編輯卡：inline 編輯、新增、移出、拖曳排序、`↗`（#66）
+6. 匯入卡與翻面：Scratch 表單、停用的 Text / Photo、背面透視（#67）
+7. 食譜編輯卡：各區塊、四欄用量、Tab / Shift+Tab、拖曳、存檔（#68）
+8. 卡片之間的轉場與減少動態效果（#69）
+9. 文件：功能頁（新增「編輯卡」）、glossary、architecture、STATUS（#70）
 
 ## 完成後遷移清單
 
