@@ -15,6 +15,7 @@ updated: 2026-10-13
 ## Claude API
 
 - 決策：[ADR-0022](adr/0022-llm-import-with-haiku.md)。SDK 為 `@anthropic-ai/sdk`。
+- 每次匯入的回應帶有 `usage`（token 數與依 `src/features/recipe-import/config.ts` 單價換算的金額），dev server 的 log 也會印出。測試時的花費上限見 `CLAUDE.md` 的 R8。
 - 用量與花費看 Claude Console；帳號已設每月上限、關閉自動儲值。餘額不足或超過上限時 API 回錯誤，匯入卡顯示 toast。
 - 送出的內容：使用者提供的文字或檔案、網頁抽出的文字，以及食材目錄（id、名稱、別名）。不送使用者的其他資料。
 - 換模型只改 `src/features/recipe-import/config.ts`；要確認新模型支援圖片、PDF 與 structured outputs。

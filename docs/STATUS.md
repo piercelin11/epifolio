@@ -12,7 +12,7 @@
 
 ## 下一步
 
-- 使用者重啟 dev server 後，重跑瀏覽器流程到 Save（腳本在 scratchpad 的 `flow.mjs`，用 puppeteer-core + 本機 Chrome；每次約 US$0.005）。測前 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`。
+- 使用者重啟 dev server 後，重跑瀏覽器流程到 Save（腳本在 scratchpad 的 `flow.mjs`，用 puppeteer-core + 本機 Chrome）。遵守 R8：單次執行花費不超過 US$0.03，從回應的 `usage.costUsd` 累加。測前 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`。
 - 通過後：計畫 `status: done`、計畫索引更新、關閉 #79 #80 #81 #52，等使用者說「合併」。
 - 若 Save 仍失敗：看 toast 與 dev server log，找原因。
 - 之後：PLAN-008 = #42、PLAN-009 = #53；其他候選 #56、#57、#71；匯入的已知限制 #82–#84；2026-10-26 之後處理 #32。
