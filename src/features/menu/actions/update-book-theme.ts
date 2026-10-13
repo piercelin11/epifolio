@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 
 import { isMenuThemeId } from "@/features/menu-theme/menu-themes";
+import type { ActionResult } from "@/lib/action-result";
 import { getCurrentUserId } from "@/lib/current-user";
 import { prisma } from "@/lib/db";
 
@@ -12,13 +13,11 @@ const inputSchema = z.object({
 	themeId: z.string().refine(isMenuThemeId),
 });
 
-export type UpdateBookThemeResult = { ok: true } | { ok: false; error: string };
-
 /** Saves the theme a menu book is shown in; the book is a menu group. */
 export async function updateBookTheme(input: {
 	bookId: string;
 	themeId: string;
-}): Promise<UpdateBookThemeResult> {
+}): Promise<ActionResult> {
 	const parsed = inputSchema.safeParse(input);
 	if (!parsed.success) return { ok: false, error: "Unknown theme." };
 	const { bookId, themeId } = parsed.data;
@@ -35,5 +34,5 @@ export async function updateBookTheme(input: {
 		return { ok: false, error: "Could not save the theme." };
 	}
 	refresh();
-	return { ok: true };
+	return { ok: true, data: undefined };
 }

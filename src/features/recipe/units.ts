@@ -8,7 +8,9 @@ export const units = ["g", "kg", "ml", "L", "tsp", "tbsp", "clove"] as const;
 
 export type Unit = (typeof units)[number];
 
-export const unitSchema = z.enum(units);
+export const unitSchema = z.enum(units, {
+	error: "Pick a unit from the list.",
+});
 
 export function isUnit(value: string): value is Unit {
 	return (units as readonly string[]).includes(value);

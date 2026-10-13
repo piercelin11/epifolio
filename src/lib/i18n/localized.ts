@@ -22,6 +22,48 @@ export function localizedSchema<T extends z.ZodType>(value: T) {
 
 export const localizedTextSchema = localizedSchema(z.string());
 
+/** Applies `fn` to the value of every locale that has one. */
+export function mapLocalized<T, U>(
+	value: Localized<T>,
+	fn: (item: T, locale: Locale) => U
+): Localized<U> {
+	const result: Localized<U> = {};
+	for (const locale of locales) {
+		const item = value[locale];
+		if (item !== undefined) result[locale] = fn(item, locale);
+	}
+	return result;
+}
+
+/** True when both texts have the same value in every locale. */
+export function sameLocalizedText(a: LocalizedText, b: LocalizedText) {
+	return locales.every((locale) => (a[locale] ?? "") === (b[locale] ?? ""));
+}
+
+/** Trims every locale's text and drops the empty ones. */
+function trimLocalizedText(text: LocalizedText): LocalizedText {
+	return Object.fromEntries(
+		Object.entries(text)
+			.map(([locale, value]) => [locale, value?.trim()])
+			.filter(([, value]) => value)
+	);
+}
+
+/** Text written in at least one locale; blank locales are dropped. */
+export const requiredLocalizedTextSchema = localizedTextSchema
+	.transform(trimLocalizedText)
+	.refine((text) => Object.keys(text).length > 0, {
+		message: "Enter text in at least one language.",
+	});
+
+/** Text that may be blank in every locale, in which case it becomes null. */
+export const optionalLocalizedTextSchema = localizedTextSchema
+	.optional()
+	.transform((text) => {
+		const trimmed = trimLocalizedText(text ?? {});
+		return Object.keys(trimmed).length > 0 ? trimmed : null;
+	});
+
 /**
  * The value for `locale`, or failing that the first locale that has one.
  * Undefined when no locale has a value.
