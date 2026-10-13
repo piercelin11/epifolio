@@ -6,19 +6,19 @@
 
 ## 現在在做什麼
 
-分支 `plan-007-llm-import`：PLAN-007（#52 LLM 匯入食譜）計畫草稿已寫好（`docs/plans/PLAN-007-llm-import.md`，`status: draft`），等使用者確認。
+分支 `plan-007-llm-import`（PLAN-007，父 issue #52）：所有子任務都已實作並推上，CI 通過。#74–#78 已關閉；#79（匯入卡）、#80（食材確認卡）、#81（文件）等最後一步驗證。
 
-已和使用者談定：Haiku 5.5；來源 Text / Photo（圖片、PDF）/ URL（伺服器抓網頁）；不保留原文、不記 token；單位加 pinch / cup / slice / piece；空數量顯示 To taste；獨立的食材卡（全部對上就跳過），新食材預填營養估計；載入用 shadcn `Spinner`。食材卡外觀先由 Claude 依現有 UI 設計，使用者之後再調整。
+最後一步：瀏覽器實測時，Text 匯入 → 食材確認卡 → 食譜卡都正常，但食譜卡按 Save 沒有寫入。推測是 R6：#76 加了 `Ingredient.nutritionEstimated`，dev server 仍用舊的 Prisma client（用新 client 直接寫入的測試是成功的）。
 
 ## 下一步
 
-- 使用者確認計畫與「設計摘要 5. 待確認」的 ADR 提案後：寫 ADR、`status: approved`，#52 加 label `plan` 當父 issue，建立子 issue。
-- 實作前載入 claude-api skill 確認 SDK 寫法；讀 `node_modules/next/dist/docs/` 確認 Route Handler。
-- 實測會花 API 費用，先告知使用者；會寫入資料庫的測試先 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`。
-- 之後：PLAN-008 = #42、PLAN-009 = #53；其他候選 #56、#57、#71；2026-10-26 之後處理 #32。
+- 使用者重啟 dev server 後，重跑瀏覽器流程到 Save（腳本在 scratchpad 的 `flow.mjs`，用 puppeteer-core + 本機 Chrome；每次約 US$0.005）。測前 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`。
+- 通過後：計畫 `status: done`、計畫索引更新、關閉 #79 #80 #81 #52，等使用者說「合併」。
+- 若 Save 仍失敗：看 toast 與 dev server log，找原因。
+- 之後：PLAN-008 = #42、PLAN-009 = #53；其他候選 #56、#57、#71；匯入的已知限制 #82–#84；2026-10-26 之後處理 #32。
 
 ## 卡點與待決定
 
-- 計畫中的 ADR 提案（套件、網頁抽取、單位、`nutritionEstimated`、食材寫入時機）待確認。
+- 食材確認卡外觀由 Claude 依現有 UI 先做（底色 `--editor-review-card` 暫與菜單卡同色），使用者之後再調整。
 - 使用者確認 #72 的調整後關閉 #72。
 - 編輯卡轉場、Tab / Shift+Tab 行為：使用者在考慮是否要改。
