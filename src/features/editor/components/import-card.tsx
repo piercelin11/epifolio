@@ -1,30 +1,53 @@
 "use client";
 
-import { type ReactNode, useId, useState } from "react";
+import { X } from "lucide-react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { toast } from "sonner";
 
+import { Spinner } from "@/components/ui/spinner";
 import type { DishDraft } from "@/features/menu/schema";
+import { importConfig } from "@/features/recipe-import/config";
+import {
+	canImport,
+	emptyImportInput,
+	fileProblem,
+	type ImportInput,
+	requestImport,
+} from "@/features/recipe-import/lib/import-input";
+import type { ImportResponseData } from "@/features/recipe-import/types";
 import { defaultLocale, type Locale } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 
 import { CardButton, EditorCard, EditorCardLayout } from "./editor-card";
 import { LanguageToggle } from "./language-toggle";
 
-/** Where a new dish comes from. Text and Photo wait for the LLM import (#52). */
+/** Where a new dish comes from: typed by hand, or read by the LLM (#52). */
 const sources = [
-	{ id: "scratch", label: "Scratch", ready: true },
-	{ id: "text", label: "Text", ready: false },
-	{ id: "photo", label: "Photo", ready: false },
+	{ id: "scratch", label: "Scratch" },
+	{ id: "text", label: "Text" },
+	{ id: "photo", label: "Photo" },
+	{ id: "url", label: "URL" },
 ] as const;
 
-type Source = (typeof sources)[number]["id"];
+export type Source = (typeof sources)[number]["id"];
 
 interface ImportCardProps {
 	dish: DishDraft;
 	onChange: (dish: DishDraft) => void;
+	source: Source;
+	onSourceChange: (source: Source) => void;
+	input: ImportInput;
+	onInputChange: (input: ImportInput) => void;
+	/** Scratch: carry on with the typed dish. */
 	onNext: () => void;
+	/** Text, Photo or URL: the import came back. */
+	onImported: (data: ImportResponseData) => void;
 	onCancel: () => void;
 	ghost?: ReactNode;
 }
+
+const fieldClass =
+	"border-editor-card-foreground placeholder:text-editor-card-foreground/50 bg-transparent focus:outline-none disabled:opacity-60";
 
 function Field({
 	value,
@@ -43,7 +66,7 @@ function Field({
 			onChange={(event) => onChange(event.target.value)}
 			placeholder={placeholder}
 			disabled={disabled}
-			className="border-editor-card-foreground placeholder:text-editor-card-foreground/50 w-2/3 border-b bg-transparent py-1.5 uppercase focus:outline-none"
+			className={cn(fieldClass, "w-2/3 border-b py-1.5 uppercase")}
 		/>
 	);
 }
@@ -57,6 +80,92 @@ export function ImportHeading({ id }: { id?: string }) {
 	);
 }
 
+/** Choose or drop photos and PDFs; lists them with their problems. */
+function FilePicker({
+	files,
+	onChange,
+	disabled,
+}: {
+	files: File[];
+	onChange: (files: File[]) => void;
+	disabled?: boolean;
+}) {
+	const inputRef = useRef<HTMLInputElement>(null);
+	const [over, setOver] = useState(false);
+	const { maxCount, types } = importConfig.files;
+
+	function add(list: FileList | null) {
+		if (!list) return;
+		const next = [...files, ...Array.from(list)];
+		if (next.length > maxCount) toast.error(`Choose up to ${maxCount} files.`);
+		onChange(next.slice(0, maxCount));
+	}
+
+	return (
+		<div className="flex flex-col gap-2">
+			<button
+				type="button"
+				disabled={disabled}
+				onClick={() => inputRef.current?.click()}
+				onDragOver={(event) => {
+					event.preventDefault();
+					setOver(true);
+				}}
+				onDragLeave={() => setOver(false)}
+				onDrop={(event) => {
+					event.preventDefault();
+					setOver(false);
+					if (!disabled) add(event.dataTransfer.files);
+				}}
+				className={cn(
+					"border-editor-card-foreground flex h-28 cursor-pointer flex-col items-center justify-center gap-1 border border-dashed text-center disabled:cursor-default disabled:opacity-60",
+					over && "bg-editor-card-foreground/10"
+				)}
+			>
+				<span className="font-bold uppercase">
+					Choose files or drag them here
+				</span>
+				<span className="text-caption">
+					JPEG, PNG, WebP or PDF, up to {maxCount} files
+				</span>
+			</button>
+			<input
+				ref={inputRef}
+				type="file"
+				multiple
+				accept={types.join(",")}
+				className="hidden"
+				onChange={(event) => {
+					add(event.target.files);
+					event.target.value = "";
+				}}
+			/>
+			{files.length > 0 && (
+				<ul className="text-caption flex flex-col gap-1">
+					{files.map((file, i) => {
+						const problem = fileProblem(file);
+						return (
+							<li key={`${file.name}-${i}`} className="flex items-center gap-2">
+								<span className="min-w-0 truncate">{file.name}</span>
+								{problem && <span className="font-bold">{problem}</span>}
+								<button
+									type="button"
+									aria-label={`Remove ${file.name}`}
+									disabled={disabled}
+									onClick={() => onChange(files.filter((_, j) => j !== i))}
+									className="ml-auto cursor-pointer disabled:cursor-default"
+								>
+									<X className="size-[1.1em]" />
+								</button>
+							</li>
+						);
+					})}
+				</ul>
+			)}
+		</div>
+	);
+}
+
 /** The import card's body: pick a source, then fill it in. */
 export function ImportForm({
 	dish,
@@ -64,6 +173,9 @@ export function ImportForm({
 	locale,
 	source,
 	onSourceChange,
+	input = emptyImportInput,
+	onInputChange,
+	busy = false,
 	labelledBy,
 }: {
 	dish: DishDraft;
@@ -71,15 +183,21 @@ export function ImportForm({
 	locale: Locale;
 	source: Source;
 	onSourceChange: (source: Source) => void;
+	input?: ImportInput;
+	onInputChange?: (input: ImportInput) => void;
+	/** While an import is running: everything waits. */
+	busy?: boolean;
 	/** Id of the heading that names the source choice. */
 	labelledBy?: string;
 }) {
 	// Unique per form: the mirrored copy on the menu card's back has its own
 	// radios, and one shared name would make them a single group.
 	const name = useId();
+	const setInput = (change: Partial<ImportInput>) =>
+		onInputChange?.({ ...input, ...change });
 	return (
 		<div className="text-body flex flex-col gap-4">
-			<fieldset aria-labelledby={labelledBy}>
+			<fieldset aria-labelledby={labelledBy} disabled={busy}>
 				<div className="flex gap-6">
 					{sources.map(({ id, label }) => (
 						<label
@@ -122,16 +240,28 @@ export function ImportForm({
 			)}
 			{source === "text" && (
 				<textarea
-					disabled
-					placeholder="Paste a recipe here. Coming soon."
-					className="border-editor-card-foreground placeholder:text-editor-card-foreground/50 h-32 resize-none border bg-transparent p-2"
+					value={input.text}
+					onChange={(event) => setInput({ text: event.target.value })}
+					disabled={busy}
+					maxLength={importConfig.maxTextLength}
+					placeholder="Paste a recipe here: ingredients, steps or a whole post."
+					className={cn(fieldClass, "h-32 resize-none border p-2")}
 				/>
 			)}
 			{source === "photo" && (
-				<div className="border-editor-card-foreground flex h-32 flex-col items-center justify-center gap-1 border border-dashed text-center">
-					<p className="font-bold uppercase">Choose a file or drag it here</p>
-					<p className="text-caption">JPEG, PNG or PDF. Coming soon.</p>
-				</div>
+				<FilePicker
+					files={input.files}
+					onChange={(files) => setInput({ files })}
+					disabled={busy}
+				/>
+			)}
+			{source === "url" && (
+				<Field
+					value={input.url}
+					onChange={(url) => setInput({ url })}
+					placeholder="https://"
+					disabled={busy}
+				/>
 			)}
 		</div>
 	);
@@ -141,14 +271,45 @@ export function ImportForm({
 export function ImportCard({
 	dish,
 	onChange,
+	source,
+	onSourceChange,
+	input,
+	onInputChange,
 	onNext,
+	onImported,
 	onCancel,
 	ghost,
 }: ImportCardProps) {
 	const [locale, setLocale] = useState<Locale>(defaultLocale);
-	const [source, setSource] = useState<Source>("scratch");
-	const ready = sources.find((s) => s.id === source)?.ready;
+	const [request, setRequest] = useState<AbortController | null>(null);
 	const headingId = useId();
+	const busy = request !== null;
+	const ready = source === "scratch" || canImport(source, input);
+
+	// Leaving the card (Esc, back) stops the import it was waiting for.
+	useEffect(() => () => request?.abort(), [request]);
+
+	async function next() {
+		if (source === "scratch") {
+			onNext();
+			return;
+		}
+		const controller = new AbortController();
+		setRequest(controller);
+		try {
+			const result = await requestImport(source, input, controller.signal);
+			if (result.ok) onImported(result.data);
+			else toast.error(result.error);
+		} catch (error) {
+			if (!controller.signal.aborted) {
+				console.error(error);
+				toast.error("Could not reach the server. Try again.");
+			}
+		} finally {
+			setRequest(null);
+		}
+	}
+
 	return (
 		<EditorCard variant="menu" ghost={ghost} reverse>
 			<EditorCardLayout
@@ -161,25 +322,40 @@ export function ImportCard({
 				}
 				footer={
 					<div className="flex gap-3">
-						<CardButton variant="primary" onClick={onNext} disabled={!ready}>
-							Next
+						<CardButton
+							variant="primary"
+							onClick={next}
+							disabled={!ready || busy}
+						>
+							{busy ? (
+								<span className="flex items-center justify-center gap-2">
+									<Spinner className="size-[1em]" />
+									Reading…
+								</span>
+							) : (
+								"Next"
+							)}
 						</CardButton>
-						<CardButton variant="outline" onClick={onCancel}>
+						<CardButton
+							variant="outline"
+							onClick={() => (busy ? request.abort() : onCancel())}
+						>
 							Cancel
 						</CardButton>
 					</div>
 				}
 			>
-				<div className={cn(!ready && "opacity-90")}>
-					<ImportForm
-						dish={dish}
-						onChange={onChange}
-						locale={locale}
-						source={source}
-						onSourceChange={setSource}
-						labelledBy={headingId}
-					/>
-				</div>
+				<ImportForm
+					dish={dish}
+					onChange={onChange}
+					locale={locale}
+					source={source}
+					onSourceChange={onSourceChange}
+					input={input}
+					onInputChange={onInputChange}
+					busy={busy}
+					labelledBy={headingId}
+				/>
 			</EditorCardLayout>
 		</EditorCard>
 	);

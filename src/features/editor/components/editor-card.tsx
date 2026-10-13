@@ -2,10 +2,13 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-type EditorCardVariant = "menu" | "recipe";
+type EditorCardVariant = "menu" | "recipe" | "review";
 
 interface EditorCardProps {
-	/** Menu: punched along the top, with a paper clip. Recipe: a ticket. */
+	/**
+	 * Menu: punched along the top, with a paper clip. Recipe: a ticket.
+	 * Review: a smaller ticket, for the ingredients an import found.
+	 */
 	variant: EditorCardVariant;
 	/** The card's other face, showing faintly through the stock, mirrored. */
 	ghost?: ReactNode;
@@ -30,16 +33,24 @@ export function EditorCard({
 		<div
 			className={cn(
 				"relative drop-shadow-2xl",
-				menu ? "w-(--editor-menu-card-width)" : "w-(--editor-recipe-card-width)"
+				{
+					menu: "w-(--editor-menu-card-width)",
+					recipe: "w-(--editor-recipe-card-width)",
+					review: "w-(--editor-review-card-width)",
+				}[variant]
 			)}
 		>
 			<div
 				data-editor-card
 				className={cn(
 					"text-editor-card-foreground relative isolate flex flex-col",
-					menu
-						? "editor-punched bg-editor-menu-card h-(--editor-menu-card-height)"
-						: "editor-ticket bg-editor-recipe-card h-(--editor-recipe-card-height)"
+					{
+						menu: "editor-punched bg-editor-menu-card h-(--editor-menu-card-height)",
+						recipe:
+							"editor-ticket bg-editor-recipe-card h-(--editor-recipe-card-height)",
+						review:
+							"editor-ticket bg-editor-review-card h-(--editor-review-card-height)",
+					}[variant]
 				)}
 			>
 				<div

@@ -7,6 +7,8 @@ export type EditorView =
 	| { card: "import"; bookId: string; sectionId: string }
 	/** An existing recipe; bookId when it was opened from that menu card. */
 	| { card: "recipe"; recipeId: string; bookId?: string }
+	/** Confirming the ingredients an import found (ADR-0025). */
+	| { card: "ingredient-review"; bookId: string; sectionId: string }
 	/** The recipe of a dish being added from the import card. */
 	| { card: "new-recipe"; bookId: string; sectionId: string };
 
@@ -19,6 +21,7 @@ export function parseEditorView(value: string | null): EditorView | null {
 		case "menu":
 			return second ? null : { card, bookId: first };
 		case "import":
+		case "ingredient-review":
 		case "new-recipe":
 			return second ? { card, bookId: first, sectionId: second } : null;
 		case "recipe":
@@ -35,6 +38,7 @@ export function serializeEditorView(view: EditorView): string {
 		case "menu":
 			return `menu:${view.bookId}`;
 		case "import":
+		case "ingredient-review":
 		case "new-recipe":
 			return `${view.card}:${view.bookId}:${view.sectionId}`;
 		case "recipe":
@@ -51,6 +55,7 @@ export function parentView(view: EditorView): EditorView | null {
 			return null;
 		case "import":
 			return { card: "menu", bookId: view.bookId };
+		case "ingredient-review":
 		case "new-recipe":
 			return { card: "import", bookId: view.bookId, sectionId: view.sectionId };
 		case "recipe":

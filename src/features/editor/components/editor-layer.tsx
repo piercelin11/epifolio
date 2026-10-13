@@ -13,6 +13,17 @@ import { type DishDraft, dishDraftSchema } from "@/features/menu/schema";
 import { saveRecipe } from "@/features/recipe/actions/recipe-editor";
 import type { RecipeDraft } from "@/features/recipe/schema";
 import type { MenuBook } from "@/features/menu/types";
+import {
+	emptyImportInput,
+	type ImportInput,
+} from "@/features/recipe-import/lib/import-input";
+import {
+	allMatched,
+	applyChoices,
+	type IngredientChoices,
+	ingredientChoices,
+} from "@/features/recipe-import/lib/ingredient-rows";
+import type { ImportResponseData } from "@/features/recipe-import/types";
 import type { Recipe } from "@/features/recipe/types";
 import type { ActionResult } from "@/lib/action-result";
 import { defaultLocale } from "@/lib/i18n/localized";
@@ -21,10 +32,11 @@ import { editorMotion } from "../editor-motion";
 import type { EditorView } from "../editor-view";
 import type { useEditorView } from "../hooks/use-editor-view";
 import { type MenuModel, toMenuModel } from "../menu-model";
-import { newRecipeModel } from "../recipe-model";
+import { newRecipeModel, toRecipeModel } from "../recipe-model";
 import { ImportGhost, MenuGhost } from "./card-ghosts";
 import { FlipCard } from "./flip-card";
-import { ImportCard } from "./import-card";
+import { ImportCard, type Source } from "./import-card";
+import { IngredientReviewCard } from "./ingredient-review-card";
 import { MenuCard } from "./menu-card";
 import { RecipeCard } from "./recipe-card";
 
@@ -77,13 +89,30 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	const [saving, setSaving] = useState(false);
 	// The dish typed on the import card, until its recipe is saved.
 	const [dish, setDish] = useState<DishDraft>(emptyDish);
+	// What the import card read with the LLM, and the ingredient choices
+	// made on the review card; both go with the dish.
+	const [source, setSource] = useState<Source>("scratch");
+	const [importInput, setImportInput] = useState<ImportInput>(emptyImportInput);
+	const [imported, setImported] = useState<ImportResponseData | null>(null);
+	const [choices, setChoices] = useState<IngredientChoices | null>(null);
+	// Whether the new recipe card was reached through the review card.
+	const [viaReview, setViaReview] = useState(false);
+
+	/** Forgets the dish and anything imported for it. */
+	function resetDish() {
+		setDish(emptyDish);
+		setSource("scratch");
+		setImportInput(emptyImportInput);
+		setImported(null);
+		setChoices(null);
+	}
 	// Set once the dish is saved; it is cleared after its card has gone.
 	// Clearing it at once would send the still-open new recipe card back to
 	// the import card, and that replaceState cancels the pending back(2).
 	const [dishSaved, setDishSaved] = useState(false);
 	if (dishSaved && editor.view?.card !== "new-recipe") {
 		setDishSaved(false);
-		setDish(emptyDish);
+		resetDish();
 	}
 	const menuModel = menu && menu.bookId === bookId ? menu.model : null;
 
@@ -95,7 +124,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		setWasOpen(Boolean(open));
 		if (!open) {
 			setMenu(undefined);
-			setDish(emptyDish);
+			resetDish();
 		}
 	}
 
@@ -144,7 +173,16 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		book: MenuBook,
 		sectionId: string
 	) {
-		const result = await createDish({ sectionId, dish, recipe: draft });
+		const catalog =
+			imported && choices
+				? applyChoices(draft, choices, imported.catalog).catalog
+				: undefined;
+		const result = await createDish({
+			sectionId,
+			dish,
+			recipe: draft,
+			catalog,
+		});
 		if (!result.ok) {
 			toast.error(failureMessage(result));
 			return false;
@@ -176,8 +214,8 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 			});
 		}
 		setDishSaved(true);
-		// Past the import card, back to the menu card.
-		editor.back(2);
+		// Past the import (and review) card, back to the menu card.
+		editor.back(viaReview ? 3 : 2);
 		return true;
 	}
 
@@ -191,19 +229,23 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		if (editor.view && !open) editor.replace(null);
 	}, [editor, open]);
 
-	// After a reload the typed dish is gone, so its recipe card goes back to
-	// the import card.
+	// After a reload the typed dish and the import are gone, so their cards
+	// go back to the import card.
 	const dishReady = dishDraftSchema.safeParse(dish).success;
+	const reviewReady = Boolean(imported && choices);
 	useEffect(() => {
 		const view = editor.view;
-		if (view?.card === "new-recipe" && !dishReady) {
+		if (
+			(view?.card === "new-recipe" && !dishReady) ||
+			(view?.card === "ingredient-review" && !reviewReady)
+		) {
 			editor.replace({
 				card: "import",
 				bookId: view.bookId,
 				sectionId: view.sectionId,
 			});
 		}
-	}, [editor, dishReady]);
+	}, [editor, dishReady, reviewReady]);
 
 	// Re-bound every render, so it always sees the current card and draft.
 	useEffect(() => {
@@ -220,6 +262,37 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	const { travel, enter, exit, rotate, scrim } = editorMotion;
 	const instant = { duration: 0 };
 
+	/**
+	 * From the import card to the next card: the review card when an import
+	 * has ingredients to decide on, else the new recipe card.
+	 */
+	function continueDish(
+		bookId: string,
+		sectionId: string,
+		current: { imported: ImportResponseData; choices: IngredientChoices } | null
+	) {
+		const review =
+			current !== null &&
+			!allMatched(current.choices, current.imported.catalog);
+		setViaReview(review);
+		editor.go({
+			card: review ? "ingredient-review" : "new-recipe",
+			bookId,
+			sectionId,
+		});
+	}
+
+	/** The new recipe card's starting point: imported, or blank. */
+	function newRecipeStart() {
+		if (!imported || !choices) return newRecipeModel(dish.name);
+		const { recipe } = applyChoices(
+			imported.imported.recipe,
+			choices,
+			imported.catalog
+		);
+		return toRecipeModel(recipe);
+	}
+
 	function card() {
 		if (!open) return null;
 		const { view, book, recipe } = open;
@@ -233,11 +306,33 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 						<ImportCard
 							dish={dish}
 							onChange={setDish}
+							source={source}
+							onSourceChange={setSource}
+							input={importInput}
+							onInputChange={setImportInput}
 							onNext={() => {
 								const parsed = dishDraftSchema.safeParse(dish);
 								if (!parsed.success) toast.error("Enter a dish name.");
 								else if (sectionId) {
-									editor.go({ card: "new-recipe", bookId: book.id, sectionId });
+									continueDish(
+										book.id,
+										sectionId,
+										imported && choices ? { imported, choices } : null
+									);
+								}
+							}}
+							onImported={(data) => {
+								const next = ingredientChoices(data.imported, defaultLocale);
+								setImported(data);
+								setChoices(next);
+								setDish(data.imported.dish);
+								// The dish name and description can be checked on Scratch.
+								setSource("scratch");
+								if (sectionId) {
+									continueDish(book.id, sectionId, {
+										imported: data,
+										choices: next,
+									});
 								}
 							}}
 							onCancel={() => editor.back()}
@@ -257,11 +352,30 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 				/>
 			);
 		}
+		if (view.card === "ingredient-review" && imported && choices) {
+			return (
+				<IngredientReviewCard
+					choices={choices}
+					catalog={imported.catalog}
+					onChange={setChoices}
+					onNext={() => {
+						setViaReview(true);
+						editor.go({
+							card: "new-recipe",
+							bookId: view.bookId,
+							sectionId: view.sectionId,
+						});
+					}}
+					onBack={() => editor.back()}
+					onCancel={() => editor.back(2)}
+				/>
+			);
+		}
 		if (view.card === "new-recipe" && book && dishReady) {
 			return (
 				<RecipeCard
 					key="new"
-					initial={newRecipeModel(dish.name)}
+					initial={newRecipeStart()}
 					onSave={(draft) => createNewDish(draft, book, view.sectionId)}
 					onCancel={() => editor.back()}
 				/>
@@ -294,7 +408,9 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	const cardKey = open
 		? open.view.card === "menu" || open.view.card === "import"
 			? `book:${open.book?.id}`
-			: `recipe:${open.recipe?.id ?? "new"}`
+			: open.view.card === "ingredient-review"
+				? "ingredient-review"
+				: `recipe:${open.recipe?.id ?? "new"}`
 		: null;
 
 	return (

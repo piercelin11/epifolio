@@ -18,6 +18,7 @@
 	--color-ingredient-card-foreground: var(--ingredient-card-foreground);
 	--color-editor-menu-card: var(--editor-menu-card);
 	--color-editor-recipe-card: var(--editor-recipe-card);
+	--color-editor-review-card: var(--editor-review-card);
 	--color-editor-card-foreground: var(--editor-card-foreground);
 	--color-editor-scrim: var(--editor-scrim);
 	/* Font roles (ADR-0006); typefaces are loaded in src/lib/fonts.ts */
@@ -116,6 +117,8 @@
 	/* Editor cards (EditorLayer); the same in every menu theme */
 	--editor-menu-card: #b4b1ad;
 	--editor-recipe-card: #c2b8ae;
+	/* The ingredient review after an import; matches the menu card for now */
+	--editor-review-card: var(--editor-menu-card);
 	--editor-card-foreground: #212121;
 	/* Laid over the shelf while a card is open */
 	--editor-scrim: rgb(0 0 0 / 0.3);
@@ -259,6 +262,8 @@
 	--editor-menu-card-height: min(30rem, 100dvh - 4rem);
 	--editor-recipe-card-width: 50rem;
 	--editor-recipe-card-height: min(68rem, 100dvh - 2rem);
+	--editor-review-card-width: 46rem;
+	--editor-review-card-height: min(46rem, 100dvh - 2rem);
 	--editor-card-padding: 1.75rem;
 	--editor-recipe-card-padding: 3rem;
 	/* Punched holes along the top of the menu card */
