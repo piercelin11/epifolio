@@ -88,15 +88,15 @@ export function EditorCardLayout({
 	return (
 		<div
 			className={cn(
-				"flex min-h-0 flex-1 flex-col gap-4 px-(--editor-card-padding) pb-(--editor-card-padding)",
+				"flex min-h-0 flex-1 flex-col gap-4 px-(--card-padding) pb-(--card-padding)",
 				variant === "menu"
-					? "pt-[calc(var(--editor-hole-top)+var(--editor-hole-size)+1.25rem)]"
-					: "pt-(--editor-card-padding)"
+					? "pt-[calc(var(--editor-hole-top)+var(--editor-hole-size)+1.25rem)] [--card-padding:var(--editor-card-padding)]"
+					: "pt-(--card-padding) [--card-padding:var(--editor-recipe-card-padding)]"
 			)}
 		>
 			{header}
 			{/* Reaches into the right padding, up to where the scroll bar sits */}
-			<div className="editor-scrollbar mr-[calc(var(--editor-scrollbar-inset)-var(--editor-card-padding))] min-h-0 flex-1 overflow-y-auto pr-4">
+			<div className="editor-scrollbar mr-[calc(var(--editor-scrollbar-inset)-var(--card-padding))] min-h-0 flex-1 overflow-y-auto pr-4">
 				{children}
 			</div>
 			{footer}

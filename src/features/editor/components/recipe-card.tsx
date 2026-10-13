@@ -57,7 +57,9 @@ function SectionTitle({
 		<div className="border-editor-card-foreground mt-6 mb-2 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-y-2 py-1.5 first:mt-0">
 			<span />
 			{/* Sized like the section titles on the recipe sheet */}
-			<h3 className="text-subheading font-bold uppercase">{title}</h3>
+			<h3 className="font-heading text-subheading font-bold uppercase">
+				{title}
+			</h3>
 			<div className="justify-self-end">{children}</div>
 		</div>
 	);

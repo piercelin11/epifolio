@@ -258,8 +258,9 @@
 	--editor-menu-card-width: 42rem;
 	--editor-menu-card-height: min(30rem, 100dvh - 4rem);
 	--editor-recipe-card-width: 50rem;
-	--editor-recipe-card-height: min(60rem, 100dvh - 3rem);
+	--editor-recipe-card-height: min(68rem, 100dvh - 2rem);
 	--editor-card-padding: 1.75rem;
+	--editor-recipe-card-padding: 3rem;
 	/* Punched holes along the top of the menu card */
 	--editor-hole-size: 1.25rem;
 	--editor-hole-pitch: 2.25rem;

@@ -143,7 +143,7 @@ function ItemRow({
 					}
 					placeholder="Dish name"
 					onEditingChange={(editing) => onEditing(item.key, editing)}
-					className="w-auto font-medium uppercase"
+					className="w-auto leading-snug font-medium uppercase"
 				/>
 				{recipeId && (
 					<button
