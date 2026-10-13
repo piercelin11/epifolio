@@ -22,6 +22,10 @@
 | 0014 | [先建一個預設使用者，使用者資料帶 userId](0014-default-user.md) | Accepted | 2026-10-12 |
 | 0015 | [步驟文字分段，以用量行 id 引用用量](0015-step-text-references-lines.md) | Accepted | 2026-10-12 |
 | 0016 | [主題與單位存字串，由程式碼清單驗證](0016-code-lists-as-strings.md) | Accepted | 2026-10-12 |
+| 0017 | [編輯卡是書架上的狀態機，以 pushState 同步網址](0017-editor-cards-with-push-state.md) | Accepted | 2026-10-13 |
+| 0018 | [拖曳排序使用 @dnd-kit/core 與 @dnd-kit/sortable](0018-dnd-kit-sortable.md) | Accepted | 2026-10-13 |
+| 0019 | [從菜單移除品項時保留食譜](0019-remove-from-menu-keeps-recipe.md) | Accepted | 2026-10-13 |
+| 0020 | [文具圖片放 public/stationery，與材質分開](0020-stationery-assets.md) | Accepted | 2026-10-13 |
 
 ## 模板
 
