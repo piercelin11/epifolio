@@ -15,6 +15,7 @@
 | [PLAN-004](PLAN-004-recipe-layout-and-ingredient-card.md) | 食譜紙排版、份數換算與食材卡片 | done | #33 |
 | [PLAN-005](PLAN-005-database.md) | 資料庫基礎與菜單書主題切換 | done | #44 |
 | [PLAN-006](PLAN-006-menu-recipe-editor.md) | 菜單與食譜編輯卡 | done | #61 |
+| [PLAN-007](PLAN-007-llm-import.md) | LLM 匯入食譜 | draft | #52 |
 
 ## 模板
 
