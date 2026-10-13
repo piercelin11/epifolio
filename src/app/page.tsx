@@ -8,9 +8,13 @@ import { getRecipes } from "@/features/recipe/data/get-recipes";
 import { getCurrentUserId } from "@/lib/current-user";
 import { siteConfig } from "@/lib/site-config";
 
-const title = (
-	<h1 className="font-heading text-masthead font-bold lowercase">Epifolio</h1>
-);
+// A component, not a shared element: React keeps per-element state while it
+// renders, so one element object reused across requests can carry it over.
+function Title() {
+	return (
+		<h1 className="font-heading text-masthead font-bold lowercase">Epifolio</h1>
+	);
+}
 
 /** The shelf with the current user's books; read on every request. */
 async function Shelf() {
@@ -23,7 +27,11 @@ async function Shelf() {
 	]);
 	// The shelf needs at least one book, e.g. before the database is seeded.
 	if (books.length === 0) {
-		return <div className="px-(--page-inset) pt-8">{title}</div>;
+		return (
+			<div className="px-(--page-inset) pt-8">
+				<Title />
+			</div>
+		);
 	}
 	return (
 		<MenuShelf
@@ -31,7 +39,7 @@ async function Shelf() {
 			recipes={recipes}
 			ingredients={ingredients}
 			chefName={siteConfig.chefName}
-			title={title}
+			title={<Title />}
 		/>
 	);
 }

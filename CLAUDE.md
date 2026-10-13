@@ -147,3 +147,4 @@
 - R4. 用無頭瀏覽器驗證點擊時，先用 `document.elementFromPoint` 確認點擊位置最上層的元素就是目標，或送出真正的滑鼠事件；不要只呼叫 `element.click()`，它不經過點擊判斷，抓不到被其他元素蓋住的情況（menu 按鈕被全高的書本容器蓋住，測試卻通過，2026-10-12）
 - R5. dev server 漏讀 `globals.css` 的原因是 `@tailwindcss/turbopack` 只用 mtime 判斷是否重新編譯，已改用 `@tailwindcss/postcss`（ADR-0010）；之前推測的「`sed` 以新檔取代原檔」不成立。改用後若仍漏讀，停下來問使用者，不要只靠重複修改繞過（改用 Edit 工具後仍連續漏讀，讀原始碼查明原因，2026-10-12）
 - R6. 改 Prisma schema 後，`migrate dev` 之外還要跑 `pnpm exec prisma generate`，並請使用者重啟 dev server：Prisma 7 的 `migrate dev` 不會自動 generate，而 `src/lib/db.ts` 在開發時把 client 存在 `globalThis`，熱更新不會換掉它（`MenuItem.price` 改選填後型別仍是必填；generate 之後 dev server 仍用舊 client，寫入 `price: null` 失敗，2026-10-13）
+- R7. Server Component 不要把 JSX 元素存成模組層級常數再傳給 Client Component（每次 render 重新建立，或寫成元件）：React 開發模式在元素上記錄 key 驗證狀態，同一個物件跨請求重複使用，`refresh()` 後會出現誤報的「Each child in a list should have a unique key」（`page.tsx` 的 `title`，存檔時間歇出現，加網路延遲才能穩定重現，2026-10-13）
