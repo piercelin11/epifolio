@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 
 import { getIngredientCatalog } from "@/features/ingredient/data/get-ingredient-catalog";
+import type { CatalogIngredient } from "@/features/ingredient/types";
 import {
 	importConfig,
 	isImportFileType,
@@ -10,6 +11,7 @@ import {
 	type ImportSource,
 	importRecipe,
 } from "@/features/recipe-import/server/import-recipe";
+import { readWebPage } from "@/features/recipe-import/server/read-web-page";
 import type { ImportResponse } from "@/features/recipe-import/types";
 
 // Reads a recipe from pasted text, files or a web page with the model
@@ -20,7 +22,9 @@ const fail = (error: string, status: number) =>
 	Response.json({ ok: false, error } satisfies ImportResponse, { status });
 
 /** The source in the form data, or a message saying what is wrong with it. */
-async function readSource(form: FormData): Promise<ImportSource | string> {
+async function readSource(
+	form: FormData
+): Promise<ImportSource | { kind: "url"; url: string } | string> {
 	switch (form.get("source")) {
 		case "text": {
 			const text = String(form.get("text") ?? "").trim();
@@ -49,9 +53,29 @@ async function readSource(form: FormData): Promise<ImportSource | string> {
 			}
 			return { kind: "files", files: read };
 		}
+		case "url": {
+			const url = String(form.get("url") ?? "").trim();
+			if (!URL.canParse(url)) return "Enter a full web address.";
+			return { kind: "url", url };
+		}
 		default:
 			return "Choose what to import from.";
 	}
+}
+
+/** Imports the recipe on a web page and cites the page as a reference. */
+async function importWebPage(
+	url: string,
+	catalog: CatalogIngredient[],
+	signal: AbortSignal
+) {
+	const text = await readWebPage(url, signal);
+	const imported = await importRecipe({ kind: "text", text }, catalog, signal);
+	const { references } = imported.recipe;
+	if (!references.some((link) => link.url === url)) {
+		references.unshift({ url });
+	}
+	return imported;
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -66,7 +90,10 @@ export async function POST(request: Request): Promise<Response> {
 
 	const catalog = await getIngredientCatalog();
 	try {
-		const imported = await importRecipe(source, catalog, request.signal);
+		const imported =
+			source.kind === "url"
+				? await importWebPage(source.url, catalog, request.signal)
+				: await importRecipe(source, catalog, request.signal);
 		return Response.json({
 			ok: true,
 			data: { imported, catalog },
