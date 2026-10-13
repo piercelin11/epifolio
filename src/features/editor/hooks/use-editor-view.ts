@@ -54,12 +54,17 @@ export function useEditorView() {
 	}
 
 	/**
-	 * Returns to the previous card. After a reload there is no entry to go
-	 * back to, so the parent card replaces the current one instead.
+	 * Returns `steps` cards back. After a reload there may be no entries to
+	 * go back to, so the card that many parents up replaces the current one.
 	 */
-	function back() {
-		if (currentDepth() > 0) window.history.back();
-		else replace(view && parentView(view));
+	function back(steps = 1) {
+		if (currentDepth() >= steps) {
+			window.history.go(-steps);
+			return;
+		}
+		let target = view;
+		for (let i = 0; i < steps && target; i++) target = parentView(target);
+		replace(target);
 	}
 
 	/** Leaves the editor, unwinding every card it pushed. */

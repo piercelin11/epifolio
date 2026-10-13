@@ -13,6 +13,8 @@ interface InlineTextProps {
 	autoEdit?: boolean;
 	/** Called when editing starts and stops, e.g. to pause dragging. */
 	onEditingChange?: (editing: boolean) => void;
+	/** Sees each key first; preventing its default skips the built-in handling. */
+	onFieldKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 	className?: string;
 }
 
@@ -26,6 +28,7 @@ export function InlineText({
 	placeholder,
 	autoEdit = false,
 	onEditingChange,
+	onFieldKeyDown,
 	className,
 }: InlineTextProps) {
 	const [editing, setEditing] = useState(autoEdit);
@@ -48,6 +51,8 @@ export function InlineText({
 	}
 
 	function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+		onFieldKeyDown?.(event);
+		if (event.defaultPrevented) return;
 		if (event.key === "Enter") {
 			event.preventDefault();
 			setEditing(false);

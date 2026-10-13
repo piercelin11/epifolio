@@ -5,19 +5,23 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import {
+	createDish,
 	loadMenuBookDraft,
 	saveMenuBook,
 } from "@/features/menu/actions/menu-book-editor";
 import { type DishDraft, dishDraftSchema } from "@/features/menu/schema";
-
+import { saveRecipe } from "@/features/recipe/actions/recipe-editor";
+import type { RecipeDraft } from "@/features/recipe/schema";
 import type { MenuBook } from "@/features/menu/types";
 import type { Recipe } from "@/features/recipe/types";
+import type { ActionResult } from "@/lib/action-result";
 import { defaultLocale } from "@/lib/i18n/localized";
 
 import { editorMotion } from "../editor-motion";
 import type { EditorView } from "../editor-view";
 import type { useEditorView } from "../hooks/use-editor-view";
 import { type MenuModel, toMenuModel } from "../menu-model";
+import { newRecipeModel } from "../recipe-model";
 import { ImportGhost, MenuGhost } from "./card-ghosts";
 import { FlipCard } from "./flip-card";
 import { ImportCard } from "./import-card";
@@ -31,6 +35,11 @@ interface EditorLayerProps {
 }
 
 const emptyDish: DishDraft = { name: {}, description: {} };
+
+/** The first field problem, else the error, of a failed action. */
+function failureMessage(result: ActionResult<unknown> & { ok: false }) {
+	return result.issues?.[0]?.message ?? result.error;
+}
 
 /** The book and section a view names, when they still exist. */
 function resolve(view: EditorView, books: MenuBook[], recipes: Recipe[]) {
@@ -96,7 +105,62 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		const result = await saveMenuBook(menuModel);
 		setSaving(false);
 		if (result.ok) close();
-		else toast.error(result.issues?.[0]?.message ?? result.error);
+		else toast.error(failureMessage(result));
+	}
+
+	/** Saves an existing recipe and returns to where it was opened from. */
+	async function saveExistingRecipe(draft: RecipeDraft, fromBook: boolean) {
+		const result = await saveRecipe(draft);
+		if (!result.ok) {
+			toast.error(failureMessage(result));
+			return false;
+		}
+		if (fromBook) editor.back();
+		else close();
+		return true;
+	}
+
+	/** Creates the dish typed on the import card with its recipe. */
+	async function createNewDish(
+		draft: RecipeDraft,
+		book: MenuBook,
+		sectionId: string
+	) {
+		const result = await createDish({ sectionId, dish, recipe: draft });
+		if (!result.ok) {
+			toast.error(failureMessage(result));
+			return false;
+		}
+		// The new dish joins the menu card's draft, which may hold other edits.
+		const { itemId } = result.data;
+		if (menuModel) {
+			setMenu({
+				bookId: book.id,
+				model: {
+					...menuModel,
+					sections: menuModel.sections.map((section) =>
+						section.id === sectionId
+							? {
+									...section,
+									items: [
+										...section.items,
+										{
+											key: itemId,
+											id: itemId,
+											name: dish.name,
+											description: dish.description,
+										},
+									],
+								}
+							: section
+					),
+				},
+			});
+		}
+		setDish(emptyDish);
+		// Past the import card, back to the menu card.
+		editor.back(2);
+		return true;
 	}
 
 	const recipeIdOf = (itemId: string) =>
@@ -108,6 +172,20 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	useEffect(() => {
 		if (editor.view && !open) editor.replace(null);
 	}, [editor, open]);
+
+	// After a reload the typed dish is gone, so its recipe card goes back to
+	// the import card.
+	const dishReady = dishDraftSchema.safeParse(dish).success;
+	useEffect(() => {
+		const view = editor.view;
+		if (view?.card === "new-recipe" && !dishReady) {
+			editor.replace({
+				card: "import",
+				bookId: view.bookId,
+				sectionId: view.sectionId,
+			});
+		}
+	}, [editor, dishReady]);
 
 	// Re-bound every render, so it always sees the current card and draft.
 	useEffect(() => {
@@ -144,14 +222,34 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 									editor.go({ card: "new-recipe", bookId: book.id, sectionId });
 								}
 							}}
-							onCancel={editor.back}
+							onCancel={() => editor.back()}
 							ghost={<MenuGhost model={menuModel} locale={defaultLocale} />}
 						/>
 					}
 				/>
 			);
 		}
-		return <RecipeCard recipe={recipe} onCancel={editor.back} />;
+		if (view.card === "recipe" && recipe) {
+			return (
+				<RecipeCard
+					key={recipe.id}
+					recipeId={recipe.id}
+					onSave={(draft) => saveExistingRecipe(draft, Boolean(view.bookId))}
+					onCancel={() => editor.back()}
+				/>
+			);
+		}
+		if (view.card === "new-recipe" && book && dishReady) {
+			return (
+				<RecipeCard
+					key="new"
+					initial={newRecipeModel(dish.name)}
+					onSave={(draft) => createNewDish(draft, book, view.sectionId)}
+					onCancel={() => editor.back()}
+				/>
+			);
+		}
+		return null;
 	}
 
 	function menuCard(book: MenuBook) {

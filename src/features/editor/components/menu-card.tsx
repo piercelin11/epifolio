@@ -22,20 +22,11 @@ import {
 	useSortable,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { ArrowUpRight } from "lucide-react";
-import {
-	type CSSProperties,
-	type HTMLAttributes,
-	type ReactNode,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { defaultLocale, type Locale } from "@/lib/i18n/localized";
-import { cn } from "@/lib/utils";
 
 import { editorDrag } from "../editor-motion";
 import {
@@ -43,13 +34,13 @@ import {
 	type MenuItemModel,
 	type MenuModel,
 	moveItem,
-	newKey,
 	type SectionModel,
 } from "../menu-model";
+import { newKey } from "../keys";
+import { AddRow, RemoveButton, rowListeners, sortableStyle } from "./card-rows";
 import { CardButton, EditorCard, EditorCardLayout } from "./editor-card";
 import { InlineText } from "./inline-text";
 import { LanguageToggle } from "./language-toggle";
-import { SquareIcon } from "./square-icon";
 
 interface MenuCardProps {
 	/** Null while the draft loads. */
@@ -96,82 +87,6 @@ const collision: CollisionDetection = (args) => {
 	if (within.length) return within;
 	return closestCenter({ ...args, droppableContainers: of("item") });
 };
-
-/** A row's drag listeners, minus the keyboard ones its inner buttons would trigger. */
-function rowListeners(
-	listeners: ReturnType<typeof useSortable>["listeners"]
-): HTMLAttributes<HTMLElement> {
-	const { onKeyDown, ...pointer } = listeners ?? {};
-	return {
-		...pointer,
-		onKeyDown: (event) => {
-			if (event.target === event.currentTarget) onKeyDown?.(event);
-		},
-	};
-}
-
-function sortableStyle(
-	transform: Parameters<typeof CSS.Translate.toString>[0],
-	transition: string | undefined,
-	dragging: boolean
-): CSSProperties {
-	return {
-		transform: CSS.Translate.toString(transform),
-		transition,
-		opacity: dragging ? editorDrag.draggingOpacity : undefined,
-		position: "relative",
-		zIndex: dragging ? 1 : undefined,
-	};
-}
-
-function RemoveButton({
-	label,
-	onClick,
-}: {
-	label: string;
-	onClick: () => void;
-}) {
-	return (
-		<button
-			type="button"
-			aria-label={label}
-			onClick={onClick}
-			className="absolute top-1/2 -left-5 grid -translate-y-1/2 cursor-pointer place-items-center opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
-		>
-			<SquareIcon sign="minus" />
-		</button>
-	);
-}
-
-function AddRow({
-	label,
-	onClick,
-	disabled,
-	title,
-	className,
-}: {
-	label: string;
-	onClick: () => void;
-	disabled?: boolean;
-	title?: string;
-	className?: string;
-}) {
-	return (
-		<button
-			type="button"
-			onClick={onClick}
-			disabled={disabled}
-			title={title}
-			className={cn(
-				"border-editor-card-foreground flex w-full cursor-pointer items-center gap-1.5 border-b py-1.5 text-left uppercase disabled:cursor-default disabled:opacity-40",
-				className
-			)}
-		>
-			<SquareIcon sign="plus" />
-			{label}
-		</button>
-	);
-}
 
 interface RowProps {
 	locale: Locale;

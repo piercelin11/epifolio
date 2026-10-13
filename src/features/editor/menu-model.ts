@@ -1,5 +1,7 @@
 import type { MenuBookDraft } from "@/features/menu/schema";
 
+import { newKey } from "./keys";
+
 // The menu card's working copy. Every section and item carries a client
 // key, so rows keep their identity while they are added and dragged;
 // the schema drops the keys when the draft is saved.
@@ -15,9 +17,6 @@ export type SectionModel = Omit<DraftSection, "items"> & {
 export type MenuModel = Omit<MenuBookDraft, "sections"> & {
 	sections: SectionModel[];
 };
-
-let lastKey = 0;
-export const newKey = () => `new-${++lastKey}`;
 
 export function toMenuModel(draft: MenuBookDraft): MenuModel {
 	return {
