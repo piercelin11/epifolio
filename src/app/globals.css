@@ -233,7 +233,7 @@
 	/* Blank band at the top of a card without a photo, under the clip */
 	--ingredient-card-blank: 4.5rem;
 	/* Binder clip on the card's top edge */
-	--ingredient-card-clip: url("/textures/binder-clip.webp");
+	--ingredient-card-clip: url("/stationery/binder-clip.webp");
 	--ingredient-card-clip-width: 5rem;
 	--ingredient-card-clip-left: 2rem;
 }

@@ -77,7 +77,8 @@ model MenuItem {
   name        Json
   /// { en?: DescriptionPart[], zh?: DescriptionPart[] }, a part being { text, ingredientId? }
   description Json?
-  price       Float
+  /// Empty until it is worked out from ingredient prices (#42).
+  price       Float?
   position    Int
 
   @@index([sectionId, position])

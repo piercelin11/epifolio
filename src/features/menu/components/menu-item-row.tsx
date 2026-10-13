@@ -24,7 +24,10 @@ export function MenuItemRow({
 			>
 				{item.name}
 			</button>
-			<span className="text-body tabular-nums">{formatPrice(item.price)}</span>
+			{/* Kept when empty, so the description still starts on its own row */}
+			<span className="text-body tabular-nums">
+				{item.price !== undefined && formatPrice(item.price)}
+			</span>
 			{item.description && (
 				<p className="text-caption col-span-full font-light">
 					{item.description.map((part, i) => (

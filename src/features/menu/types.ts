@@ -15,7 +15,8 @@ export interface MenuItem {
 	name: string;
 	/** Phrases shown joined by " · ". */
 	description?: DescriptionPart[];
-	price: number;
+	/** Absent until it is worked out from ingredient prices. */
+	price?: number;
 	/** The recipe this item presents; a reference, not a copy. */
 	recipeId: string;
 }
