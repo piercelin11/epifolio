@@ -10,6 +10,13 @@ export const editorMotion = {
 	rotate: { enter: -4, exit: 3 },
 	/** The scrim over the book fades with the card. */
 	scrim: { duration: 0.3 },
+	/** Turning the menu card over to its import side and back. */
+	flip: {
+		duration: 0.7,
+		ease: [0.65, 0, 0.35, 1] as Easing,
+		/** Distance of the eye from the card; smaller looks more dramatic. */
+		perspective: "2000px",
+	},
 };
 
 /** Tuning for dragging rows on the editor cards. */

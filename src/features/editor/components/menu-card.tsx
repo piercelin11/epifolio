@@ -63,6 +63,8 @@ interface MenuCardProps {
 	onSave: () => void;
 	saving: boolean;
 	onCancel: () => void;
+	/** The import side, showing faintly through the card. */
+	ghost?: ReactNode;
 }
 
 type DragData =
@@ -375,6 +377,7 @@ export function MenuCard({
 	onSave,
 	saving,
 	onCancel,
+	ghost,
 }: MenuCardProps) {
 	const [locale, setLocale] = useState<Locale>(defaultLocale);
 	const [editingKey, setEditingKey] = useState<string | null>(null);
@@ -469,7 +472,7 @@ export function MenuCard({
 	const rowProps = { locale, editingKey, onEditing, autoEditKey };
 
 	return (
-		<EditorCard variant="menu">
+		<EditorCard variant="menu" ghost={ghost}>
 			<EditorCardLayout
 				variant="menu"
 				header={

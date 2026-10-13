@@ -9,11 +9,21 @@ interface EditorCardProps {
 	variant: EditorCardVariant;
 	/** The card's other face, showing faintly through the stock, mirrored. */
 	ghost?: ReactNode;
+	/**
+	 * The back of a menu card: the paper clip on the front's top-right corner
+	 * shows at the top left.
+	 */
+	reverse?: boolean;
 	children: ReactNode;
 }
 
 /** The card stock an editor card is drawn on; content sits in children. */
-export function EditorCard({ variant, ghost, children }: EditorCardProps) {
+export function EditorCard({
+	variant,
+	ghost,
+	reverse = false,
+	children,
+}: EditorCardProps) {
 	const menu = variant === "menu";
 	return (
 		// The mask would clip a shadow, so the shadow sits on this wrapper.
@@ -50,7 +60,11 @@ export function EditorCard({ variant, ghost, children }: EditorCardProps) {
 			{menu && (
 				<div
 					aria-hidden
-					className="pointer-events-none absolute top-(--editor-paper-clip-top) right-(--editor-paper-clip-right) aspect-[160/700] w-(--editor-paper-clip-width) rotate-(--editor-paper-clip-rotate) bg-(image:--editor-paper-clip) bg-contain bg-no-repeat"
+					className={cn(
+						"pointer-events-none absolute top-(--editor-paper-clip-top) right-(--editor-paper-clip-right) aspect-[160/700] w-(--editor-paper-clip-width) rotate-(--editor-paper-clip-rotate) bg-(image:--editor-paper-clip) bg-contain bg-no-repeat",
+						reverse &&
+							"right-auto left-(--editor-paper-clip-right) -scale-x-100"
+					)}
 				/>
 			)}
 		</div>

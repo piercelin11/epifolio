@@ -8,14 +8,19 @@ import {
 	loadMenuBookDraft,
 	saveMenuBook,
 } from "@/features/menu/actions/menu-book-editor";
+import { type DishDraft, dishDraftSchema } from "@/features/menu/schema";
 
 import type { MenuBook } from "@/features/menu/types";
 import type { Recipe } from "@/features/recipe/types";
+import { defaultLocale } from "@/lib/i18n/localized";
 
 import { editorMotion } from "../editor-motion";
 import type { EditorView } from "../editor-view";
 import type { useEditorView } from "../hooks/use-editor-view";
 import { type MenuModel, toMenuModel } from "../menu-model";
+import { ImportGhost, MenuGhost } from "./card-ghosts";
+import { FlipCard } from "./flip-card";
+import { ImportCard } from "./import-card";
 import { MenuCard } from "./menu-card";
 import { RecipeCard } from "./recipe-card";
 
@@ -24,6 +29,8 @@ interface EditorLayerProps {
 	books: MenuBook[];
 	recipes: Recipe[];
 }
+
+const emptyDish: DishDraft = { name: {}, description: {} };
 
 /** The book and section a view names, when they still exist. */
 function resolve(view: EditorView, books: MenuBook[], recipes: Recipe[]) {
@@ -59,6 +66,8 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		model: MenuModel | null;
 	}>();
 	const [saving, setSaving] = useState(false);
+	// The dish typed on the import card, until its recipe is saved.
+	const [dish, setDish] = useState<DishDraft>(emptyDish);
 	const menuModel = menu && menu.bookId === bookId ? menu.model : null;
 
 	useEffect(() => {
@@ -77,6 +86,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	/** Leaves the editor and forgets the draft. */
 	function close() {
 		setMenu(undefined);
+		setDish(emptyDish);
 		editor.close();
 	}
 
@@ -118,24 +128,50 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		if (!open) return null;
 		const { view, book, recipe } = open;
 		if ((view.card === "menu" || view.card === "import") && book) {
+			const sectionId = view.card === "import" ? view.sectionId : undefined;
 			return (
-				<MenuCard
-					model={menuModel}
-					onChange={(model) => setMenu({ bookId: book.id, model })}
-					recipeIdOf={recipeIdOf}
-					onOpenRecipe={(recipeId) =>
-						editor.go({ card: "recipe", recipeId, bookId: book.id })
+				<FlipCard
+					flipped={view.card === "import"}
+					front={menuCard(book)}
+					back={
+						<ImportCard
+							dish={dish}
+							onChange={setDish}
+							onNext={() => {
+								const parsed = dishDraftSchema.safeParse(dish);
+								if (!parsed.success) toast.error("Enter a dish name.");
+								else if (sectionId) {
+									editor.go({ card: "new-recipe", bookId: book.id, sectionId });
+								}
+							}}
+							onCancel={editor.back}
+							ghost={<MenuGhost model={menuModel} locale={defaultLocale} />}
+						/>
 					}
-					onAddDish={(sectionId) =>
-						editor.go({ card: "import", bookId: book.id, sectionId })
-					}
-					onSave={saveMenu}
-					saving={saving}
-					onCancel={close}
 				/>
 			);
 		}
 		return <RecipeCard recipe={recipe} onCancel={editor.back} />;
+	}
+
+	function menuCard(book: MenuBook) {
+		return (
+			<MenuCard
+				model={menuModel}
+				onChange={(model) => setMenu({ bookId: book.id, model })}
+				recipeIdOf={recipeIdOf}
+				onOpenRecipe={(recipeId) =>
+					editor.go({ card: "recipe", recipeId, bookId: book.id })
+				}
+				onAddDish={(sectionId) =>
+					editor.go({ card: "import", bookId: book.id, sectionId })
+				}
+				onSave={saveMenu}
+				saving={saving}
+				onCancel={close}
+				ghost={<ImportGhost dish={dish} locale={defaultLocale} />}
+			/>
+		);
 	}
 
 	// Menu and import are two faces of one card, so they share a key.
