@@ -77,6 +77,14 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	const [saving, setSaving] = useState(false);
 	// The dish typed on the import card, until its recipe is saved.
 	const [dish, setDish] = useState<DishDraft>(emptyDish);
+	// Set once the dish is saved; it is cleared after its card has gone.
+	// Clearing it at once would send the still-open new recipe card back to
+	// the import card, and that replaceState cancels the pending back(2).
+	const [dishSaved, setDishSaved] = useState(false);
+	if (dishSaved && editor.view?.card !== "new-recipe") {
+		setDishSaved(false);
+		setDish(emptyDish);
+	}
 	const menuModel = menu && menu.bookId === bookId ? menu.model : null;
 
 	// The drafts are dropped once the editor has closed, not when closing
@@ -167,7 +175,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 				},
 			});
 		}
-		setDish(emptyDish);
+		setDishSaved(true);
 		// Past the import card, back to the menu card.
 		editor.back(2);
 		return true;
