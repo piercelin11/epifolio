@@ -108,14 +108,11 @@ function IngredientLine({
 					className="size-[0.8em] shrink-0 translate-y-[0.1em] cursor-pointer appearance-none border border-current checked:bg-current focus-visible:outline-2 focus-visible:outline-offset-2"
 				/>
 				<span>
-					{item.quantity !== undefined && (
-						<strong className="font-semibold">
-							{formatQuantity(
-								scaleQuantity(item.quantity, factor),
-								item.unit
-							)}{" "}
-						</strong>
-					)}
+					<strong className="font-semibold">
+						{item.quantity !== undefined
+							? formatQuantity(scaleQuantity(item.quantity, factor), item.unit)
+							: (item.unit ?? "To taste")}{" "}
+					</strong>
 					{/* A button inside the label opens the card instead of checking the line */}
 					{ingredientId && onSelectIngredient ? (
 						<button

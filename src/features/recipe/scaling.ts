@@ -18,5 +18,11 @@ export const scalingConfig = {
 	/** Units measured precisely enough that scaled values round to whole numbers. */
 	wholeUnits: ["g", "ml"] as readonly string[],
 	/** Plural spellings of units, used when the amount is more than one. */
-	plurals: { clove: "cloves" } as Readonly<Record<string, string>>,
+	plurals: {
+		cup: "cups",
+		pinch: "pinches",
+		clove: "cloves",
+		slice: "slices",
+		piece: "pieces",
+	} as Readonly<Record<string, string>>,
 };
