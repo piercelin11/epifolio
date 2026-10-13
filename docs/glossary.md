@@ -34,4 +34,9 @@ updated: 2026-10-12
 | 紙張     | `PaperSheet`    | 紙張堆疊中的一張紙，有底色、材質，可選擇右側打孔。                                     |
 | 廚師名稱 | `chefName`      | 菜單紙右上角顯示的名字。目前沒有使用者功能，全站固定一個值。                           |
 | 使用者   | `User`          | 菜單與食譜的擁有者。目前只有一個預設使用者，由 `getCurrentUserId()` 取得。           |
+| 編輯卡   | `EditorCard`    | 在書上打開、用來編輯的卡片：菜單編輯卡、匯入卡、食譜編輯卡；由 `EditorLayer` 管理，目前的卡記在網址 `?edit=`。 |
+| 菜單編輯卡 | `MenuCard`    | 編輯一本菜單書的書名、章節與品項的打孔卡片。                                   |
+| 匯入卡   | `ImportCard`    | 菜單編輯卡的背面，新增品項的起點：Scratch（手填），之後還有 Text、Photo。       |
+| 食譜編輯卡 | `RecipeCard`  | 編輯一份食譜的票券形卡片：名稱、份數、用量、步驟、參考連結。                   |
+| 草稿     | `draft`         | 編輯卡上尚未存檔的內容；格式由 zod schema 定義（`MenuBookDraft`、`RecipeDraft`），Save 時一次寫入。 |
 | 雙語文字 | `LocalizedText` | 一段可有中英兩種語言的文字 `{ en, zh }`；顯示時用 `localize()` 取值，缺的語言退回另一種。 |

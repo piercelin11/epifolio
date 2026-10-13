@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-006-menu-recipe-editor
 issue: 61
 created: 2026-10-13
@@ -96,7 +96,7 @@ created: 2026-10-13
 
 ## 邊界情況
 
-- 章節或書名清空後 Save：zod 擋下並提示（書名、章節名、品項名、食譜名、用量的 Ingredient 必填，至少一種語言）。
+- 書名、品項名、食譜名、用量的 Ingredient 清空後 Save：zod 擋下並提示（至少一種語言）。章節名選填（PLAN-004 起即選填，現有資料也有沒有名稱的章節）。
 - 移出的品項、章節：資料庫中的食譜保留，只是不再出現在任何菜單（食譜庫完成前看不到）。
 - `Qty` 寫成 `abc`、`5-2`（下限大於上限）：欄位標錯，不能存。
 - `Unit` 有值但 `Qty` 空白：允許（例如 `tbsp` to taste），照原樣顯示。
@@ -159,7 +159,7 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：新增 `docs/features/editor.md`，`features/index.md`；`menu-shelf.md` 補 Edit 入口
-- [ ] ADR：任務 1 的各項
-- [ ] glossary：編輯卡、匯入卡、草稿等新詞
-- [ ] `docs/architecture.md`：編輯器資料流、`public/stationery/`；`CLAUDE.md` 第 4 節
+- [x] 功能頁：新增 `docs/features/editor.md`，`features/index.md`；`menu-shelf.md` 補 Edit 入口
+- [x] ADR：任務 1 的各項
+- [x] glossary：編輯卡、匯入卡、草稿等新詞
+- [x] `docs/architecture.md`：編輯器資料流、`public/stationery/`；`CLAUDE.md` 第 4 節

@@ -5,8 +5,9 @@
 | 功能     | 狀態 | 最後更新 |
 | -------- | ---- | -------- |
 | [紙張堆疊](paper-stack.md) | draft | 2026-10-12 |
-| [菜單書架](menu-shelf.md) | draft | 2026-10-12 |
+| [菜單書架](menu-shelf.md) | draft | 2026-10-13 |
 | [食材卡片](ingredient-card.md) | draft | 2026-10-12 |
+| [編輯卡](editor.md) | draft | 2026-10-13 |
 
 ## 功能頁模板
 

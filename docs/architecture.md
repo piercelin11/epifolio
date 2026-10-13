@@ -34,6 +34,7 @@ flowchart LR
 ```
 
 - 首頁每次請求都讀資料庫（`<Suspense>` 內先 `connection()`），build 時不連資料庫；寫入後 Server Action 以 `refresh()` 重新整理畫面。
+- 編輯在書上的[編輯卡](features/editor.md)進行：卡片以 Server Action 讀取雙語草稿，Save 時把草稿交給同一份 zod schema 驗證後在一個 transaction 內寫入；目前的卡記在網址 `?edit=`（[ADR-0017](adr/0017-editor-cards-with-push-state.md)）。
 - 元件只依賴 `src/features/*/types.ts` 的呈現型別，不 import Prisma 型別。
 
 ## 核心概念與關係
@@ -79,10 +80,11 @@ erDiagram
 | `src/app/`               | 路由（App Router）                     |
 | `src/components/ui/`     | shadcn 元件                            |
 | `src/components/`        | 專案共用元件                           |
-| `src/features/<feature>/` | 功能模組（components / hooks / lib / data / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf` |
+| `src/features/<feature>/` | 功能模組（components / hooks / lib / data / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf`、`editor` |
 | `src/features/<feature>/data/` | 讀資料庫的 server-only 函式，回傳呈現型別 |
 | `src/features/<feature>/actions/` | Server Actions（寫入） |
-| `public/textures/`       | 紙張、卡紙材質等靜態圖片               |
+| `public/textures/`       | 紙張、卡紙材質等鋪滿表面的圖片         |
+| `public/stationery/`     | 疊在紙上的文具：長尾夾、迴紋針（[ADR-0020](adr/0020-stationery-assets.md)） |
 | `public/ingredients/`    | 食材目錄的照片（進 git）               |
 | `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例、`current-user.ts` 為目前使用者 |
 | `src/lib/i18n/`          | 雙語內容的型別與 `localize()`          |
@@ -95,6 +97,6 @@ erDiagram
 
 ## 待決定
 
-- 圖片上傳細節（#51）
+- 圖片上傳細節（#59）
 
 各項待規劃時建立計畫，見 [計畫索引](plans/README.md)。

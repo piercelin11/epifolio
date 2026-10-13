@@ -6,14 +6,17 @@
 
 ## 現在在做什麼
 
-分支 `plan-006-menu-recipe-editor`：PLAN-006（菜單與食譜編輯卡，父 issue #61）。已完成 #62（ADR 0017–0020）、#63（stationery、價格選填）、#64（schema 與 Server Actions）、#65（編輯器外殼）、#66（菜單編輯卡）、#67（匯入卡與翻面）。正在做 #68（食譜編輯卡）。
+分支 `plan-006-menu-recipe-editor`：PLAN-006（菜單與食譜編輯卡，父 issue #61）程式與文件都已完成，CI 通過，等使用者說「合併」。
 
 ## 下一步
 
-- #68 食譜編輯卡 → #69 卡片間轉場 → #70 文件。
-- 瀏覽器實測會寫入資料庫時，先 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`；使用者自己改過的主題在資料庫裡，不要用 seed 覆蓋。
+- **請使用者重啟 dev server**（R6）：`MenuItem.price` 改選填後，執行中的 dev server 仍用舊的 Prisma client，新增品項（createDish）在瀏覽器會失敗；同樣的寫入在資料庫副本上成功。重啟後在瀏覽器補測「+ Dish → Scratch → Next → 食譜 → Save」，通過後關閉 #68。
+- 合併後用 `curl` 確認 dev server 的 CSS 含 `--editor-menu-card`（R2）。
+- 瀏覽器實測會寫入資料庫時，先 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`；使用者改過的主題在資料庫裡，不要用 seed 覆蓋。
+- 候選：#52（LLM 匯入，交接資訊在 issue 留言）、#42、#53、#56、#57、#71。
 - 2026-10-26 之後處理 #32。
 
 ## 卡點與待決定
 
-- 無。
+- 編輯卡的轉場（↗、Next）先做成「往下收、從下方冒出」，使用者在考慮是否要改。
+- Tab / Shift+Tab 只在第一個欄位或整列被選取時切換「內容 ↔ 小標」，其他欄位的 Tab 照常換欄；使用者若想改再調整。
