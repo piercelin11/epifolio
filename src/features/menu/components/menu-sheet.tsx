@@ -33,7 +33,7 @@ export function MenuSheet({
 				<div className="relative pt-(--paper-padding) pr-(--paper-padding)">
 					{/* Out of the flow, so the chef name stays where it is */}
 					{actions && (
-						<div className="absolute top-(--paper-padding) right-full mr-2 flex -translate-y-1/4 items-center">
+						<div className="absolute top-(--paper-padding) right-full mr-2 flex -translate-y-1/4 items-center gap-1">
 							{actions}
 						</div>
 					)}

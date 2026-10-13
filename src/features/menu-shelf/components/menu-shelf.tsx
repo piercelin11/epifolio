@@ -15,6 +15,9 @@ import type { Ingredient } from "@/features/ingredient/types";
 import { updateBookTheme } from "@/features/menu/actions/update-book-theme";
 import { MenuRecipeStack } from "@/features/menu/components/menu-recipe-stack";
 import type { MenuBook } from "@/features/menu/types";
+import { EditBookButton } from "@/features/editor/components/edit-book-button";
+import { EditorLayer } from "@/features/editor/components/editor-layer";
+import { useEditorView } from "@/features/editor/hooks/use-editor-view";
 import { MenuThemePicker } from "@/features/menu-theme/components/menu-theme-picker";
 import { MenuThemeScope } from "@/features/menu-theme/components/menu-theme-scope";
 import type { MenuThemeId } from "@/features/menu-theme/menu-themes";
@@ -54,6 +57,9 @@ export function MenuShelf({
 }: MenuShelfProps) {
 	const shelf = useMenuShelf(books.length);
 	const card = useIngredientCard();
+	const editor = useEditorView();
+	// The shelf sits still under an open editor card.
+	const editing = editor.view !== null;
 	const { phase, center, focus, geometry, positions, rootRef, bookRefs } =
 		shelf;
 	const reading = phase === "reading";
@@ -84,7 +90,10 @@ export function MenuShelf({
 	return (
 		<div ref={rootRef} className="relative min-h-0 flex-1 overflow-hidden">
 			{/* The open book scrolls over the header band */}
-			<header className="absolute inset-x-0 top-0 flex h-(--header-height) items-start justify-between px-(--page-inset) pt-8">
+			<header
+				inert={editing}
+				className="absolute inset-x-0 top-0 flex h-(--header-height) items-start justify-between px-(--page-inset) pt-8"
+			>
 				{title}
 				<button
 					type="button"
@@ -123,7 +132,7 @@ export function MenuShelf({
 						// Off-screen books stay rendered so they can slide in. Each book
 						// spans the full height and overlaps the header band, so only its
 						// open scroll area and sheets take pointer input.
-						inert={!onScreen}
+						inert={!onScreen || editing}
 						className={cn(
 							"pointer-events-none absolute inset-y-0 left-[calc(50%-var(--shelf-book-width)/2+var(--shelf-slot)*var(--shelf-pitch))] flex w-(--shelf-book-width) flex-col",
 							// The overview scales books from their top-left corner.
@@ -137,10 +146,18 @@ export function MenuShelf({
 							chefName={chefName}
 							menuActions={
 								reading && (
-									<MenuThemePicker
-										themeId={themes[book.id] ?? book.themeId}
-										onChange={(themeId) => changeTheme(book.id, themeId)}
-									/>
+									<>
+										<EditBookButton
+											onClick={() => {
+												card.close();
+												editor.go({ card: "menu", bookId: book.id });
+											}}
+										/>
+										<MenuThemePicker
+											themeId={themes[book.id] ?? book.themeId}
+											onChange={(themeId) => changeTheme(book.id, themeId)}
+										/>
+									</>
 								)
 							}
 							front={state?.front ?? "base"}
@@ -179,6 +196,7 @@ export function MenuShelf({
 					</MenuThemeScope>
 				);
 			})}
+			<EditorLayer editor={editor} books={books} recipes={recipes} />
 		</div>
 	);
 }

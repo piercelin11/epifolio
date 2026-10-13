@@ -16,6 +16,10 @@
 	--color-backdrop-foreground: var(--backdrop-foreground);
 	--color-ingredient-card: var(--ingredient-card);
 	--color-ingredient-card-foreground: var(--ingredient-card-foreground);
+	--color-editor-menu-card: var(--editor-menu-card);
+	--color-editor-recipe-card: var(--editor-recipe-card);
+	--color-editor-card-foreground: var(--editor-card-foreground);
+	--color-editor-scrim: var(--editor-scrim);
 	/* Font roles (ADR-0006); typefaces are loaded in src/lib/fonts.ts */
 	--font-sans: var(--font-body-src), ui-sans-serif, system-ui, sans-serif;
 	--font-heading: var(--font-heading-src), ui-serif, Georgia, serif;
@@ -109,6 +113,12 @@
 	/* Ingredient card (IngredientCard); the same in every menu theme */
 	--ingredient-card: #d7c9b2;
 	--ingredient-card-foreground: #2e2a24;
+	/* Editor cards (EditorLayer); the same in every menu theme */
+	--editor-menu-card: #b4b1ad;
+	--editor-recipe-card: #c2b8ae;
+	--editor-card-foreground: #212121;
+	/* Laid over the shelf while a card is open */
+	--editor-scrim: rgb(0 0 0 / 0.3);
 }
 
 /*
@@ -243,6 +253,36 @@
 	--paper-texture-opacity: var(--ingredient-card-texture-opacity);
 }
 
+/* Editor cards (EditorCard): same card stock as the ingredient card */
+:root {
+	--editor-menu-card-width: 36rem;
+	--editor-menu-card-height: min(28rem, 100dvh - 4rem);
+	--editor-recipe-card-width: 40rem;
+	--editor-recipe-card-height: min(56rem, 100dvh - 4rem);
+	--editor-card-padding: 1.75rem;
+	/* Punched holes along the top of the menu card */
+	--editor-hole-size: 1.75rem;
+	--editor-hole-pitch: 2.75rem;
+	--editor-hole-top: 1.25rem;
+	/* Radius of the ticket card's cut-out corners */
+	--editor-ticket-notch: 3rem;
+	/* The other face of a card, mirrored, showing faintly through the stock */
+	--editor-ghost-opacity: 0.12;
+	/* Paper clip over the menu card's top-right corner */
+	--editor-paper-clip: url("/stationery/paper-clip.webp");
+	--editor-paper-clip-width: 1.5rem;
+	--editor-paper-clip-top: -1.25rem;
+	--editor-paper-clip-right: 1.5rem;
+	--editor-paper-clip-rotate: -32deg;
+	/* Scroll bar inside a card */
+	--editor-scrollbar-width: 0.375rem;
+}
+
+[data-editor-card] {
+	--paper-texture: var(--ingredient-card-texture);
+	--paper-texture-opacity: var(--ingredient-card-texture-opacity);
+}
+
 [data-paper-tone="primary"] {
 	--paper-texture: var(--paper-texture-primary);
 	--paper-texture-opacity: var(--paper-texture-primary-opacity);
@@ -255,6 +295,68 @@
 	background-size: 100% auto;
 	mix-blend-mode: overlay;
 	opacity: var(--paper-texture-opacity);
+}
+
+/* A row of see-through punched holes along the top edge, evenly spread */
+@utility editor-punched {
+	--hole-radius: calc(var(--editor-hole-size) / 2);
+	mask-image: radial-gradient(
+		circle var(--hole-radius) at 50%
+			calc(var(--editor-hole-top) + var(--hole-radius)),
+		transparent calc(var(--hole-radius) - 0.5px),
+		#000 var(--hole-radius)
+	);
+	mask-size: var(--editor-hole-pitch) 100%;
+	/* round, not space: space leaves see-through gaps between the tiles */
+	mask-repeat: round no-repeat;
+}
+
+/* A ticket: each corner cut out as a quarter circle */
+@utility editor-ticket {
+	--notch: var(--editor-ticket-notch);
+	mask:
+		radial-gradient(
+				circle at 0 0,
+				transparent var(--notch),
+				#000 calc(var(--notch) + 0.5px)
+			)
+			top left / 51% 51% no-repeat,
+		radial-gradient(
+				circle at 100% 0,
+				transparent var(--notch),
+				#000 calc(var(--notch) + 0.5px)
+			)
+			top right / 51% 51% no-repeat,
+		radial-gradient(
+				circle at 0 100%,
+				transparent var(--notch),
+				#000 calc(var(--notch) + 0.5px)
+			)
+			bottom left / 51% 51% no-repeat,
+		radial-gradient(
+				circle at 100% 100%,
+				transparent var(--notch),
+				#000 calc(var(--notch) + 0.5px)
+			)
+			bottom right / 51% 51% no-repeat;
+}
+
+/*
+ * A thick, plain scroll bar in the card's text colour. Chrome ignores the
+ * ::-webkit-scrollbar styles once scrollbar-width is set, so the standard
+ * properties are only for browsers without them (Firefox).
+ */
+@utility editor-scrollbar {
+	@supports not selector(::-webkit-scrollbar) {
+		scrollbar-width: thin;
+		scrollbar-color: var(--editor-card-foreground) transparent;
+	}
+	&::-webkit-scrollbar {
+		width: var(--editor-scrollbar-width);
+	}
+	&::-webkit-scrollbar-thumb {
+		background: var(--editor-card-foreground);
+	}
 }
 
 /* Scrolls with the scroll bar hidden */
