@@ -181,22 +181,24 @@ model ReferenceLink {
 
 /// Shared reference data: no owner. Recipes and menu items cite it by id.
 model Ingredient {
-  id          String             @id @default(cuid())
+  id                 String             @id @default(cuid())
   /// LocalizedText
-  name        Json
+  name               Json
   /// string[]; other names used to match recipe wording to this ingredient
-  aliases     Json
+  aliases            Json
   /// Path under public/, e.g. /ingredients/garlic.webp
-  image       String?
+  image              String?
   /// A price for priceUnit of the ingredient, e.g. 25 per "100 g"
-  priceAmount Float?
-  priceUnit   String?
+  priceAmount        Float?
+  priceUnit          String?
   /// Nutrition per 100 g: calories in kcal, the rest in grams.
-  calories    Float?
-  protein     Float?
-  carbs       Float?
-  fat         Float?
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  lines       RecipeIngredient[]
+  calories           Float?
+  protein            Float?
+  carbs              Float?
+  fat                Float?
+  /// True while the nutrition is an LLM estimate nobody has checked.
+  nutritionEstimated Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  lines              RecipeIngredient[]
 }

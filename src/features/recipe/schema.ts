@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import {
+	localizedSchema,
+	localizedTextSchema,
 	optionalLocalizedTextSchema,
 	requiredLocalizedText,
 	requiredLocalizedTextSchema,
@@ -25,9 +27,26 @@ export const quantityFieldSchema = z.string().transform((text, ctx) => {
 	return quantity;
 });
 
+/** Where a line's ingredient was decided, e.g. on the import's ingredient card. */
+export const ingredientLinkSchema = z.discriminatedUnion("kind", [
+	z.object({ kind: z.literal("catalog"), ingredientId: z.string().min(1) }),
+	/** An ingredient created with the recipe, by its key (ADR-0025). */
+	z.object({ kind: z.literal("new"), key: z.string().min(1) }),
+	z.object({ kind: z.literal("none") }),
+]);
+
 export const ingredientLineDraftSchema = z.object({
 	/** Absent for a line added in the editor; kept so steps can cite it. */
 	id: z.string().min(1).optional(),
+	/** A new line's stand-in for its id, so a step's parts can cite it. */
+	ref: z.string().min(1).optional(),
+	/**
+	 * An explicit ingredient for the line, made for the wording in `name`.
+	 * Once the line is renamed it is matched by name again.
+	 */
+	link: z
+		.object({ to: ingredientLinkSchema, name: localizedTextSchema })
+		.optional(),
 	quantity: quantityFieldSchema,
 	unit: z
 		.union([unitSchema, z.literal("")], {
@@ -51,6 +70,13 @@ export const stepDraftSchema = z.object({
 	/** Optional highlight, e.g. "Emulsify". */
 	title: optionalLocalizedTextSchema,
 	text: requiredLocalizedText("Each step needs an instruction."),
+	/**
+	 * The text split into runs citing lines by id or ref (ADR-0015). Used
+	 * for a locale only while its runs still join up to its text.
+	 */
+	parts: localizedSchema(
+		z.array(z.object({ text: z.string(), line: z.string().min(1).optional() }))
+	).optional(),
 });
 
 export const stepGroupDraftSchema = z.object({

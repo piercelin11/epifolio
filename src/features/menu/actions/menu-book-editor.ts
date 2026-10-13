@@ -2,6 +2,10 @@
 
 import { refresh } from "next/cache";
 
+import {
+	type CatalogChanges,
+	catalogChangesSchema,
+} from "@/features/ingredient/schema";
 import { recipeDraftSchema, type RecipeDraft } from "@/features/recipe/schema";
 import {
 	type ActionResult,
@@ -49,17 +53,24 @@ export async function createDish(input: {
 	sectionId: string;
 	dish: DishDraft;
 	recipe: RecipeDraft;
+	/** Ingredients and aliases an import decided on (ADR-0025). */
+	catalog?: CatalogChanges;
 }): Promise<ActionResult<{ recipeId: string; itemId: string }>> {
 	const dish = dishDraftSchema.safeParse(input.dish);
 	if (!dish.success) return invalidInput(dish.error);
 	const recipe = recipeDraftSchema.safeParse(input.recipe);
 	if (!recipe.success) return invalidInput(recipe.error);
+	const catalog = catalogChangesSchema.safeParse(
+		input.catalog ?? { ingredients: [], aliases: [] }
+	);
+	if (!catalog.success) return invalidInput(catalog.error);
 	try {
 		const created = await writeNewDish(
 			await getCurrentUserId(),
 			input.sectionId,
 			dish.data,
-			recipe.data
+			recipe.data,
+			catalog.data
 		);
 		refresh();
 		return { ok: true, data: created };

@@ -31,9 +31,15 @@ export function invalidInput(error: z.ZodError): ActionResult<never> {
  */
 export class RecordNotFoundError extends Error {}
 
+/**
+ * Thrown by data functions when the input clashes with stored data, e.g. a
+ * new ingredient named like an existing one; the message is safe to show.
+ */
+export class ConflictError extends Error {}
+
 /** Turns an error from a data function into a result to show. */
 export function failedResult(error: unknown): ActionResult<never> {
-	if (error instanceof RecordNotFoundError) {
+	if (error instanceof RecordNotFoundError || error instanceof ConflictError) {
 		return { ok: false, error: error.message };
 	}
 	console.error(error);

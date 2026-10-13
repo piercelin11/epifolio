@@ -15,6 +15,7 @@ import {
 	localizedTextSchema,
 	mapLocalized,
 	sameLocalizedText,
+	type Locale,
 	type LocalizedText,
 } from "@/lib/i18n/localized";
 
@@ -90,6 +91,64 @@ function matchLine(name: LocalizedText, catalog: IngredientNames[]) {
 		.find(Boolean);
 }
 
+type LineData = RecipeData["ingredientGroups"][number]["lines"][number];
+type StepData = RecipeData["stepGroups"][number]["steps"][number];
+
+/**
+ * The ingredient a line uses: an unchanged line keeps its own, a line
+ * still worded as its explicit link was made uses that link, any other
+ * line is matched by name. `created` maps new ingredients' keys to ids.
+ */
+function lineIngredient(
+	line: LineData,
+	previous: { name: unknown; ingredientId: string | null } | undefined,
+	catalog: IngredientNames[],
+	created: ReadonlyMap<string, string>
+): string | null {
+	if (previous && sameLocalizedText(readText(previous.name), line.name)) {
+		return previous.ingredientId;
+	}
+	const link = line.link;
+	if (link && sameLocalizedText(link.name, line.name)) {
+		switch (link.to.kind) {
+			case "none":
+				return null;
+			case "new":
+				return created.get(link.to.key) ?? null;
+			case "catalog": {
+				const { ingredientId } = link.to;
+				if (catalog.some((ingredient) => ingredient.id === ingredientId)) {
+					return ingredientId;
+				}
+			}
+		}
+	}
+	return matchLine(line.name, catalog) ?? null;
+}
+
+/**
+ * A step's text for one locale: the previous runs while the text is
+ * unchanged, else the draft's runs while they still join up to it (their
+ * lines cited by id or ref), else one plain run.
+ */
+function stepRuns(
+	step: StepData,
+	value: string,
+	locale: Locale,
+	before: StepText,
+	lineIds: ReadonlyMap<string, string>
+): NonNullable<StepText[Locale]> {
+	if (joinStepText(before)[locale] === value) return before[locale]!;
+	const parts = step.parts?.[locale];
+	if (parts && parts.map((part) => part.text).join("") === value) {
+		return parts.map(({ text, line }) => {
+			const lineId = line ? lineIds.get(line) : undefined;
+			return lineId ? { text, lineId } : { text };
+		});
+	}
+	return [{ text: value }];
+}
+
 /**
  * Writes a recipe's groups, lines, steps and references to match the draft.
  * Lines and steps that already exist keep their ids; an unchanged line
@@ -99,7 +158,8 @@ async function writeRecipeContent(
 	tx: Prisma.TransactionClient,
 	recipeId: string,
 	recipe: RecipeData,
-	catalog: IngredientNames[]
+	catalog: IngredientNames[],
+	created: ReadonlyMap<string, string> = new Map()
 ) {
 	const existing = await tx.recipe.findUniqueOrThrow({
 		where: { id: recipeId },
@@ -129,6 +189,8 @@ async function writeRecipeContent(
 
 	const keptGroups = new Set<string>();
 	const keptLines = new Set<string>();
+	/** Saved line ids by the id or ref a step's parts cite them with. */
+	const lineIds = new Map<string, string>();
 	for (const [g, group] of recipe.ingredientGroups.entries()) {
 		const fields = { label: group.label ?? Prisma.DbNull, position: g };
 		const { id: groupId } = group.id
@@ -141,10 +203,7 @@ async function writeRecipeContent(
 
 		for (const [i, line] of group.lines.entries()) {
 			const previous = line.id ? lines.get(line.id) : undefined;
-			const ingredientId =
-				previous && sameLocalizedText(readText(previous.name), line.name)
-					? previous.ingredientId
-					: (matchLine(line.name, catalog) ?? null);
+			const ingredientId = lineIngredient(line, previous, catalog, created);
 			const data = {
 				groupId,
 				position: i,
@@ -159,6 +218,7 @@ async function writeRecipeContent(
 				? await tx.recipeIngredient.update({ where: { id: line.id }, data })
 				: await tx.recipeIngredient.create({ data });
 			keptLines.add(id);
+			lineIds.set(line.id ?? line.ref ?? id, id);
 		}
 	}
 
@@ -174,9 +234,8 @@ async function writeRecipeContent(
 		for (const [i, step] of group.steps.entries()) {
 			const previous = step.id ? steps.get(step.id) : undefined;
 			const before = previous ? stepTextSchema.parse(previous.text) : {};
-			const joined = joinStepText(before);
 			const text: StepText = mapLocalized(step.text, (value, locale) =>
-				joined[locale] === value ? before[locale]! : [{ text: value }]
+				stepRuns(step, value, locale, before, lineIds)
 			);
 			const data = {
 				groupId,
@@ -246,11 +305,12 @@ export async function createRecipe(
 	tx: Prisma.TransactionClient,
 	userId: string,
 	recipe: RecipeData,
-	catalog: IngredientNames[]
+	catalog: IngredientNames[],
+	created?: ReadonlyMap<string, string>
 ): Promise<string> {
 	const { id } = await tx.recipe.create({
 		data: { userId, name: recipe.name, serves: recipe.serves, notes: [] },
 	});
-	await writeRecipeContent(tx, id, recipe, catalog);
+	await writeRecipeContent(tx, id, recipe, catalog, created);
 	return id;
 }

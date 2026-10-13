@@ -1,6 +1,8 @@
 import "server-only";
 
 import { getIngredientNames } from "@/features/ingredient/data/get-ingredient-names";
+import { writeCatalogChanges } from "@/features/ingredient/data/write-catalog-changes";
+import type { CatalogChangesData } from "@/features/ingredient/schema";
 import { createRecipe } from "@/features/recipe/data/recipe-draft";
 import type { RecipeData } from "@/features/recipe/schema";
 import { Prisma } from "@/generated/prisma/client";
@@ -12,13 +14,15 @@ import type { DishData } from "../schema";
 
 /**
  * Adds a dish to the end of a section: a new recipe and the menu item that
- * presents it, both in one transaction.
+ * presents it, both in one transaction, along with the catalog changes the
+ * recipe brings (new ingredients its lines cite, new aliases).
  */
 export async function writeNewDish(
 	userId: string,
 	sectionId: string,
 	dish: DishData,
-	recipe: RecipeData
+	recipe: RecipeData,
+	changes: CatalogChangesData = { ingredients: [], aliases: [] }
 ): Promise<{ recipeId: string; itemId: string }> {
 	return prisma.$transaction(async (tx) => {
 		const section = await tx.section.findFirst({
@@ -27,8 +31,9 @@ export async function writeNewDish(
 		});
 		if (!section) throw new RecordNotFoundError("Section not found.");
 
+		const created = await writeCatalogChanges(tx, changes, recipe);
 		const catalog = await getIngredientNames(tx);
-		const recipeId = await createRecipe(tx, userId, recipe, catalog);
+		const recipeId = await createRecipe(tx, userId, recipe, catalog, created);
 		const description = dish.description
 			? splitDescription(dish.description, null, catalog)
 			: null;
