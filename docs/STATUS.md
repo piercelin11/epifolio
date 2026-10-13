@@ -13,7 +13,8 @@
 - 合併後用 `curl` 確認 dev server 的 CSS 含 `group-has-focus-visible`（R2）。
 - 瀏覽器實測會寫入資料庫時，先 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`；使用者改過的主題在資料庫裡，不要用 seed 覆蓋。
 - 使用者確認 #72 的調整後關閉 #72。
-- 候選：#52（LLM 匯入，交接資訊在 issue 留言）、#42、#53、#56、#57、#71。
+- 合併 PLAN-006 後依序規劃：PLAN-007 = #52（LLM 匯入）、PLAN-008 = #42（食材價格與營養）、PLAN-009 = #53（雙語介面）。issue 標題有預定編號，交接資訊在各 issue 留言。API 金鑰已在 `.env`（`ANTHROPIC_API_KEY`）。
+- 其他候選：#56、#57、#71。
 - 2026-10-26 之後處理 #32。
 
 ## 卡點與待決定
