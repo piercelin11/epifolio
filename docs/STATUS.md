@@ -6,11 +6,11 @@
 
 ## 現在在做什麼
 
-分支 `plan-006-menu-recipe-editor`：PLAN-006（菜單與食譜編輯卡，父 issue #61）程式與文件都已完成；使用者試用後的第一輪調整（#72，含刪除整本菜單書、食譜紙編輯按鈕）也已完成並推上，CI 通過。等使用者確認調整結果，說「合併」再合併。
+分支 `chore/tailwind-canonical-lint`（#73）：ESLint 加入 `eslint-plugin-better-tailwindcss`，只開 `enforce-canonical-classes`（ADR-0021），現有違規已修正。已推上，等使用者說「合併」。
 
 ## 下一步
 
-- 合併後用 `curl` 確認 dev server 的 CSS 含 `--editor-menu-card`（R2）。
+- 合併後用 `curl` 確認 dev server 的 CSS 含 `group-has-focus-visible`（R2）。
 - 瀏覽器實測會寫入資料庫時，先 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`；使用者改過的主題在資料庫裡，不要用 seed 覆蓋。
 - 使用者確認 #72 的調整後關閉 #72。
 - 候選：#52（LLM 匯入，交接資訊在 issue 留言）、#42、#53、#56、#57、#71。
