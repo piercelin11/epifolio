@@ -6,16 +6,17 @@
 
 ## 現在在做什麼
 
-分支 `plan-007-llm-import`（PLAN-007，父 issue #52）：所有子任務都已實作並推上，CI 通過。#74–#78 已關閉；#79（匯入卡）、#80（食材確認卡）、#81（文件）等最後一步驗證。
+分支 `plan-007-llm-import`（PLAN-007，父 issue #52）：功能完成、CI 通過。使用者重啟 dev server 後已自行匯入並存檔成功（R6 的問題解決），整條流程驗證過。#74–#78 已關閉；#79、#80、#81 尚未關閉。
 
-最後一步：瀏覽器實測時，Text 匯入 → 食材確認卡 → 食譜卡都正常，但食譜卡按 Save 沒有寫入。推測是 R6：#76 加了 `Ingredient.nutritionEstimated`，dev server 仍用舊的 Prisma client（用新 client 直接寫入的測試是成功的）。
+最後的修正：新食材改成寫在每一行用量裡（不再用 key 交叉對應，之前 PDF 匯入時新食材全變成 Not linked）；prompt 加入「A 或 B」與新食材命名規則。
 
 ## 下一步
 
-- 使用者重啟 dev server 後，重跑瀏覽器流程到 Save（腳本在 scratchpad 的 `flow.mjs`，用 puppeteer-core + 本機 Chrome）。遵守 R8：單次執行花費不超過 US$0.03，從回應的 `usage.costUsd` 累加。測前 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`。
-- 通過後：計畫 `status: done`、計畫索引更新、關閉 #79 #80 #81 #52，等使用者說「合併」。
-- 若 Save 仍失敗：看 toast 與 dev server log，找原因。
+- 使用者確認後收尾：計畫 `status: done`、計畫索引更新、關閉 #79 #80 #81 #52，等使用者說「合併」。
+- 待使用者決定：資料庫中食材「Celery leaves or parsley」（中文已是巴西里）是否由 Claude 直接把英文名改成 Parsley；目前沒有編輯食材目錄的畫面。
+- 高湯等通用食材的對應規則（使用者先擱置）：選項 A 建「未指定」通用食材、B 預設某一種、C 不連結。
 - 之後：PLAN-008 = #42、PLAN-009 = #53；其他候選 #56、#57、#71；匯入的已知限制 #82–#84；2026-10-26 之後處理 #32。
+- 測試會呼叫 API 時遵守 R8（單次執行 ≤ US$0.03，從回應的 `usage.costUsd` 累加）。
 
 ## 卡點與待決定
 
