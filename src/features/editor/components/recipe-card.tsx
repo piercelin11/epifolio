@@ -54,7 +54,7 @@ function SectionTitle({
 	children?: ReactNode;
 }) {
 	return (
-		<div className="border-editor-card-foreground mt-6 mb-2 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-y-2 py-1.5 first:mt-0">
+		<div className="border-editor-card-foreground mt-16 mb-2 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-y-2 py-1.5 first:mt-0">
 			<span />
 			{/* Sized like the section titles on the recipe sheet */}
 			<h3 className="font-heading text-subheading font-bold uppercase">
