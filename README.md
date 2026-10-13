@@ -48,6 +48,7 @@ pnpm dev
 | Variable       | Description                                          |
 | -------------- | ---------------------------------------------------- |
 | `DATABASE_URL` | SQLite database file, defaults to `file:./prisma/dev.db` |
+| `ANTHROPIC_API_KEY` | Claude API key for importing recipes from text, photos and web pages; read on the server only |
 
 ## Documentation
 

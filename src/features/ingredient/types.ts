@@ -1,3 +1,5 @@
+import type { LocalizedText } from "@/lib/i18n/localized";
+
 // Presentation types for ingredients. An ingredient is reference data,
 // shared by every recipe line and menu item that names it by id.
 
@@ -22,4 +24,11 @@ export interface Ingredient {
 	image?: string;
 	price?: IngredientPrice;
 	nutrition?: Nutrition;
+}
+
+/** A catalog ingredient by its names, e.g. for choosing one in a list. */
+export interface CatalogIngredient {
+	id: string;
+	name: LocalizedText;
+	aliases: string[];
 }
