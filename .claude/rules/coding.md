@@ -27,7 +27,7 @@ paths:
 - Prisma 7 寫法：連線設定在 `prisma.config.ts`（不是 `schema.prisma` 的 `datasource.url`）；`PrismaClient` 必須搭配 driver adapter 建立。
 - `src/lib/db.ts` 檔頭有 `import "server-only"`，只能在 Server Component / Server Action import。
 - Prisma model 單數命名（`Recipe` 不是 `Recipes`），欄位 camelCase，名稱對齊 `docs/glossary.md`。
-- 修改 schema 後：`pnpm exec prisma migrate dev --name <name>`（會一併 generate）。
+- 修改 schema 後：`pnpm exec prisma migrate dev --name <name>`，再跑 `pnpm exec prisma generate`（Prisma 7 的 `migrate dev` 不會自動 generate，見 R6）。
 - **資料存取用 Server Actions**（不建 REST API），回傳可序列化的 plain object（`Date` 先轉字串）。
 - `cacheComponents` 啟用時，讀 DB 的元件需要 `<Suspense>` 包裹或 `"use cache"`，**不要用 `export const dynamic`**（與 `cacheComponents` 不相容）。寫之前先讀 `node_modules/next/dist/docs/01-app/01-getting-started/08-caching.md`。
 

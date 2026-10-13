@@ -146,3 +146,4 @@
 - R3. commit 的 `style` type 只用於不影響畫面的程式碼格式調整；調整 UI 視覺（字級、顏色、間距等 token 或 class）一律用 `feat` 或 `fix`（曾把手動微調字級標成 `style`，2026-10-12）
 - R4. 用無頭瀏覽器驗證點擊時，先用 `document.elementFromPoint` 確認點擊位置最上層的元素就是目標，或送出真正的滑鼠事件；不要只呼叫 `element.click()`，它不經過點擊判斷，抓不到被其他元素蓋住的情況（menu 按鈕被全高的書本容器蓋住，測試卻通過，2026-10-12）
 - R5. dev server 漏讀 `globals.css` 的原因是 `@tailwindcss/turbopack` 只用 mtime 判斷是否重新編譯，已改用 `@tailwindcss/postcss`（ADR-0010）；之前推測的「`sed` 以新檔取代原檔」不成立。改用後若仍漏讀，停下來問使用者，不要只靠重複修改繞過（改用 Edit 工具後仍連續漏讀，讀原始碼查明原因，2026-10-12）
+- R6. 改 Prisma schema 後，`migrate dev` 之外還要跑 `pnpm exec prisma generate`；Prisma 7 的 `migrate dev` 不會自動 generate，`src/generated/prisma` 會停在舊 schema（`MenuItem.price` 改選填後型別仍是必填，型別檢查才發現，2026-10-13）
