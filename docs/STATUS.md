@@ -6,13 +6,12 @@
 
 ## 現在在做什麼
 
-分支 `plan-006-menu-recipe-editor`：PLAN-006（菜單與食譜編輯卡，#51）草稿已寫好，等使用者確認；尚未寫程式。示意圖在對話中提供，重點已寫進計畫檔。
+分支 `plan-006-menu-recipe-editor`：PLAN-006（菜單與食譜編輯卡，父 issue #61）。已完成 #62（ADR 0017–0020）、#63（stationery、價格選填）、#64（schema 與 Server Actions）、#65（編輯器外殼）、#66（菜單編輯卡）、#67（匯入卡與翻面）。正在做 #68（食譜編輯卡）。
 
 ## 下一步
 
-- 使用者確認 PLAN-006 後：`status: approved`，建立父 issue 與子 issue，從任務 1（ADR）開始。
-- 迴紋針圖片由使用者在對話中提供（2275×2275 透明 PNG），任務 2 轉成 webp 放 `public/stationery/`；若換對話，需請使用者重新提供。
-- 後續計畫的交接資訊寫在 issue 留言：LLM 匯入 #52、食材管理 #42、雙語介面 #53。
+- #68 食譜編輯卡 → #69 卡片間轉場 → #70 文件。
+- 瀏覽器實測會寫入資料庫時，先 `sqlite3 prisma/dev.db ".backup <scratchpad>/dev-backup.db"`，測完 `.restore`；使用者自己改過的主題在資料庫裡，不要用 seed 覆蓋。
 - 2026-10-26 之後處理 #32。
 
 ## 卡點與待決定
