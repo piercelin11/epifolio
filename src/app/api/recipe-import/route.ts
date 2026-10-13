@@ -12,14 +12,19 @@ import {
 	importRecipe,
 } from "@/features/recipe-import/server/import-recipe";
 import { readWebPage } from "@/features/recipe-import/server/read-web-page";
-import type { ImportResponse } from "@/features/recipe-import/types";
+import type {
+	ImportResponse,
+	ImportUsage,
+} from "@/features/recipe-import/types";
 
 // Reads a recipe from pasted text, files or a web page with the model
 // (ADR-0022). A route handler rather than a Server Action: it takes large
 // files, and a cancelled request aborts the model call.
 
-const fail = (error: string, status: number) =>
-	Response.json({ ok: false, error } satisfies ImportResponse, { status });
+const fail = (error: string, status: number, usage?: ImportUsage) =>
+	Response.json({ ok: false, error, usage } satisfies ImportResponse, {
+		status,
+	});
 
 /** The source in the form data, or a message saying what is wrong with it. */
 async function readSource(
@@ -70,12 +75,12 @@ async function importWebPage(
 	signal: AbortSignal
 ) {
 	const text = await readWebPage(url, signal);
-	const imported = await importRecipe({ kind: "text", text }, catalog, signal);
-	const { references } = imported.recipe;
+	const result = await importRecipe({ kind: "text", text }, catalog, signal);
+	const { references } = result.imported.recipe;
 	if (!references.some((link) => link.url === url)) {
 		references.unshift({ url });
 	}
-	return imported;
+	return result;
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -90,20 +95,23 @@ export async function POST(request: Request): Promise<Response> {
 
 	const catalog = await getIngredientCatalog();
 	try {
-		const imported =
+		const { imported, usage } =
 			source.kind === "url"
 				? await importWebPage(source.url, catalog, request.signal)
 				: await importRecipe(source, catalog, request.signal);
 		return Response.json({
 			ok: true,
 			data: { imported, catalog },
+			usage,
 		} satisfies ImportResponse);
 	} catch (error) {
 		if (error instanceof Anthropic.APIUserAbortError) {
 			// The card stopped waiting; nobody reads this answer.
 			return new Response(null, { status: 499 });
 		}
-		if (error instanceof ImportError) return fail(error.message, 422);
+		if (error instanceof ImportError) {
+			return fail(error.message, 422, error.usage);
+		}
 		console.error(error);
 		return fail("Could not read the recipe. Try again.", 500);
 	}

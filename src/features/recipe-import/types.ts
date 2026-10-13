@@ -6,6 +6,14 @@ import type { ImportedRecipe } from "./lib/to-draft";
 /** Where an import reads from; Scratch is typed on the card instead. */
 export type ImportSourceKind = "text" | "files" | "url";
 
+/** What one import's model call used; outputTokens include thinking. */
+export interface ImportUsage {
+	inputTokens: number;
+	outputTokens: number;
+	/** Worked out from importConfig.price. */
+	costUsd: number;
+}
+
 /** What POST /api/recipe-import answers. */
 export interface ImportResponseData {
 	imported: ImportedRecipe;
@@ -13,4 +21,7 @@ export interface ImportResponseData {
 	catalog: CatalogIngredient[];
 }
 
-export type ImportResponse = ActionResult<ImportResponseData>;
+/** The result, with the call's usage whenever the model was called. */
+export type ImportResponse = ActionResult<ImportResponseData> & {
+	usage?: ImportUsage;
+};

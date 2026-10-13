@@ -8,6 +8,17 @@ export const importConfig = {
 	maxTokens: 16000,
 	/** How hard the model thinks: low | medium | high | xhigh | max. */
 	effort: "medium",
+	/**
+	 * USD per million tokens for `model`, to report what an import cost.
+	 * Prompts longer than `longPromptTokens` cost `longPromptFactor` times
+	 * as much (Haiku 5.5 pricing, 2026-10). Update with the model.
+	 */
+	price: {
+		input: 0.1,
+		output: 0.5,
+		longPromptTokens: 100_000,
+		longPromptFactor: 5,
+	},
 	/** Longest wait for the model before the import fails, in ms. */
 	timeoutMs: 120_000,
 	/** Longest pasted text, in characters. */

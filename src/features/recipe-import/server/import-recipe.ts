@@ -11,7 +11,9 @@ import { dishDraftSchema } from "@/features/menu/schema";
 import { recipeDraftSchema } from "@/features/recipe/schema";
 
 import { type ImportFileType, importConfig } from "../config";
+import { importUsage } from "../lib/cost";
 import { type ImportedRecipe, toImportedRecipe } from "../lib/to-draft";
+import type { ImportUsage } from "../types";
 import { llmOutputSchema } from "../llm-output";
 import { catalogMessage, systemPrompt } from "../prompt";
 
@@ -21,7 +23,10 @@ export type ImportSource =
 	| { kind: "files"; files: { type: ImportFileType; data: string }[] };
 
 /** A failed import; the message is safe to show. */
-export class ImportError extends Error {}
+export class ImportError extends Error {
+	/** Set when the model was called before the import failed. */
+	usage?: ImportUsage;
+}
 
 let client: Anthropic | undefined;
 
@@ -88,7 +93,7 @@ export async function importRecipe(
 	source: ImportSource,
 	catalog: CatalogIngredient[],
 	signal?: AbortSignal
-): Promise<ImportedRecipe> {
+): Promise<{ imported: ImportedRecipe; usage: ImportUsage }> {
 	if (!process.env.ANTHROPIC_API_KEY) {
 		throw new ImportError("Set ANTHROPIC_API_KEY in .env to import recipes.");
 	}
@@ -129,14 +134,22 @@ export async function importRecipe(
 		throw importError(error);
 	}
 
+	const usage = importUsage(response.usage);
+	console.info(
+		`recipe-import: ${usage.inputTokens} in / ${usage.outputTokens} out, about US$${usage.costUsd.toFixed(4)}`
+	);
+	/** An ImportError that reports the call's usage. */
+	const failure = (message: string) =>
+		Object.assign(new ImportError(message), { usage });
+
 	if (response.stop_reason === "refusal") {
-		throw new ImportError("The model declined to read this source.");
+		throw failure("The model declined to read this source.");
 	}
 	if (response.stop_reason === "max_tokens") {
-		throw new ImportError("The recipe is too long to read in one go.");
+		throw failure("The recipe is too long to read in one go.");
 	}
 	if (!response.parsed_output) {
-		throw new ImportError("Could not read the recipe. Try again.");
+		throw failure("Could not read the recipe. Try again.");
 	}
 	let imported: ImportedRecipe;
 	try {
@@ -145,7 +158,7 @@ export async function importRecipe(
 			new Set(catalog.map((ingredient) => ingredient.id))
 		);
 	} catch {
-		throw new ImportError("No recipe found in this source.");
+		throw failure("No recipe found in this source.");
 	}
 	// The cards save through these schemas; an answer they reject is a bug.
 	const checks = [
@@ -156,7 +169,7 @@ export async function importRecipe(
 	const failed = checks.find((check) => !check.success);
 	if (failed) {
 		console.error(failed.error);
-		throw new ImportError("Could not read the recipe. Try again.");
+		throw failure("Could not read the recipe. Try again.");
 	}
-	return imported;
+	return { imported, usage };
 }
