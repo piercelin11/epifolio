@@ -11,6 +11,7 @@ import {
 	canImport,
 	emptyImportInput,
 	fileProblem,
+	filesProblem,
 	type ImportInput,
 	requestImport,
 } from "@/features/recipe-import/lib/import-input";
@@ -92,7 +93,10 @@ function FilePicker({
 }) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [over, setOver] = useState(false);
-	const { maxCount, types } = importConfig.files;
+	const { maxCount, maxImageBytes, maxPdfBytes, maxTotalBytes, types } =
+		importConfig.files;
+	const mb = (bytes: number) => bytes / 1024 / 1024;
+	const tooMuch = filesProblem(files);
 
 	function add(list: FileList | null) {
 		if (!list) return;
@@ -126,7 +130,9 @@ function FilePicker({
 					Choose files or drag them here
 				</span>
 				<span className="text-caption">
-					JPEG, PNG, WebP or PDF, up to {maxCount} files
+					Photos (JPEG, PNG, WebP) up to {mb(maxImageBytes)} MB, PDFs up to{" "}
+					{mb(maxPdfBytes)} MB; up to {maxCount} files, {mb(maxTotalBytes)} MB
+					in all
 				</span>
 			</button>
 			<input
@@ -162,6 +168,7 @@ function FilePicker({
 					})}
 				</ul>
 			)}
+			{tooMuch && <p className="text-caption font-bold">{tooMuch}</p>}
 		</div>
 	);
 }

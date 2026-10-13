@@ -7,6 +7,10 @@ import {
 	isImportFileType,
 } from "@/features/recipe-import/config";
 import {
+	fileProblem,
+	filesProblem,
+} from "@/features/recipe-import/lib/import-input";
+import {
 	ImportError,
 	type ImportSource,
 	importRecipe,
@@ -42,17 +46,14 @@ async function readSource(
 		case "files": {
 			const files = form.getAll("files").filter((f) => f instanceof File);
 			if (files.length === 0) return "Choose a file first.";
-			if (files.length > importConfig.files.maxCount) {
-				return `Choose up to ${importConfig.files.maxCount} files.`;
-			}
+			const tooMuch = filesProblem(files);
+			if (tooMuch) return tooMuch;
 			const read: Extract<ImportSource, { kind: "files" }>["files"] = [];
 			for (const file of files) {
-				if (!isImportFileType(file.type)) {
-					return `${file.name}: use JPEG, PNG, WebP or PDF.`;
-				}
-				if (file.size > importConfig.files.maxBytes) {
-					return `${file.name} is too large.`;
-				}
+				const problem = fileProblem(file);
+				if (problem) return `${file.name}: ${problem}`;
+				// Checked by fileProblem; narrows the type for the API.
+				if (!isImportFileType(file.type)) continue;
 				const data = Buffer.from(await file.arrayBuffer()).toString("base64");
 				read.push({ type: file.type, data });
 			}

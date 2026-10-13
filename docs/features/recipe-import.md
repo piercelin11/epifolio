@@ -54,6 +54,7 @@ flowchart LR
 | 項目 | 規則 |
 | ---- | ---- |
 | 來源 | `Scratch`（手填）、`Text`（貼上）、`Photo`（JPEG / PNG / WebP / PDF，可多個、可拖放）、`URL` |
+| 檔案上限 | 照片與 PDF 各有單檔上限，另有總大小與檔案數上限（API 單次請求 32 MB，檔案以 base64 送出會變大約三分之一）；匯入卡當場提示，伺服器也再檢查一次 |
 | 讀取中 | Next 變成 `Spinner` 與 `Reading…`，輸入鎖住；Cancel 或離開卡片會中止請求 |
 | 成功 | 菜名與描述填回 Scratch 欄位並切到 Scratch；之後在 Scratch 按 Next 仍沿用這次匯入的結果 |
 | 網址 | 只抓公開的 `http(s)` 網址，每次轉址都檢查；先讀頁面的 JSON-LD `Recipe`，沒有就抽正文；網址加進 References（[ADR-0023](../adr/0023-url-import-extraction.md)） |
@@ -73,7 +74,7 @@ flowchart LR
 
 ## 參數
 
-- 模型、思考程度、逾時、檔案與網頁上限：見 `src/features/recipe-import/config.ts`。（待校準）
+- 模型、思考程度、逾時、檔案（照片、PDF、總量）與網頁上限：見 `src/features/recipe-import/config.ts`。（待校準）
 - prompt：見 `src/features/recipe-import/prompt.ts`；LLM 輸出格式：`src/features/recipe-import/llm-output.ts`。
 - 確認卡的底色與尺寸：見 `src/app/globals.css` 的 `--editor-review-card*`。（待校準，先與菜單卡同色）
 

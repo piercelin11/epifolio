@@ -24,12 +24,30 @@ function isWebAddress(text: string): boolean {
 	}
 }
 
+/** A file as the checks need it; browser and server File both fit. */
+interface FileSize {
+	type: string;
+	size: number;
+}
+
+const megabytes = (bytes: number) => bytes / 1024 / 1024;
+
 /** Why a file cannot be imported, or undefined when it can. */
-export function fileProblem(file: File): string | undefined {
+export function fileProblem(file: FileSize): string | undefined {
 	if (!isImportFileType(file.type)) return "Use JPEG, PNG, WebP or PDF.";
-	if (file.size > importConfig.files.maxBytes) {
-		const mb = importConfig.files.maxBytes / 1024 / 1024;
-		return `Larger than ${mb} MB.`;
+	const { maxImageBytes, maxPdfBytes } = importConfig.files;
+	const max = file.type === "application/pdf" ? maxPdfBytes : maxImageBytes;
+	if (file.size > max) return `Larger than ${megabytes(max)} MB.`;
+	return undefined;
+}
+
+/** Why the files together cannot be imported, or undefined when they can. */
+export function filesProblem(files: FileSize[]): string | undefined {
+	const { maxCount, maxTotalBytes } = importConfig.files;
+	if (files.length > maxCount) return `Choose up to ${maxCount} files.`;
+	const total = files.reduce((sum, file) => sum + file.size, 0);
+	if (total > maxTotalBytes) {
+		return `The files add up to more than ${megabytes(maxTotalBytes)} MB.`;
 	}
 	return undefined;
 }
@@ -47,7 +65,7 @@ export function canImport(source: ImportSourceChoice, input: ImportInput) {
 		case "photo":
 			return (
 				input.files.length > 0 &&
-				input.files.length <= importConfig.files.maxCount &&
+				!filesProblem(input.files) &&
 				input.files.every((file) => !fileProblem(file))
 			);
 	}

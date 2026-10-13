@@ -26,8 +26,15 @@ export const importConfig = {
 	files: {
 		/** Files per import, e.g. the pages of one recipe. */
 		maxCount: 5,
-		/** Largest file, in bytes. */
-		maxBytes: 5 * 1024 * 1024,
+		/** Largest photo, in bytes. */
+		maxImageBytes: 5 * 1024 * 1024,
+		/** Largest PDF, in bytes. */
+		maxPdfBytes: 10 * 1024 * 1024,
+		/**
+		 * All files together, in bytes. Sent base64-encoded (a third larger),
+		 * they must stay under the API's 32 MB request limit.
+		 */
+		maxTotalBytes: 20 * 1024 * 1024,
 		/** Accepted types; HEIC and other formats the API cannot read are refused. */
 		types: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
 	},
