@@ -37,7 +37,7 @@ updated: 2026-10-14
 | 菜單編輯卡 | `MenuCard`    | 編輯一本菜單書的書名、章節與品項的打孔卡片。                                   |
 | 匯入卡   | `ImportCard`    | 菜單編輯卡的背面，新增品項的起點：Scratch（手填）、Text、Photo、URL（交給 LLM 讀取）。 |
 | 食譜匯入 | `recipe-import` | 由 LLM 把文字、照片、PDF 或網頁整理成品項與食譜草稿；只產生草稿，Save 才寫入。 |
-| 食材確認卡 | `IngredientReviewCard` | 匯入後決定每行用量對應哪個食材的卡片：Matched、Alias、Suggested、New、Not linked。 |
+| 食材確認卡 | `IngredientReviewCard` | 匯入後決定每行用量對應哪個食材的卡片：已對上的收在最下方，未對上的選 Create new 或 Link to。 |
 | 食材比對 | `matchLine` | 用 LLM 給的標準名稱、同義詞與原文寫法，以程式比對食材目錄的名稱與別名，得到每行的狀態與候選。 |
 | 估計營養 | `nutritionEstimated` | 食材的營養是 LLM 估計、尚未確認的值。                                   |
 | 食譜編輯卡 | `RecipeCard`  | 編輯一份食譜的票券形卡片：名稱、份數、用量、步驟、參考連結。                   |
