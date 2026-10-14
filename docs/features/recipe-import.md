@@ -88,7 +88,7 @@ flowchart LR
 
 ## 相關連結
 
-- ADR：[ADR-0022](../adr/0022-llm-import-with-haiku.md)、[ADR-0023](../adr/0023-url-import-extraction.md)、[ADR-0024](../adr/0024-more-units.md)、[ADR-0025](../adr/0025-imported-ingredients.md)
+- ADR：[ADR-0022](../adr/0022-llm-import-with-haiku.md)、[ADR-0023](../adr/0023-url-import-extraction.md)、[ADR-0024](../adr/0024-more-units.md)、[ADR-0025](../adr/0025-imported-ingredients.md)；食材對應之後改由程式比對，見 [ADR-0026](../adr/0026-ingredient-matching-pipeline.md)
 - 計畫：[PLAN-007](../plans/PLAN-007-llm-import.md)
 - 外部服務：[資料來源](../data-sources.md)
 - Issue：#52

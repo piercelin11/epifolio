@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-007-llm-import
 issue: 52
 created: 2026-10-13
@@ -169,8 +169,8 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：`docs/features/editor.md` 補匯入與食材卡（或另開 `recipe-import.md`），`features/index.md`
-- [ ] ADR：任務 1 的各項
-- [ ] glossary：食材卡、匯入來源等新詞
-- [ ] `docs/architecture.md`：匯入資料流、`src/features/recipe-import/`；`CLAUDE.md` 第 4 節
-- [ ] `docs/data-sources.md`（新建）、`docs/vision.md`
+- [x] 功能頁：另開 `docs/features/recipe-import.md`，`editor.md` 與 `features/index.md` 連過去
+- [x] ADR：ADR-0022 到 ADR-0025；之後的食材對應改法見 ADR-0026
+- [x] glossary：食譜匯入、食材確認卡、估計營養
+- [x] `docs/architecture.md`：匯入資料流、`src/features/recipe-import/`；`CLAUDE.md` 第 4 節
+- [x] `docs/data-sources.md`（新建）、`docs/vision.md`
