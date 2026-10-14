@@ -1,4 +1,5 @@
 import type { NewIngredientDraft } from "@/features/ingredient/schema";
+import type { CatalogIngredient } from "@/features/ingredient/types";
 import { descriptionSeparator, type DishDraft } from "@/features/menu/schema";
 import { parseQuantity } from "@/features/recipe/lib/parse-quantity";
 import type { RecipeDraft } from "@/features/recipe/schema";
@@ -6,6 +7,7 @@ import { scalingConfig } from "@/features/recipe/scaling";
 import type { Localized, LocalizedText } from "@/lib/i18n/localized";
 
 import type { LlmLineIngredient, LlmOutput } from "../llm-output";
+import { type LineMatch, matchLine, normalize } from "./match-catalog";
 
 // Turns the model's answer into the editor's drafts. The answer already has
 // the right shape; this cleans its values so the drafts pass the same zod
@@ -17,6 +19,11 @@ export interface ImportedRecipe {
 	recipe: RecipeDraft;
 	/** Ingredients to create on save; recipe lines cite them by key. */
 	newIngredients: NewIngredientDraft[];
+	/**
+	 * How each food line was found in the catalog, by "group:line" (the
+	 * line's position in the recipe draft). Lines that are not food have none.
+	 */
+	matches: Record<string, LineMatch>;
 }
 
 interface Bilingual {
@@ -38,6 +45,17 @@ const isBlank = (text: LocalizedText) => Object.keys(text).length === 0;
 
 const nameKey = (text: Bilingual) =>
 	`${text.en.trim().toLowerCase()}|${text.zh.trim()}`;
+
+/** Drops repeats that differ only in case, width or punctuation. */
+function unique(texts: string[]): string[] {
+	const seen = new Set<string>();
+	return texts.filter((text) => {
+		const key = normalize(text);
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+}
 
 const nutrient = (value: number | null) =>
 	value !== null && Number.isFinite(value) && value >= 0 ? value : null;
@@ -61,101 +79,101 @@ function servings(value: number | null): number | null {
 		: null;
 }
 
+type LlmLine = LlmOutput["recipe"]["ingredientGroups"][number]["lines"][number];
+type LlmFood = Extract<LlmLineIngredient, { kind: "food" }>;
+
+/** The whole wording and the part before its first comma, per locale. */
+const wordingNames = (wording: LocalizedText) =>
+	Object.values(wording).flatMap((text) =>
+		text ? [text, text.split(/[,，]/)[0].trim()] : []
+	);
+
 /**
- * The drafts for an answer, given the ids in the ingredient catalog. Throws
- * when the answer has no recipe in it.
+ * The drafts for an answer, with each food line matched to the catalog in
+ * code (ADR-0026). Throws when the answer has no recipe in it. `warn`
+ * hears about anything dropped on the way.
  */
 export function toImportedRecipe(
 	output: LlmOutput,
-	catalogIds: ReadonlySet<string>
+	catalog: CatalogIngredient[],
+	warn: (message: string) => void = () => {}
 ): ImportedRecipe {
 	if (!output.isRecipe) throw new Error("No recipe found.");
 
 	// New ingredients by name; lines naming the same one share it.
 	const created = new Map<string, NewIngredientDraft>();
-	function newIngredient(
-		ingredient: Extract<LlmLineIngredient, { kind: "new" }> | null,
-		lineName: Bilingual
-	): string {
-		const source =
-			ingredient && !isBlank(localized(ingredient.name))
-				? ingredient.name
-				: lineName;
-		const id = nameKey(source);
-		const same = created.get(id);
-		const aliases = (ingredient?.aliases ?? [])
+	function newIngredient(food: LlmFood, wording: LocalizedText): string {
+		const named = localized(food.name);
+		const name = isBlank(named) ? wording : named;
+		const id = nameKey({ en: name.en ?? "", zh: name.zh ?? "" });
+		const taken = new Set(Object.values(name).map((n) => normalize(n ?? "")));
+		const aliases = [...food.terms, ...wordingNames(wording)]
 			.map((alias) => alias.trim())
-			.filter(Boolean);
+			.filter((alias) => alias && !taken.has(normalize(alias)));
+		const same = created.get(id);
 		if (same) {
-			same.aliases = [...new Set([...same.aliases, ...aliases])];
+			same.aliases = unique([...same.aliases, ...aliases]);
 			return same.key;
 		}
 		const nutrition = {
-			calories: nutrient(ingredient?.calories ?? null),
-			protein: nutrient(ingredient?.protein ?? null),
-			carbs: nutrient(ingredient?.carbs ?? null),
-			fat: nutrient(ingredient?.fat ?? null),
+			calories: nutrient(food.calories),
+			protein: nutrient(food.protein),
+			carbs: nutrient(food.carbs),
+			fat: nutrient(food.fat),
 		};
 		const key = `new-${created.size + 1}`;
 		created.set(id, {
 			key,
-			name: localized(source),
-			aliases: [...new Set(aliases)],
+			name,
+			aliases: unique(aliases),
 			nutrition,
 			nutritionEstimated: Object.values(nutrition).some((v) => v !== null),
 		});
 		return key;
 	}
 
-	/**
-	 * Where a line links. A catalog id the catalog lacks becomes a new
-	 * ingredient named after the line, so it shows up for review instead
-	 * of silently losing its ingredient.
-	 */
-	function linkTo(
-		line: LlmOutput["recipe"]["ingredientGroups"][number]["lines"][number]
-	) {
+	const matches: Record<string, LineMatch> = {};
+	/** Where a line links: its best catalog candidate, a new ingredient, or none. */
+	function linkTo(line: LlmLine, wording: LocalizedText, position: string) {
 		const { ingredient } = line;
-		switch (ingredient.kind) {
-			case "catalog":
-				return catalogIds.has(ingredient.id)
-					? { kind: "catalog" as const, ingredientId: ingredient.id }
-					: { kind: "new" as const, key: newIngredient(null, line.name) };
-			case "new":
-				return {
-					kind: "new" as const,
-					key: newIngredient(ingredient, line.name),
-				};
-			case "none":
-				return { kind: "none" as const };
-		}
+		if (ingredient.kind === "none") return { kind: "none" as const };
+		const match = matchLine(
+			{ wording, name: localized(ingredient.name), terms: ingredient.terms },
+			catalog
+		);
+		matches[position] = match;
+		return match.status === "new"
+			? { kind: "new" as const, key: newIngredient(ingredient, wording) }
+			: { kind: "catalog" as const, ingredientId: match.candidates[0] };
 	}
 
 	const refs = new Set<string>();
-	const ingredientGroups = output.recipe.ingredientGroups.map((group) => ({
-		label: localized(group.label),
-		lines: group.lines.flatMap((line): Line[] => {
+	const ingredientGroups = output.recipe.ingredientGroups.map((group, g) => {
+		const lines: Line[] = [];
+		for (const line of group.lines) {
 			const name = localized(line.name);
-			if (isBlank(name)) return [];
+			if (isBlank(name)) {
+				warn(`Dropped an ingredient line with no name (${line.ref}).`);
+				continue;
+			}
 			const ref = line.ref.trim();
-			const to = linkTo(line);
-			const unique = ref && !refs.has(ref);
-			if (unique) refs.add(ref);
-			return [
-				{
-					...(unique ? { ref } : {}),
-					quantity:
-						parseQuantity(line.quantity) === undefined
-							? ""
-							: line.quantity.trim(),
-					unit: line.unit,
-					name,
-					note: localized(line.note),
-					link: { to, name },
-				},
-			];
-		}),
-	}));
+			const to = linkTo(line, name, `${g}:${lines.length}`);
+			const fresh = ref && !refs.has(ref);
+			if (fresh) refs.add(ref);
+			lines.push({
+				...(fresh ? { ref } : {}),
+				quantity:
+					parseQuantity(line.quantity) === undefined
+						? ""
+						: line.quantity.trim(),
+				unit: line.unit,
+				name,
+				note: localized(line.note),
+				link: { to, name },
+			});
+		}
+		return { label: localized(group.label), lines };
+	});
 
 	const stepGroups = output.recipe.stepGroups.map((group) => ({
 		label: localized(group.label),
@@ -171,11 +189,19 @@ export function toImportedRecipe(
 					line && refs.has(line) ? { text, line } : { text }
 				);
 			}
-			if (isBlank(text)) return [];
-			return [{ title: localized(step.title), text, parts }];
+			const title = localized(step.title);
+			if (isBlank(text)) {
+				if (isBlank(title)) {
+					warn("Dropped a step with no text and no title.");
+					return [];
+				}
+				// A step that came back as a title alone keeps the title as its text.
+				warn("A step came back without text; its title stands in.");
+				return [{ title: {}, text: title }];
+			}
+			return [{ title, text, parts }];
 		}),
 	}));
-
 	const dishName = localized(output.dish.name);
 	const recipeName = localized(output.recipe.name);
 	const name = isBlank(recipeName) ? dishName : recipeName;
@@ -209,5 +235,6 @@ export function toImportedRecipe(
 				.map((url) => ({ url })),
 		},
 		newIngredients: [...created.values()],
+		matches,
 	};
 }

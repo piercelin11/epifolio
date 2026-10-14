@@ -13,16 +13,17 @@ const bilingual = z.object({ en: z.string(), zh: z.string() });
 const run = z.object({ text: z.string(), line: z.string().nullable() });
 
 /**
- * The ingredient a line uses, decided on the line itself: an existing
- * catalog ingredient by id, a new one described in place, or none.
+ * What a line's ingredient is, without the catalog (ADR-0026): its plain
+ * name, other names to look it up by, and estimated nutrition; or not a
+ * food at all. The catalog match is made in code.
  */
 const lineIngredient = z.discriminatedUnion("kind", [
-	z.object({ kind: z.literal("catalog"), id: z.string() }),
 	z.object({
-		kind: z.literal("new"),
-		/** Plain product name, without preparation words. */
+		kind: z.literal("food"),
+		/** Plain product name in the form the recipe uses, no preparation. */
 		name: bilingual,
-		aliases: z.array(z.string()),
+		/** Other names for it, in either language. */
+		terms: z.array(z.string()),
 		/** Per 100 g; null when unknown. */
 		calories: z.number().nullable(),
 		protein: z.number().nullable(),

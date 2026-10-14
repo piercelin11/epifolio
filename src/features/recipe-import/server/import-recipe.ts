@@ -15,7 +15,8 @@ import { importUsage } from "../lib/cost";
 import { type ImportedRecipe, toImportedRecipe } from "../lib/to-draft";
 import type { ImportUsage } from "../types";
 import { llmOutputSchema } from "../llm-output";
-import { catalogMessage, systemPrompt } from "../prompt";
+import { systemPrompt } from "../prompt";
+import { saveRawResponse } from "./raw-responses";
 
 /** What to read: text (pasted, or taken from a web page) or files. */
 export type ImportSource =
@@ -101,12 +102,6 @@ export async function importRecipe(
 		...(source.kind === "files" ? source.files.map(fileBlock) : []),
 		{
 			type: "text",
-			text: catalogMessage(
-				catalog.map(({ id, name, aliases }) => ({ id, ...name, aliases }))
-			),
-		},
-		{
-			type: "text",
 			text:
 				source.kind === "text"
 					? `Recipe source:\n\n${source.text}`
@@ -134,6 +129,7 @@ export async function importRecipe(
 		throw importError(error);
 	}
 
+	await saveRawResponse(source.kind, response);
 	const usage = importUsage(response.usage);
 	console.info(
 		`recipe-import: ${usage.inputTokens} in / ${usage.outputTokens} out, about US$${usage.costUsd.toFixed(4)}`
@@ -153,9 +149,8 @@ export async function importRecipe(
 	}
 	let imported: ImportedRecipe;
 	try {
-		imported = toImportedRecipe(
-			response.parsed_output,
-			new Set(catalog.map((ingredient) => ingredient.id))
+		imported = toImportedRecipe(response.parsed_output, catalog, (message) =>
+			console.warn(`recipe-import: ${message}`)
 		);
 	} catch {
 		throw failure("No recipe found in this source.");
