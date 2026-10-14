@@ -1,50 +1,38 @@
-import {
-	type IngredientNames,
-	matchIngredient,
-} from "@/features/ingredient/lib/match-ingredient";
 import type {
 	CatalogChanges,
 	NewIngredientDraft,
 } from "@/features/ingredient/schema";
 import type { CatalogIngredient } from "@/features/ingredient/types";
 import type { RecipeDraft } from "@/features/recipe/schema";
-import {
-	type Locale,
-	type LocalizedText,
-	localize,
-	locales,
-} from "@/lib/i18n/localized";
+import { type LocalizedText, localize, locales } from "@/lib/i18n/localized";
 
 import { wordingNamesIngredient } from "./match-catalog";
-import type { ImportedRecipe } from "./to-draft";
+import type { FreshIngredient, ImportedRecipe } from "./to-draft";
 
-// The ingredient card's model: one row per imported ingredient line, each
-// deciding which catalog ingredient the line uses (ADR-0025). Pure, so the
-// card only presents it.
+// The ingredient review card's model: one row per imported food line, each
+// either linking the line to a catalog ingredient or creating a new one.
+// Aliases and nutrition are settled here, not by the cook (ADR-0025,
+// ADR-0026). Pure, so the card only presents it.
 
-/** What a row's line will be linked to. */
+/** What a row's line will be linked to; a link may still lack its pick. */
 export type RowChoice =
-	| { kind: "catalog"; ingredientId: string; addAlias: boolean }
-	| { kind: "new"; key: string }
-	| { kind: "none" };
-
-/** How a row's choice relates to its wording, for the row's tag. */
-export type RowStatus = "matched" | "alias" | "suggested" | "new" | "none";
+	| { kind: "catalog"; ingredientId: string | null }
+	| { kind: "new"; key: string };
 
 export interface IngredientRow {
 	/** Position of the line, "group:line". */
 	id: string;
 	/** The line's wording in the recipe. */
 	wording: LocalizedText;
-	/** Where the line sits, e.g. "Sauce · 2 tbsp". */
-	where: string;
 	choice: RowChoice;
-	/** Catalog ids the line's names point to, best first (ADR-0026). */
-	candidates: string[];
-	/** For a new line: catalog ids that loosely resemble it. */
-	maybe: string[];
-	/** Set once the cook picks an ingredient for the row. */
-	confirmed: boolean;
+	/** The import found the wording among an ingredient's names. */
+	matched: boolean;
+	/** Catalog ids that fit, best first, then loose resemblances. */
+	suggestions: string[];
+	/** The ingredient this row creates when it is set to Create new. */
+	fresh: FreshIngredient;
+	/** Key of that ingredient; rows naming the same one share it. */
+	newKey: string;
 }
 
 export interface IngredientChoices {
@@ -53,60 +41,104 @@ export interface IngredientChoices {
 	newIngredients: NewIngredientDraft[];
 }
 
-const toNames = (catalog: CatalogIngredient[]): IngredientNames[] =>
-	catalog.map(({ id, name, aliases }) => ({
-		id,
-		names: [...Object.values(name), ...aliases].filter((n): n is string =>
-			Boolean(n)
-		),
-	}));
-
-export function rowStatus(
-	row: IngredientRow,
-	catalog: CatalogIngredient[]
-): RowStatus {
-	if (row.choice.kind !== "catalog") return row.choice.kind;
-	// Several ingredients fit and the cook has not picked one yet.
-	if (!row.confirmed && row.candidates.length > 1) return "suggested";
-	const { ingredientId } = row.choice;
-	const ingredient = catalog.find((i) => i.id === ingredientId);
-	return ingredient && wordingNamesIngredient(row.wording, ingredient)
-		? "matched"
-		: "alias";
-}
-
-/** The rows for an import, with the model's choices. */
-export function ingredientChoices(
-	imported: ImportedRecipe,
-	locale: Locale
-): IngredientChoices {
+/** The rows for an import's food lines; lines that are not food stay unlinked. */
+export function ingredientChoices(imported: ImportedRecipe): IngredientChoices {
 	const rows = imported.recipe.ingredientGroups.flatMap((group, g) =>
-		group.lines.map((line, i): IngredientRow => {
-			const to = line.link?.to ?? { kind: "none" as const };
-			const amount = [line.quantity, line.unit].filter(Boolean).join(" ");
-			const match = imported.matches[`${g}:${i}`];
-			return {
-				id: `${g}:${i}`,
-				wording: line.name,
-				where: [localize(group.label ?? {}, locale), amount]
-					.filter(Boolean)
-					.join(" · "),
-				choice: to.kind === "catalog" ? { ...to, addAlias: true } : { ...to },
-				candidates: match?.candidates ?? [],
-				maybe: match?.maybe ?? [],
-				confirmed: false,
-			};
+		group.lines.flatMap((line, i): IngredientRow[] => {
+			const id = `${g}:${i}`;
+			const match = imported.matches[id];
+			if (!match) return [];
+			const to = line.link?.to;
+			return [
+				{
+					id,
+					wording: line.name,
+					choice:
+						to?.kind === "new"
+							? to
+							: {
+									kind: "catalog",
+									ingredientId: to?.kind === "catalog" ? to.ingredientId : null,
+								},
+					matched: match.status === "matched",
+					suggestions: [...match.candidates, ...match.maybe],
+					fresh: match.fresh,
+					newKey: to?.kind === "new" ? to.key : `row:${id}`,
+				},
+			];
 		})
 	);
 	return { rows, newIngredients: imported.newIngredients };
 }
 
-/** True when every row already names its catalog ingredient. */
-export function allMatched(
+/** True when every food line already names its catalog ingredient. */
+export function allMatched(choices: IngredientChoices): boolean {
+	return choices.rows.every((row) => row.matched);
+}
+
+function updateRow(
 	choices: IngredientChoices,
-	catalog: CatalogIngredient[]
-): boolean {
-	return choices.rows.every((row) => rowStatus(row, catalog) === "matched");
+	rowId: string,
+	choice: RowChoice
+): IngredientChoices {
+	return {
+		...choices,
+		rows: choices.rows.map((row) =>
+			row.id === rowId ? { ...row, choice } : row
+		),
+	};
+}
+
+/** Links the row's line to a catalog ingredient (or clears the pick). */
+export function linkRow(
+	choices: IngredientChoices,
+	rowId: string,
+	ingredientId: string | null
+): IngredientChoices {
+	return updateRow(choices, rowId, { kind: "catalog", ingredientId });
+}
+
+/** Switches the row to Link to, picking its best suggestion. */
+export function linkRowToSuggestion(
+	choices: IngredientChoices,
+	rowId: string
+): IngredientChoices {
+	const row = choices.rows.find((r) => r.id === rowId);
+	return linkRow(choices, rowId, row?.suggestions[0] ?? null);
+}
+
+/** Switches the row to Create new, with the model's name and nutrition. */
+export function createForRow(
+	choices: IngredientChoices,
+	rowId: string
+): IngredientChoices {
+	const row = choices.rows.find((r) => r.id === rowId);
+	if (!row) return choices;
+	const exists = choices.newIngredients.some((i) => i.key === row.newKey);
+	const next = updateRow(choices, rowId, { kind: "new", key: row.newKey });
+	return exists
+		? next
+		: {
+				...next,
+				newIngredients: [
+					...next.newIngredients,
+					{ key: row.newKey, ...row.fresh },
+				],
+			};
+}
+
+/** Renames a new ingredient in one locale. */
+export function renameNew(
+	choices: IngredientChoices,
+	key: string,
+	name: LocalizedText
+): IngredientChoices {
+	return {
+		...choices,
+		newIngredients: choices.newIngredients.map((item) =>
+			item.key === key ? { ...item, name } : item
+		),
+	};
 }
 
 /** New ingredients some row still chooses. */
@@ -121,41 +153,60 @@ export function chosenNewIngredients(
 	return choices.newIngredients.filter((item) => keys.has(item.key));
 }
 
+/** True when `text` is one of the ingredient's names or aliases. */
+const names =
+	(ingredient: { name: LocalizedText; aliases: string[] }) => (text: string) =>
+		wordingNamesIngredient({ en: text }, { id: "", ...ingredient });
+
 /**
- * The first problem with the new ingredients, by key: a blank name, or a
- * name the catalog or another new ingredient already has.
+ * What stops each row from being saved, by row id: a link with no pick, a
+ * new ingredient with no name, or one named like an existing ingredient.
  */
-export function newIngredientProblems(
+export function rowProblems(
 	choices: IngredientChoices,
 	catalog: CatalogIngredient[]
 ): Map<string, string> {
-	const problems = new Map<string, string>();
-	const names = toNames(catalog);
+	const byKey = new Map<string, string>();
+	const taken: { id: string; name: LocalizedText; aliases: string[] }[] = [
+		...catalog,
+	];
 	for (const item of chosenNewIngredients(choices)) {
 		const texts = locales
 			.map((locale) => item.name[locale]?.trim())
 			.filter((t): t is string => Boolean(t));
 		if (texts.length === 0) {
-			problems.set(item.key, "Enter a name.");
+			byKey.set(item.key, "Enter a name.");
 			continue;
 		}
-		const clash = texts.map((t) => matchIngredient(t, names)).find(Boolean);
+		const clash = taken.find((other) => texts.some(names(other)));
 		if (clash) {
-			const existing = catalog.find((i) => i.id === clash);
-			problems.set(
+			byKey.set(
 				item.key,
-				`"${localize(existing?.name)}" is already in the catalog. Link to it instead.`
+				`"${localize(clash.name)}" already exists. Link to it instead.`
 			);
 			continue;
 		}
-		names.push({ id: item.key, names: texts });
+		taken.push({ id: item.key, name: item.name, aliases: [] });
+	}
+
+	const problems = new Map<string, string>();
+	for (const row of choices.rows) {
+		const { choice } = row;
+		const problem =
+			choice.kind === "catalog"
+				? choice.ingredientId
+					? undefined
+					: "Pick an ingredient."
+				: byKey.get(choice.key);
+		if (problem) problems.set(row.id, problem);
 	}
 	return problems;
 }
 
 /**
  * The recipe with each line linked as its row chose, and the catalog
- * changes to save with it.
+ * changes to save with it. A line linked to an ingredient whose names do
+ * not include its wording teaches the catalog that wording as an alias.
  */
 export function applyChoices(
 	recipe: RecipeDraft,
@@ -164,13 +215,19 @@ export function applyChoices(
 ): { recipe: RecipeDraft; catalog: CatalogChanges } {
 	const byId = new Map(choices.rows.map((row) => [row.id, row]));
 	const aliases: CatalogChanges["aliases"] = [];
+	const added = new Set<string>();
 	for (const row of choices.rows) {
-		if (row.choice.kind !== "catalog" || !row.choice.addAlias) continue;
-		if (rowStatus(row, catalog) !== "alias") continue;
-		for (const text of new Set(Object.values(row.wording))) {
-			if (text?.trim()) {
-				aliases.push({ ingredientId: row.choice.ingredientId, alias: text });
-			}
+		const { choice } = row;
+		if (choice.kind !== "catalog" || !choice.ingredientId) continue;
+		const ingredient = catalog.find((i) => i.id === choice.ingredientId);
+		if (!ingredient || wordingNamesIngredient(row.wording, ingredient))
+			continue;
+		for (const text of Object.values(row.wording)) {
+			const alias = text?.trim();
+			const id = `${choice.ingredientId}|${alias?.toLowerCase()}`;
+			if (!alias || added.has(id)) continue;
+			added.add(id);
+			aliases.push({ ingredientId: choice.ingredientId, alias });
 		}
 	}
 	return {
@@ -181,13 +238,16 @@ export function applyChoices(
 				lines: group.lines.map((line, i) => {
 					const row = byId.get(`${g}:${i}`);
 					if (!row) return line;
+					const { choice } = row;
 					const to =
-						row.choice.kind === "catalog"
-							? {
-									kind: "catalog" as const,
-									ingredientId: row.choice.ingredientId,
-								}
-							: row.choice;
+						choice.kind === "new"
+							? choice
+							: choice.ingredientId
+								? {
+										kind: "catalog" as const,
+										ingredientId: choice.ingredientId,
+									}
+								: { kind: "none" as const };
 					return { ...line, link: { to, name: line.name } };
 				}),
 			})),

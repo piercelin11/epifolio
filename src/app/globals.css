@@ -117,8 +117,8 @@
 	/* Editor cards (EditorLayer); the same in every menu theme */
 	--editor-menu-card: #b4b1ad;
 	--editor-recipe-card: #c2b8ae;
-	/* The ingredient review after an import; matches the menu card for now */
-	--editor-review-card: var(--editor-menu-card);
+	/* The ingredient review after an import: the ingredient card's stock */
+	--editor-review-card: var(--ingredient-card);
 	--editor-card-foreground: #212121;
 	/* Laid over the shelf while a card is open */
 	--editor-scrim: rgb(0 0 0 / 0.3);
@@ -262,8 +262,12 @@
 	--editor-menu-card-height: min(30rem, 100dvh - 4rem);
 	--editor-recipe-card-width: 50rem;
 	--editor-recipe-card-height: min(68rem, 100dvh - 2rem);
-	--editor-review-card-width: 46rem;
-	--editor-review-card-height: min(46rem, 100dvh - 2rem);
+	--editor-review-card-width: 40rem;
+	--editor-review-card-height: min(44rem, 100dvh - 4rem);
+	--editor-review-card-padding: 2.5rem;
+	/* Binder clip over the review card's top-right corner */
+	--editor-review-clip-width: 8rem;
+	--editor-review-clip-right: 2rem;
 	--editor-card-padding: 1.75rem;
 	--editor-recipe-card-padding: 3rem;
 	/* Punched holes along the top of the menu card */

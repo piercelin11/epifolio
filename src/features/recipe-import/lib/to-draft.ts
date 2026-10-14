@@ -23,8 +23,14 @@ export interface ImportedRecipe {
 	 * How each food line was found in the catalog, by "group:line" (the
 	 * line's position in the recipe draft). Lines that are not food have none.
 	 */
-	matches: Record<string, LineMatch>;
+	matches: Record<string, ImportedMatch>;
 }
+
+/** A new ingredient as the model described it, before it gets a key. */
+export type FreshIngredient = Omit<NewIngredientDraft, "key">;
+
+/** A food line's catalog match, and the ingredient to create instead. */
+export type ImportedMatch = LineMatch & { fresh: FreshIngredient };
 
 interface Bilingual {
 	en: string;
@@ -100,39 +106,50 @@ export function toImportedRecipe(
 ): ImportedRecipe {
 	if (!output.isRecipe) throw new Error("No recipe found.");
 
-	// New ingredients by name; lines naming the same one share it.
-	const created = new Map<string, NewIngredientDraft>();
-	function newIngredient(food: LlmFood, wording: LocalizedText): string {
+	/**
+	 * The ingredient a food line would create: the model's name (else the
+	 * wording), its other names and the wording as aliases, and its
+	 * estimated nutrition.
+	 */
+	function freshIngredient(
+		food: LlmFood,
+		wording: LocalizedText
+	): FreshIngredient {
 		const named = localized(food.name);
 		const name = isBlank(named) ? wording : named;
-		const id = nameKey({ en: name.en ?? "", zh: name.zh ?? "" });
 		const taken = new Set(Object.values(name).map((n) => normalize(n ?? "")));
 		const aliases = [...food.terms, ...wordingNames(wording)]
 			.map((alias) => alias.trim())
 			.filter((alias) => alias && !taken.has(normalize(alias)));
-		const same = created.get(id);
-		if (same) {
-			same.aliases = unique([...same.aliases, ...aliases]);
-			return same.key;
-		}
 		const nutrition = {
 			calories: nutrient(food.calories),
 			protein: nutrient(food.protein),
 			carbs: nutrient(food.carbs),
 			fat: nutrient(food.fat),
 		};
-		const key = `new-${created.size + 1}`;
-		created.set(id, {
-			key,
+		return {
 			name,
 			aliases: unique(aliases),
 			nutrition,
 			nutritionEstimated: Object.values(nutrition).some((v) => v !== null),
-		});
+		};
+	}
+
+	// New ingredients by name; lines naming the same one share it.
+	const created = new Map<string, NewIngredientDraft>();
+	function newIngredient(fresh: FreshIngredient): string {
+		const id = nameKey({ en: fresh.name.en ?? "", zh: fresh.name.zh ?? "" });
+		const same = created.get(id);
+		if (same) {
+			same.aliases = unique([...same.aliases, ...fresh.aliases]);
+			return same.key;
+		}
+		const key = `new-${created.size + 1}`;
+		created.set(id, { key, ...fresh });
 		return key;
 	}
 
-	const matches: Record<string, LineMatch> = {};
+	const matches: Record<string, ImportedMatch> = {};
 	/** Where a line links: its best catalog candidate, a new ingredient, or none. */
 	function linkTo(line: LlmLine, wording: LocalizedText, position: string) {
 		const { ingredient } = line;
@@ -141,9 +158,10 @@ export function toImportedRecipe(
 			{ wording, name: localized(ingredient.name), terms: ingredient.terms },
 			catalog
 		);
-		matches[position] = match;
+		const fresh = freshIngredient(ingredient, wording);
+		matches[position] = { ...match, fresh };
 		return match.status === "new"
-			? { kind: "new" as const, key: newIngredient(ingredient, wording) }
+			? { kind: "new" as const, key: newIngredient(fresh) }
 			: { kind: "catalog" as const, ingredientId: match.candidates[0] };
 	}
 

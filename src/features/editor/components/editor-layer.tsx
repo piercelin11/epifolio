@@ -271,9 +271,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		sectionId: string,
 		current: { imported: ImportResponseData; choices: IngredientChoices } | null
 	) {
-		const review =
-			current !== null &&
-			!allMatched(current.choices, current.imported.catalog);
+		const review = current !== null && !allMatched(current.choices);
 		setViaReview(review);
 		editor.go({
 			card: review ? "ingredient-review" : "new-recipe",
@@ -322,7 +320,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 								}
 							}}
 							onImported={(data) => {
-								const next = ingredientChoices(data.imported, defaultLocale);
+								const next = ingredientChoices(data.imported);
 								setImported(data);
 								setChoices(next);
 								setDish(data.imported.dish);

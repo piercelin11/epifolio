@@ -7,7 +7,8 @@ type EditorCardVariant = "menu" | "recipe" | "review";
 interface EditorCardProps {
 	/**
 	 * Menu: punched along the top, with a paper clip. Recipe: a ticket.
-	 * Review: a smaller ticket, for the ingredients an import found.
+	 * Review: the ingredient card's stock and binder clip, for the
+	 * ingredients an import found.
 	 */
 	variant: EditorCardVariant;
 	/** The card's other face, showing faintly through the stock, mirrored. */
@@ -48,8 +49,7 @@ export function EditorCard({
 						menu: "editor-punched bg-editor-menu-card h-(--editor-menu-card-height)",
 						recipe:
 							"editor-ticket bg-editor-recipe-card h-(--editor-recipe-card-height)",
-						review:
-							"editor-ticket bg-editor-review-card h-(--editor-review-card-height)",
+						review: "bg-editor-review-card h-(--editor-review-card-height)",
 					}[variant]
 				)}
 			>
@@ -68,6 +68,14 @@ export function EditorCard({
 				)}
 				<div className="relative flex min-h-0 flex-1 flex-col">{children}</div>
 			</div>
+			{variant === "review" && (
+				// The clip image is 263 by 240; its jaw starts at 0.56 of its width
+				// from the top, so that much of it rises above the card.
+				<div
+					aria-hidden
+					className="pointer-events-none absolute top-[calc(var(--editor-review-clip-width)*-0.56)] right-(--editor-review-clip-right) aspect-240/263 w-(--editor-review-clip-width) bg-(image:--ingredient-card-clip) bg-contain bg-no-repeat"
+				/>
+			)}
 			{menu && (
 				<div
 					aria-hidden
@@ -102,9 +110,13 @@ export function EditorCardLayout({
 		<div
 			className={cn(
 				"flex min-h-0 flex-1 flex-col gap-4 px-(--card-padding) pb-(--card-padding)",
-				variant === "menu"
-					? "pt-[calc(var(--editor-hole-top)+var(--editor-hole-size)+1.25rem)] [--card-padding:var(--editor-card-padding)]"
-					: "pt-(--card-padding) [--card-padding:var(--editor-recipe-card-padding)]"
+				{
+					menu: "pt-[calc(var(--editor-hole-top)+var(--editor-hole-size)+1.25rem)] [--card-padding:var(--editor-card-padding)]",
+					recipe:
+						"pt-(--card-padding) [--card-padding:var(--editor-recipe-card-padding)]",
+					review:
+						"pt-(--card-padding) [--card-padding:var(--editor-review-card-padding)]",
+				}[variant]
 			)}
 		>
 			{header}
