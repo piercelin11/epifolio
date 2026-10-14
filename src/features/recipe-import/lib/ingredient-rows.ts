@@ -142,7 +142,7 @@ export function renameNew(
 }
 
 /** New ingredients some row still chooses. */
-export function chosenNewIngredients(
+function chosenNewIngredients(
 	choices: IngredientChoices
 ): NewIngredientDraft[] {
 	const keys = new Set(
