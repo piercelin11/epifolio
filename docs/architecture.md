@@ -20,7 +20,7 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
 | 首頁版面 | 菜單書架（`MenuShelf`），每本書是一組紙張堆疊（`PaperStack`）；動畫用 `motion`，總覽滾輪用 `wheel-gestures` | [ADR-0007](adr/0007-paper-stack-layout.md) |
 | 配色     | 菜單主題（`MenuTheme`）TS 設定檔，以 CSS 變數套用到每本書 | [ADR-0008](adr/0008-menu-theme-colors.md) |
-| 食譜匯入 | Claude API（Haiku 5.5）經 Route Handler 產生草稿；網址由伺服器抓取 | [ADR-0022](adr/0022-llm-import-with-haiku.md)、[ADR-0023](adr/0023-url-import-extraction.md) |
+| 食譜匯入 | Claude API（Haiku 5.5）經 Route Handler 產生草稿；網址由伺服器抓取；食材由程式比對目錄，目錄不送給 LLM | [ADR-0022](adr/0022-llm-import-with-haiku.md)、[ADR-0023](adr/0023-url-import-extraction.md)、[ADR-0026](adr/0026-ingredient-matching-pipeline.md) |
 
 ```mermaid
 flowchart LR
