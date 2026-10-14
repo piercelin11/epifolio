@@ -27,7 +27,7 @@ Wording and structure
 Ingredient lines
 - quantity: a number, fraction, mixed number or range, e.g. "2", "1/2", "1 1/2", "80-100". Use "" when there is no amount.
 - unit: one of ${units.map((u) => `"${u}"`).join(", ")}, or "". Keep the source's unit when it is in the list (a pinch is "pinch"). For a unit not in the list, such as "1 onion", keep the number and use "".
-- name: the ingredient as the recipe words it, e.g. "Garlic, minced". note: preparation or remarks that are not part of the name, else empty.
+- name: the ingredient only, as the recipe calls it, without preparation, amounts or remarks: "Garlic", "Yellow onion", "Arborio rice". note: everything else about the line, e.g. "smashed", "finely chopped (about 1/2 cup)", "plus extra for serving", "optional"; else empty.
 - Alternatives ("parsley or celery leaves", "芹菜葉或巴西里"): name the first one only, put "or <the other>" in note (in both languages), and describe the ingredient for the first one only. Never name an ingredient line or a new ingredient with "or", "/" or "或" joining two foods.
 - ref: a unique id per line, "L1", "L2", ...
 
