@@ -1,5 +1,5 @@
 ---
-status: draft
+status: in-progress
 branch: plan-010-ingredient-matching
 issue: 85
 created: 2026-10-14
@@ -95,11 +95,11 @@ flowchart LR
 
 ## 任務拆解
 
-1. LLM 輸出格式與 prompt：拿掉目錄、每行標準名稱／同義詞／營養、prompt 修正；原始回應存檔；不靜默丟資料
-2. 比對模組與設定檔，用假資料測試各狀態與邊界情況
-3. 串接：Route Handler 把比對結果放進匯入結果；確認卡的列與狀態（含 Suggested、可能是）的邏輯
-4. 食材確認卡 UI：Suggested 標籤、候選排在下拉選單最上面、New 的「可能是」
-5. 實測（R8）與文件：`recipe-import.md`、glossary、STATUS
+1. LLM 輸出格式與 prompt：拿掉目錄、每行標準名稱／同義詞／營養、prompt 修正；原始回應存檔；不靜默丟資料（#86）
+2. 比對模組與設定檔，用假資料測試各狀態與邊界情況（#87）
+3. 串接：Route Handler 把比對結果放進匯入結果；確認卡的列與狀態（含 Suggested、可能是）的邏輯（#88）
+4. 食材確認卡 UI：Suggested 標籤、候選排在下拉選單最上面、New 的「可能是」（#89）
+5. 實測（R8）與文件：`recipe-import.md`、glossary、STATUS（#90）
 
 ## 完成後遷移清單
 
