@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-010-ingredient-matching
 issue: 85
 created: 2026-10-14
@@ -103,7 +103,7 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：`docs/features/recipe-import.md` 的流程、狀態表、參數
-- [ ] ADR：ADR-0026 已寫；實作中若有新取捨再補
-- [ ] glossary：Suggested 等新詞（若有）
-- [ ] `docs/architecture.md`：匯入資料流（目錄不再送給 LLM）
+- [x] 功能頁：`docs/features/recipe-import.md` 的流程、狀態表、參數
+- [x] ADR：ADR-0026；ADR-0027（高湯）；ADR-0022 補充關閉思考
+- [x] glossary：食材比對、食材確認卡的狀態
+- [x] `docs/architecture.md`：匯入資料流（目錄不再送給 LLM）
