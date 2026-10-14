@@ -19,6 +19,32 @@ export const importConfig = {
 		longPromptTokens: 100_000,
 		longPromptFactor: 5,
 	},
+	/** Matching imported lines to the ingredient catalog (ADR-0026). */
+	matching: {
+		/** Candidates kept for a line that names several ingredients. */
+		maxCandidates: 5,
+		/** "Maybe" ingredients listed for a line that names none. */
+		maxMaybe: 3,
+		/** Shortest Chinese text that may match inside a longer name. */
+		minContainedLength: 2,
+		/** Shortest English word that counts in a loose match. */
+		minWordLength: 3,
+		/** English words that say nothing about which ingredient it is. */
+		ignoredWords: [
+			"fresh",
+			"large",
+			"small",
+			"medium",
+			"organic",
+			"whole",
+			"chopped",
+			"sliced",
+			"minced",
+			"of",
+			"and",
+			"the",
+		],
+	},
 	/** Longest wait for the model before the import fails, in ms. */
 	timeoutMs: 120_000,
 	/** Longest pasted text, in characters. */
