@@ -7,10 +7,17 @@ import { requiredLocalizedText } from "@/lib/i18n/localized";
 
 const nutritionValue = z.number().min(0).nullable();
 
+/** "risotto rice" becomes "Risotto rice", like the rest of the catalog. */
+const capitalized = (text: string) =>
+	text.charAt(0).toLocaleUpperCase("en") + text.slice(1);
+
 /** An ingredient to add to the catalog; recipe lines cite it by key. */
 export const newIngredientDraftSchema = z.object({
 	key: z.string().min(1),
-	name: requiredLocalizedText("Each new ingredient needs a name."),
+	/** The English name starts with a capital, however it was typed. */
+	name: requiredLocalizedText("Each new ingredient needs a name.").transform(
+		(name) => (name.en ? { ...name, en: capitalized(name.en) } : name)
+	),
 	aliases: z.array(z.string().trim().min(1)),
 	/** Per 100 g: calories in kcal, the rest in grams. */
 	nutrition: z.object({

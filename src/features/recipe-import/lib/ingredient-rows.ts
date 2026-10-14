@@ -6,7 +6,7 @@ import type { CatalogIngredient } from "@/features/ingredient/types";
 import type { RecipeDraft } from "@/features/recipe/schema";
 import { type LocalizedText, localize, locales } from "@/lib/i18n/localized";
 
-import { wordingNamesIngredient } from "./match-catalog";
+import { normalize, wordingNamesIngredient } from "./match-catalog";
 import type { FreshIngredient, ImportedRecipe } from "./to-draft";
 
 // The ingredient review card's model: one row per imported food line, each
@@ -252,6 +252,38 @@ export function applyChoices(
 				}),
 			})),
 		},
-		catalog: { ingredients: chosenNewIngredients(choices), aliases },
+		catalog: { ingredients: withWordings(choices), aliases },
 	};
+}
+
+/**
+ * The new ingredients to create, each also known by the wordings of its
+ * lines and by the name the model first gave it, so a renamed ingredient
+ * still matches the recipe next time. Aliases that repeat a name go.
+ */
+function withWordings(choices: IngredientChoices): NewIngredientDraft[] {
+	return chosenNewIngredients(choices).map((item) => {
+		const rows = choices.rows.filter(
+			(row) => row.choice.kind === "new" && row.choice.key === item.key
+		);
+		const names = new Set(
+			Object.values(item.name).map((name) => normalize(name ?? ""))
+		);
+		const seen = new Set<string>();
+		const aliases = [
+			...item.aliases,
+			...rows.flatMap((row) => [
+				...Object.values(row.fresh.name),
+				...Object.values(row.wording),
+			]),
+		]
+			.map((alias) => alias?.trim() ?? "")
+			.filter((alias) => {
+				const key = normalize(alias);
+				if (!key || names.has(key) || seen.has(key)) return false;
+				seen.add(key);
+				return true;
+			});
+		return { ...item, aliases };
+	});
 }

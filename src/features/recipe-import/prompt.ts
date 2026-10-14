@@ -36,7 +36,7 @@ Steps cite lines
 
 What each ingredient is
 - For every line, set ingredient to {"kind": "none"} only for things that are not food ingredients (e.g. water for boiling, ice). Otherwise set {"kind": "food", ...}:
-  - name: the plain name of the product as bought, in both languages, without preparation words, keeping the form the recipe uses: "Garlic, minced" is Garlic / 蒜頭; whole peppercorns are "Black peppercorns" / "黑胡椒粒", not "Black pepper".
+  - name: the plain name of the product as bought, in both languages, without preparation words or "fresh", keeping the form the recipe uses (dried, ground or whole products stay distinct): "Garlic, minced" is Garlic / 蒜頭; whole peppercorns are "Black peppercorns" / "黑胡椒粒", not "Black pepper".
   - terms: other names people use for the same product, in English and in Chinese (e.g. for porcini: "cep", "penny bun", "牛肝菌菇"). Do not list different products: garlic powder is not garlic, chicken breast is not chicken thigh.
   - calories (kcal), protein, carbs and fat (g): your best estimate per 100 g of the raw ingredient; null when you cannot estimate.
 - Give the same name every time the same ingredient appears.
