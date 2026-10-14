@@ -69,6 +69,7 @@ function StatusTag({ status }: { status: RowStatus }) {
 			className={cn(
 				"text-caption border-editor-card-foreground shrink-0 border px-1.5 font-bold uppercase",
 				status === "new" && "bg-editor-card-foreground text-editor-review-card",
+				status === "suggested" && "border-dashed",
 				status === "matched" && "opacity-60"
 			)}
 		>
@@ -196,6 +197,13 @@ function ReviewRow({
 	const otherNew = chosenNewIngredients(choices).filter(
 		(item) => item.key !== newItem?.key
 	);
+	const byId = (id: string) => catalog.find((i) => i.id === id);
+	const listed = row.candidates.length > 1 ? row.candidates : [];
+	// The line's candidates first, best first; the rest of the catalog after.
+	const candidates = listed.flatMap((id) => byId(id) ?? []);
+	const rest = catalog.filter((i) => !listed.includes(i.id));
+	const maybe =
+		choice.kind === "new" ? row.maybe.flatMap((id) => byId(id) ?? []) : [];
 
 	return (
 		<li className="border-editor-card-foreground border-b py-2.5">
@@ -212,8 +220,17 @@ function ReviewRow({
 					onChange={(event) => onChoose(event.target.value)}
 					className={cn(fieldClass, "w-48 cursor-pointer")}
 				>
+					{candidates.length > 1 && (
+						<optgroup label="Suggested">
+							{candidates.map((ingredient) => (
+								<option key={ingredient.id} value={`catalog:${ingredient.id}`}>
+									{text(ingredient.name)}
+								</option>
+							))}
+						</optgroup>
+					)}
 					<optgroup label="Catalog">
-						{catalog.map((ingredient) => (
+						{rest.map((ingredient) => (
 							<option key={ingredient.id} value={`catalog:${ingredient.id}`}>
 								{text(ingredient.name)}
 							</option>
@@ -249,6 +266,21 @@ function ReviewRow({
 					/>
 					Add &ldquo;{text(row.wording)}&rdquo; as an alias
 				</label>
+			)}
+			{maybe.length > 0 && (
+				<p className="text-caption mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1 pl-1">
+					<span className="uppercase">Maybe</span>
+					{maybe.map((ingredient) => (
+						<button
+							key={ingredient.id}
+							type="button"
+							onClick={() => onChoose(`catalog:${ingredient.id}`)}
+							className="cursor-pointer font-bold underline-offset-2 hover:underline"
+						>
+							{text(ingredient.name)}
+						</button>
+					))}
+				</p>
 			)}
 			{newItem && firstOfItem && (
 				<NewIngredientFields
@@ -286,7 +318,7 @@ export function IngredientReviewCard({
 	const matched = choices.rows.filter(
 		(row) => statuses.get(row.id) === "matched"
 	);
-	const counts = (["matched", "alias", "new", "none"] as const)
+	const counts = (["matched", "alias", "suggested", "new", "none"] as const)
 		.map((status) => ({
 			status,
 			count: [...statuses.values()].filter((s) => s === status).length,
@@ -327,7 +359,9 @@ export function IngredientReviewCard({
 		}
 		onChange({
 			newIngredients,
-			rows: choices.rows.map((r) => (r.id === row.id ? { ...r, choice } : r)),
+			rows: choices.rows.map((r) =>
+				r.id === row.id ? { ...r, choice, confirmed: true } : r
+			),
 		});
 	}
 
