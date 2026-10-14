@@ -4,10 +4,14 @@
 export const importConfig = {
 	/** Claude model that reads the source; see docs/data-sources.md. */
 	model: "claude-haiku-5-5",
-	/** Output budget, thinking included. */
+	/** Output budget. */
 	maxTokens: 16000,
-	/** How hard the model thinks: low | medium | high | xhigh | max. */
-	effort: "medium",
+	/**
+	 * Whether the model thinks before answering. Off: with thinking on, the
+	 * model now and then spent most of its output thinking and cut the
+	 * answer short, dropping steps (ADR-0022, 2026-10-14 note).
+	 */
+	thinking: false,
 	/**
 	 * USD per million tokens for `model`, to report what an import cost.
 	 * Prompts longer than `longPromptTokens` cost `longPromptFactor` times

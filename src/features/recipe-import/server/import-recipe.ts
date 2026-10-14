@@ -115,11 +115,10 @@ export async function importRecipe(
 			{
 				model: importConfig.model,
 				max_tokens: importConfig.maxTokens,
-				thinking: { type: "adaptive" },
-				output_config: {
-					effort: importConfig.effort,
-					format: zodOutputFormat(llmOutputSchema),
-				},
+				thinking: importConfig.thinking
+					? { type: "adaptive" }
+					: { type: "disabled" },
+				output_config: { format: zodOutputFormat(llmOutputSchema) },
 				system: systemPrompt,
 				messages: [{ role: "user", content }],
 			},
