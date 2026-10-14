@@ -32,6 +32,7 @@
 | 0024 | [單位清單加入 pinch、cup、slice、piece，保留原文單位](0024-more-units.md) | Accepted | 2026-10-13 |
 | 0025 | [匯入的新食材在食譜存檔時寫入，營養標記為估計值](0025-imported-ingredients.md) | Accepted | 2026-10-13 |
 | 0026 | [匯入的食材對應改由程式比對，LLM 只整理食譜](0026-ingredient-matching-pipeline.md) | Accepted | 2026-10-14 |
+| 0027 | [沒寫種類的高湯一律對應雞高湯](0027-unspecified-stock-is-chicken.md) | Accepted | 2026-10-14 |
 
 ## 模板
 
