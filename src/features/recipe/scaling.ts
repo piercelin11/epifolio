@@ -21,6 +21,7 @@ export const scalingConfig = {
 	plurals: {
 		cup: "cups",
 		pinch: "pinches",
+		dash: "dashes",
 		clove: "cloves",
 		slice: "slices",
 		piece: "pieces",
