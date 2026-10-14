@@ -36,6 +36,7 @@ interface IngredientReviewCardProps {
 const statusLabel: Record<RowStatus, string> = {
 	matched: "Matched",
 	alias: "Alias",
+	suggested: "Suggested",
 	new: "New",
 	none: "Not linked",
 };

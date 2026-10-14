@@ -71,6 +71,17 @@ const namesOf = (ingredient: CatalogIngredient) =>
 		(n): n is string => Boolean(n)
 	);
 
+/** True when the recipe's wording is one of the ingredient's names or aliases. */
+export function wordingNamesIngredient(
+	wording: LocalizedText,
+	ingredient: CatalogIngredient
+): boolean {
+	const texts = Object.values(wording)
+		.filter((t): t is string => Boolean(t))
+		.flatMap(wordingForms);
+	return strictHits(texts, [ingredient]).size > 0;
+}
+
 /** Ingredients whose names share keys with `texts`, with how many matched. */
 function strictHits(texts: string[], catalog: CatalogIngredient[]) {
 	const wanted = new Set(texts.flatMap(keys));

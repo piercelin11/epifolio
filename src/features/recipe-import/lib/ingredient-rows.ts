@@ -15,6 +15,7 @@ import {
 	locales,
 } from "@/lib/i18n/localized";
 
+import { wordingNamesIngredient } from "./match-catalog";
 import type { ImportedRecipe } from "./to-draft";
 
 // The ingredient card's model: one row per imported ingredient line, each
@@ -28,7 +29,7 @@ export type RowChoice =
 	| { kind: "none" };
 
 /** How a row's choice relates to its wording, for the row's tag. */
-export type RowStatus = "matched" | "alias" | "new" | "none";
+export type RowStatus = "matched" | "alias" | "suggested" | "new" | "none";
 
 export interface IngredientRow {
 	/** Position of the line, "group:line". */
@@ -38,6 +39,12 @@ export interface IngredientRow {
 	/** Where the line sits, e.g. "Sauce · 2 tbsp". */
 	where: string;
 	choice: RowChoice;
+	/** Catalog ids the line's names point to, best first (ADR-0026). */
+	candidates: string[];
+	/** For a new line: catalog ids that loosely resemble it. */
+	maybe: string[];
+	/** Set once the cook picks an ingredient for the row. */
+	confirmed: boolean;
 }
 
 export interface IngredientChoices {
@@ -54,25 +61,16 @@ const toNames = (catalog: CatalogIngredient[]): IngredientNames[] =>
 		),
 	}));
 
-/** True when some wording of the line already names the ingredient. */
-function namesIngredient(
-	wording: LocalizedText,
-	ingredient: CatalogIngredient
-): boolean {
-	const names = toNames([ingredient]);
-	return Object.values(wording).some(
-		(text) => text && matchIngredient(text, names)
-	);
-}
-
 export function rowStatus(
 	row: IngredientRow,
 	catalog: CatalogIngredient[]
 ): RowStatus {
 	if (row.choice.kind !== "catalog") return row.choice.kind;
+	// Several ingredients fit and the cook has not picked one yet.
+	if (!row.confirmed && row.candidates.length > 1) return "suggested";
 	const { ingredientId } = row.choice;
 	const ingredient = catalog.find((i) => i.id === ingredientId);
-	return ingredient && namesIngredient(row.wording, ingredient)
+	return ingredient && wordingNamesIngredient(row.wording, ingredient)
 		? "matched"
 		: "alias";
 }
@@ -86,6 +84,7 @@ export function ingredientChoices(
 		group.lines.map((line, i): IngredientRow => {
 			const to = line.link?.to ?? { kind: "none" as const };
 			const amount = [line.quantity, line.unit].filter(Boolean).join(" ");
+			const match = imported.matches[`${g}:${i}`];
 			return {
 				id: `${g}:${i}`,
 				wording: line.name,
@@ -93,6 +92,9 @@ export function ingredientChoices(
 					.filter(Boolean)
 					.join(" · "),
 				choice: to.kind === "catalog" ? { ...to, addAlias: true } : { ...to },
+				candidates: match?.candidates ?? [],
+				maybe: match?.maybe ?? [],
+				confirmed: false,
 			};
 		})
 	);
