@@ -27,10 +27,11 @@
 | 0019 | [從菜單移除品項時保留食譜](0019-remove-from-menu-keeps-recipe.md) | Accepted | 2026-10-13 |
 | 0020 | [文具圖片放 public/stationery，與材質分開](0020-stationery-assets.md) | Accepted | 2026-10-13 |
 | 0021 | [以 eslint-plugin-better-tailwindcss 檢查 Tailwind class 的標準寫法](0021-tailwind-eslint-plugin.md) | Accepted | 2026-10-13 |
-| 0022 | [LLM 匯入用 Anthropic SDK 與 Claude Haiku 5.5，只產生草稿](0022-llm-import-with-haiku.md) | Accepted | 2026-10-13 |
+| 0022 | [LLM 匯入用 Anthropic SDK 與 Claude Haiku 5.5，只產生草稿](0022-llm-import-with-haiku.md) | Accepted（部分由 0026 取代） | 2026-10-13 |
 | 0023 | [網址匯入由伺服器抓網頁，先讀 JSON-LD，再抽正文](0023-url-import-extraction.md) | Accepted | 2026-10-13 |
 | 0024 | [單位清單加入 pinch、cup、slice、piece，保留原文單位](0024-more-units.md) | Accepted | 2026-10-13 |
 | 0025 | [匯入的新食材在食譜存檔時寫入，營養標記為估計值](0025-imported-ingredients.md) | Accepted | 2026-10-13 |
+| 0026 | [匯入的食材對應改由程式比對，LLM 只整理食譜](0026-ingredient-matching-pipeline.md) | Accepted | 2026-10-14 |
 
 ## 模板
 

@@ -1,7 +1,7 @@
 # ADR-0022：LLM 匯入用 Anthropic SDK 與 Claude Haiku 5.5，只產生草稿
 
 日期：2026-10-13
-狀態：Accepted
+狀態：Accepted（食材對應的部分由 ADR-0026 取代）
 
 ## 背景
 
