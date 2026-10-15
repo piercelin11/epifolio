@@ -9,6 +9,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 
+import { LocaleSwitch } from "@/components/locale-switch";
 import { IngredientCardLayer } from "@/features/ingredient/components/ingredient-card-layer";
 import { useIngredientCard } from "@/features/ingredient/hooks/use-ingredient-card";
 import type { Ingredient } from "@/features/ingredient/types";
@@ -25,6 +26,7 @@ import { MenuThemeScope } from "@/features/menu-theme/components/menu-theme-scop
 import type { MenuThemeId } from "@/features/menu-theme/menu-themes";
 import type { StackPosition } from "@/features/paper-stack/types";
 import type { Recipe, RecipeProgress } from "@/features/recipe/types";
+import { useMessages } from "@/lib/i18n/locale-provider";
 import { cn } from "@/lib/utils";
 
 import { useMenuShelf } from "../hooks/use-menu-shelf";
@@ -55,6 +57,7 @@ export function MenuShelf({
 	ingredients,
 	title,
 }: MenuShelfProps) {
+	const t = useMessages();
 	const shelf = useMenuShelf(books.length);
 	const card = useIngredientCard();
 	const editor = useEditorView();
@@ -95,18 +98,21 @@ export function MenuShelf({
 				className="absolute inset-x-0 top-0 flex h-(--header-height) items-start justify-between px-(--page-inset) pt-8"
 			>
 				{title}
-				<button
-					type="button"
-					aria-pressed={phase === "overview"}
-					className="font-heading text-masthead-nav cursor-pointer font-bold lowercase"
-					onClick={() => {
-						card.close();
-						if (reading) shelf.openOverview();
-						else shelf.closeOverview();
-					}}
-				>
-					Menu
-				</button>
+				<div className="font-heading text-masthead-nav flex items-start gap-6 font-bold">
+					<LocaleSwitch />
+					<button
+						type="button"
+						aria-pressed={phase === "overview"}
+						className="cursor-pointer lowercase"
+						onClick={() => {
+							card.close();
+							if (reading) shelf.openOverview();
+							else shelf.closeOverview();
+						}}
+					>
+						{t.shelf.menu}
+					</button>
+				</div>
 			</header>
 			{positions.map((k) => {
 				const book = books[bookAt(k, books.length)];

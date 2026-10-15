@@ -7,8 +7,8 @@ import { loadRecipeDraft } from "@/features/recipe/actions/recipe-editor";
 import type { RecipeDraft } from "@/features/recipe/schema";
 import { scalingConfig } from "@/features/recipe/scaling";
 import { units } from "@/features/recipe/units";
+import { useLocale } from "@/lib/i18n/locale-provider";
 import {
-	defaultLocale,
 	type Locale,
 	type LocalizedText,
 	localize,
@@ -118,7 +118,9 @@ export function RecipeCard({
 	onSave,
 	onCancel,
 }: RecipeCardProps) {
-	const [locale, setLocale] = useState<Locale>(defaultLocale);
+	const siteLocale = useLocale();
+	// Starts in the site language; the toggle only picks what is being edited.
+	const [locale, setLocale] = useState<Locale>(siteLocale);
 	const [model, setModel] = useState<RecipeModel | null>(initial ?? null);
 	const [saving, setSaving] = useState(false);
 	const [autoEditUrl, setAutoEditUrl] = useState<string | null>(null);

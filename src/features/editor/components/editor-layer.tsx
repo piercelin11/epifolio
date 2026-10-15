@@ -26,7 +26,7 @@ import {
 import type { ImportResponseData } from "@/features/recipe-import/types";
 import type { Recipe } from "@/features/recipe/types";
 import type { ActionResult } from "@/lib/action-result";
-import { defaultLocale } from "@/lib/i18n/localized";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 import { editorMotion } from "../editor-motion";
 import type { EditorView } from "../editor-view";
@@ -78,6 +78,7 @@ function resolve(view: EditorView, books: MenuBook[], recipes: Recipe[]) {
  */
 export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	const reduceMotion = useReducedMotion();
+	const locale = useLocale();
 	const open = editor.view && resolve(editor.view, books, recipes);
 	const bookId = open?.book?.id;
 	// The menu card's draft lives here, so it survives turning the card over
@@ -334,7 +335,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 								}
 							}}
 							onCancel={() => editor.back()}
-							ghost={<MenuGhost model={menuModel} locale={defaultLocale} />}
+							ghost={<MenuGhost model={menuModel} locale={locale} />}
 						/>
 					}
 				/>
@@ -397,7 +398,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 				onSave={saveMenu}
 				saving={saving}
 				onCancel={close}
-				ghost={<ImportGhost dish={dish} locale={defaultLocale} />}
+				ghost={<ImportGhost dish={dish} locale={locale} />}
 			/>
 		);
 	}

@@ -16,7 +16,8 @@ import {
 	requestImport,
 } from "@/features/recipe-import/lib/import-input";
 import type { ImportResponseData } from "@/features/recipe-import/types";
-import { defaultLocale, type Locale } from "@/lib/i18n/localized";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import type { Locale } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 
 import { CardButton, EditorCard, EditorCardLayout } from "./editor-card";
@@ -287,7 +288,9 @@ export function ImportCard({
 	onCancel,
 	ghost,
 }: ImportCardProps) {
-	const [locale, setLocale] = useState<Locale>(defaultLocale);
+	const siteLocale = useLocale();
+	// Starts in the site language; the toggle only picks what is being edited.
+	const [locale, setLocale] = useState<Locale>(siteLocale);
 	const [request, setRequest] = useState<AbortController | null>(null);
 	const headingId = useId();
 	const busy = request !== null;

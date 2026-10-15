@@ -26,7 +26,8 @@ import { ArrowUpRight } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { defaultLocale, type Locale } from "@/lib/i18n/localized";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import type { Locale } from "@/lib/i18n/localized";
 
 import { editorDrag } from "../editor-motion";
 import {
@@ -295,7 +296,9 @@ export function MenuCard({
 	onCancel,
 	ghost,
 }: MenuCardProps) {
-	const [locale, setLocale] = useState<Locale>(defaultLocale);
+	const siteLocale = useLocale();
+	// Starts in the site language; the toggle only picks what is being edited.
+	const [locale, setLocale] = useState<Locale>(siteLocale);
 	const [editingKey, setEditingKey] = useState<string | null>(null);
 	const [autoEditKey, setAutoEditKey] = useState<string | null>(null);
 	// The row being dragged; a copy of it follows the pointer in an overlay.
