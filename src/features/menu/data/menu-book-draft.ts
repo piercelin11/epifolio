@@ -72,7 +72,7 @@ export async function writeMenuBook(
 			where: { id: book.id, menu: { userId } },
 			include: { sections: { include: { items: true } } },
 		});
-		if (!group) throw new RecordNotFoundError("Menu not found.");
+		if (!group) throw new RecordNotFoundError({ key: "menuNotFound" });
 
 		const sectionIds = new Set(group.sections.map((section) => section.id));
 		const items = new Map(
@@ -84,7 +84,7 @@ export async function writeMenuBook(
 			draftItems.some((item) => !items.has(item.id)) ||
 			new Set(draftItems.map((item) => item.id)).size !== draftItems.length
 		) {
-			throw new RecordNotFoundError("This menu changed. Reopen it to edit.");
+			throw new RecordNotFoundError({ key: "menuChanged" });
 		}
 
 		const catalog = await getIngredientNames(tx);

@@ -42,7 +42,8 @@ export async function writeCatalogChanges(
 			where: { id: ingredientId },
 			select: { name: true, aliases: true },
 		});
-		if (!ingredient) throw new RecordNotFoundError("Ingredient not found.");
+		if (!ingredient)
+			throw new RecordNotFoundError({ key: "ingredientNotFound" });
 		const aliases = z.array(z.string()).parse(ingredient.aliases);
 		const names = Object.values(localizedTextSchema.parse(ingredient.name));
 		const known = [...names, ...aliases].some(
@@ -65,9 +66,10 @@ export async function writeCatalogChanges(
 			(name) => name && matchIngredient(name, catalog)
 		);
 		if (clash) {
-			throw new ConflictError(
-				`An ingredient named "${localize(ingredient.name)}" already exists.`
-			);
+			throw new ConflictError({
+				key: "ingredientExists",
+				values: { name: localize(ingredient.name) ?? "" },
+			});
 		}
 		const { id } = await tx.ingredient.create({
 			data: {

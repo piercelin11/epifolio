@@ -26,7 +26,7 @@ import { MenuThemeScope } from "@/features/menu-theme/components/menu-theme-scop
 import type { MenuThemeId } from "@/features/menu-theme/menu-themes";
 import type { StackPosition } from "@/features/paper-stack/types";
 import type { Recipe, RecipeProgress } from "@/features/recipe/types";
-import { useMessages } from "@/lib/i18n/locale-provider";
+import { useErrorText, useMessages } from "@/lib/i18n/locale-provider";
 import { cn } from "@/lib/utils";
 
 import { useMenuShelf } from "../hooks/use-menu-shelf";
@@ -58,6 +58,7 @@ export function MenuShelf({
 	title,
 }: MenuShelfProps) {
 	const t = useMessages();
+	const errorText = useErrorText();
 	const shelf = useMenuShelf(books.length);
 	const card = useIngredientCard();
 	const editor = useEditorView();
@@ -82,7 +83,7 @@ export function MenuShelf({
 		startTransition(async () => {
 			showTheme({ bookId, themeId });
 			const result = await updateBookTheme({ bookId, themeId });
-			if (!result.ok) toast.error(result.error);
+			if (!result.ok) toast.error(errorText(result.error));
 		});
 	const update = (id: string, change: Partial<BookState>) =>
 		setStates((all) => {
@@ -170,7 +171,7 @@ export function MenuShelf({
 												const result = await deleteMenuBook({
 													bookId: book.id,
 												});
-												if (!result.ok) toast.error(result.error);
+												if (!result.ok) toast.error(errorText(result.error));
 												return result.ok;
 											}}
 										/>

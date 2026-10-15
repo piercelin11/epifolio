@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, type ReactNode, use } from "react";
+import { createContext, type ReactNode, use, useCallback } from "react";
 
 import { defaultLocale, type Locale } from "./localized";
 import { type ErrorMessage, errorText, messages } from "./messages";
@@ -28,8 +28,14 @@ export function useMessages() {
 	return messages[useLocale()];
 }
 
-/** Words an ErrorMessage, e.g. from a Server Action, in the current language. */
+/**
+ * Words an ErrorMessage, e.g. from a Server Action, in the current language.
+ * The function stays the same until the language changes.
+ */
 export function useErrorText() {
 	const dictionary = useMessages();
-	return (message: ErrorMessage) => errorText(dictionary, message);
+	return useCallback(
+		(message: ErrorMessage) => errorText(dictionary, message),
+		[dictionary]
+	);
 }

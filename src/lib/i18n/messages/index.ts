@@ -31,6 +31,12 @@ export function isPlainErrorKey(value: string): value is PlainErrorKey {
 	return typeof (en.errors as Record<string, unknown>)[value] === "string";
 }
 
+/** The message for a key that takes no values. */
+export function plainMessage(key: PlainErrorKey): ErrorMessage {
+	// Every plain key's message has this shape; the union cannot see it.
+	return { key } as ErrorMessage;
+}
+
 /** The text of a message in the given dictionary. */
 export function errorText(dictionary: Messages, message: ErrorMessage): string {
 	const entry: string | ((values: never) => string) =

@@ -22,7 +22,9 @@ import {
 	rowProblems,
 } from "@/features/recipe-import/lib/ingredient-rows";
 import { normalize } from "@/features/recipe-import/lib/match-catalog";
+import { useErrorText } from "@/lib/i18n/locale-provider";
 import type { LocalizedText } from "@/lib/i18n/localized";
+import type { ErrorMessage } from "@/lib/i18n/messages";
 
 import { CardButton, EditorCard, EditorCardLayout } from "./editor-card";
 
@@ -136,9 +138,10 @@ function ReviewRow({
 	row: IngredientRow;
 	catalog: CatalogIngredient[];
 	choices: IngredientChoices;
-	problem?: string;
+	problem?: ErrorMessage;
 	onChange: (choices: IngredientChoices) => void;
 }) {
+	const errorText = useErrorText();
 	const name = useId();
 	const { choice } = row;
 	const created =
@@ -201,7 +204,9 @@ function ReviewRow({
 					</div>
 				)
 			)}
-			{problem && <p className="text-caption font-bold">{problem}</p>}
+			{problem && (
+				<p className="text-caption font-bold">{errorText(problem)}</p>
+			)}
 		</li>
 	);
 }

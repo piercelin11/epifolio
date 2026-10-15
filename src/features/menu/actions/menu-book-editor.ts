@@ -30,7 +30,7 @@ export async function loadMenuBookDraft(
 	const draft = await getMenuBookDraft(await getCurrentUserId(), bookId);
 	return draft
 		? { ok: true, data: draft }
-		: { ok: false, error: "Menu not found." };
+		: { ok: false, error: { key: "menuNotFound" } };
 }
 
 /** Saves the menu card's draft in one go. */

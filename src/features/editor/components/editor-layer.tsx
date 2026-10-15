@@ -26,7 +26,8 @@ import {
 import type { ImportResponseData } from "@/features/recipe-import/types";
 import type { Recipe } from "@/features/recipe/types";
 import type { ActionResult } from "@/lib/action-result";
-import { useLocale } from "@/lib/i18n/locale-provider";
+import { useErrorText, useLocale } from "@/lib/i18n/locale-provider";
+import type { ErrorMessage } from "@/lib/i18n/messages";
 
 import { editorMotion } from "../editor-motion";
 import type { EditorView } from "../editor-view";
@@ -49,7 +50,9 @@ interface EditorLayerProps {
 const emptyDish: DishDraft = { name: {}, description: {} };
 
 /** The first field problem, else the error, of a failed action. */
-function failureMessage(result: ActionResult<unknown> & { ok: false }) {
+function failureMessage(
+	result: ActionResult<unknown> & { ok: false }
+): ErrorMessage {
 	return result.issues?.[0]?.message ?? result.error;
 }
 
@@ -79,6 +82,7 @@ function resolve(view: EditorView, books: MenuBook[], recipes: Recipe[]) {
 export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 	const reduceMotion = useReducedMotion();
 	const locale = useLocale();
+	const errorText = useErrorText();
 	const open = editor.view && resolve(editor.view, books, recipes);
 	const bookId = open?.book?.id;
 	// The menu card's draft lives here, so it survives turning the card over
@@ -135,12 +139,12 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		loadMenuBookDraft(bookId).then((result) => {
 			if (!current) return;
 			if (result.ok) setMenu({ bookId, model: toMenuModel(result.data) });
-			else toast.error(result.error);
+			else toast.error(errorText(result.error));
 		});
 		return () => {
 			current = false;
 		};
-	}, [bookId, menu?.bookId]);
+	}, [bookId, menu?.bookId, errorText]);
 
 	/** Leaves the editor; the drafts go once it has closed. */
 	function close() {
@@ -153,14 +157,14 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 		const result = await saveMenuBook(menuModel);
 		setSaving(false);
 		if (result.ok) close();
-		else toast.error(failureMessage(result));
+		else toast.error(errorText(failureMessage(result)));
 	}
 
 	/** Saves an existing recipe and returns to where it was opened from. */
 	async function saveExistingRecipe(draft: RecipeDraft, fromBook: boolean) {
 		const result = await saveRecipe(draft);
 		if (!result.ok) {
-			toast.error(failureMessage(result));
+			toast.error(errorText(failureMessage(result)));
 			return false;
 		}
 		if (fromBook) editor.back();
@@ -185,7 +189,7 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 			catalog,
 		});
 		if (!result.ok) {
-			toast.error(failureMessage(result));
+			toast.error(errorText(failureMessage(result)));
 			return false;
 		}
 		// The new dish joins the menu card's draft, which may hold other edits.
@@ -311,8 +315,9 @@ export function EditorLayer({ editor, books, recipes }: EditorLayerProps) {
 							onInputChange={setImportInput}
 							onNext={() => {
 								const parsed = dishDraftSchema.safeParse(dish);
-								if (!parsed.success) toast.error("Enter a dish name.");
-								else if (sectionId) {
+								if (!parsed.success) {
+									toast.error(errorText({ key: "dishNameRequired" }));
+								} else if (sectionId) {
 									continueDish(
 										book.id,
 										sectionId,

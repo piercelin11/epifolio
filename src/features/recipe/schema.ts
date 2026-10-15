@@ -7,6 +7,7 @@ import {
 	requiredLocalizedText,
 	requiredLocalizedTextSchema,
 } from "@/lib/i18n/localized";
+import type { PlainErrorKey } from "@/lib/i18n/messages";
 
 import { parseQuantity } from "./lib/parse-quantity";
 import { scalingConfig } from "./scaling";
@@ -20,7 +21,7 @@ export const quantityFieldSchema = z.string().transform((text, ctx) => {
 	if (quantity === undefined) {
 		ctx.addIssue({
 			code: "custom",
-			message: "Enter a number, a fraction or a range, e.g. 2, 1/2, 80-100.",
+			message: "quantityFormat" satisfies PlainErrorKey,
 		});
 		return z.NEVER;
 	}
@@ -50,12 +51,12 @@ export const ingredientLineDraftSchema = z.object({
 	quantity: quantityFieldSchema,
 	unit: z
 		.union([unitSchema, z.literal("")], {
-			error: "Pick a unit from the list.",
+			error: "unitInvalid" satisfies PlainErrorKey,
 		})
 		.optional()
 		.transform((unit) => unit || null),
 	/** The recipe's wording, e.g. "Garlic, minced". */
-	name: requiredLocalizedText("Each ingredient line needs an ingredient."),
+	name: requiredLocalizedText("lineNeedsIngredient"),
 	note: optionalLocalizedTextSchema,
 });
 
@@ -69,7 +70,7 @@ export const stepDraftSchema = z.object({
 	id: z.string().min(1).optional(),
 	/** Optional highlight, e.g. "Emulsify". */
 	title: optionalLocalizedTextSchema,
-	text: requiredLocalizedText("Each step needs an instruction."),
+	text: requiredLocalizedText("stepNeedsText"),
 	/**
 	 * The text split into runs citing lines by id or ref (ADR-0015). Used
 	 * for a locale only while its runs still join up to its text.
@@ -89,7 +90,7 @@ export const referenceDraftSchema = z.object({
 	url: z
 		.string()
 		.trim()
-		.pipe(z.url({ message: "Enter a full web address." })),
+		.pipe(z.url({ message: "urlInvalid" satisfies PlainErrorKey })),
 });
 
 /** One recipe as edited on the recipe card. */

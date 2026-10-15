@@ -17,7 +17,7 @@ export async function deleteMenuBook(input: {
 	bookId: string;
 }): Promise<ActionResult> {
 	const parsed = inputSchema.safeParse(input);
-	if (!parsed.success) return { ok: false, error: "Menu not found." };
+	if (!parsed.success) return { ok: false, error: { key: "menuNotFound" } };
 	const { bookId } = parsed.data;
 
 	const userId = await getCurrentUserId();
@@ -25,10 +25,10 @@ export async function deleteMenuBook(input: {
 		const { count } = await prisma.menuGroup.deleteMany({
 			where: { id: bookId, menu: { userId } },
 		});
-		if (count === 0) return { ok: false, error: "Menu not found." };
+		if (count === 0) return { ok: false, error: { key: "menuNotFound" } };
 	} catch (error) {
 		console.error(error);
-		return { ok: false, error: "Could not delete the menu." };
+		return { ok: false, error: { key: "deleteMenuFailed" } };
 	}
 	refresh();
 	return { ok: true, data: undefined };

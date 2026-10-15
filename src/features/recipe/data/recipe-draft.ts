@@ -184,7 +184,7 @@ async function writeRecipeContent(
 		recipe.stepGroups.some((g) => g.id && !stepGroupIds.has(g.id)) ||
 		draftSteps.some((s) => s.id && !steps.has(s.id))
 	) {
-		throw new RecordNotFoundError("This recipe changed. Reopen it to edit.");
+		throw new RecordNotFoundError({ key: "recipeChanged" });
 	}
 
 	const keptGroups = new Set<string>();
@@ -283,7 +283,7 @@ export async function writeRecipe(
 			where: { id: recipeId, userId },
 			select: { id: true },
 		});
-		if (!owned) throw new RecordNotFoundError("Recipe not found.");
+		if (!owned) throw new RecordNotFoundError({ key: "recipeNotFound" });
 		await tx.recipe.update({
 			where: { id: recipeId },
 			data: { name: recipe.name, serves: recipe.serves },

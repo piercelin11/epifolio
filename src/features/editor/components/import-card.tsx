@@ -16,7 +16,7 @@ import {
 	requestImport,
 } from "@/features/recipe-import/lib/import-input";
 import type { ImportResponseData } from "@/features/recipe-import/types";
-import { useLocale } from "@/lib/i18n/locale-provider";
+import { useErrorText, useLocale } from "@/lib/i18n/locale-provider";
 import type { Locale } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 
@@ -92,6 +92,7 @@ function FilePicker({
 	onChange: (files: File[]) => void;
 	disabled?: boolean;
 }) {
+	const errorText = useErrorText();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [over, setOver] = useState(false);
 	const { maxCount, maxImageBytes, maxPdfBytes, maxTotalBytes, types } =
@@ -102,7 +103,11 @@ function FilePicker({
 	function add(list: FileList | null) {
 		if (!list) return;
 		const next = [...files, ...Array.from(list)];
-		if (next.length > maxCount) toast.error(`Choose up to ${maxCount} files.`);
+		if (next.length > maxCount) {
+			toast.error(
+				errorText({ key: "tooManyFiles", values: { count: maxCount } })
+			);
+		}
 		onChange(next.slice(0, maxCount));
 	}
 
@@ -154,7 +159,9 @@ function FilePicker({
 						return (
 							<li key={`${file.name}-${i}`} className="flex items-center gap-2">
 								<span className="min-w-0 truncate">{file.name}</span>
-								{problem && <span className="font-bold">{problem}</span>}
+								{problem && (
+									<span className="font-bold">{errorText(problem)}</span>
+								)}
 								<button
 									type="button"
 									aria-label={`Remove ${file.name}`}
@@ -169,7 +176,9 @@ function FilePicker({
 					})}
 				</ul>
 			)}
-			{tooMuch && <p className="text-caption font-bold">{tooMuch}</p>}
+			{tooMuch && (
+				<p className="text-caption font-bold">{errorText(tooMuch)}</p>
+			)}
 		</div>
 	);
 }
@@ -289,6 +298,7 @@ export function ImportCard({
 	ghost,
 }: ImportCardProps) {
 	const siteLocale = useLocale();
+	const errorText = useErrorText();
 	// Starts in the site language; the toggle only picks what is being edited.
 	const [locale, setLocale] = useState<Locale>(siteLocale);
 	const [request, setRequest] = useState<AbortController | null>(null);
@@ -309,11 +319,11 @@ export function ImportCard({
 		try {
 			const result = await requestImport(source, input, controller.signal);
 			if (result.ok) onImported(result.data);
-			else toast.error(result.error);
+			else toast.error(errorText(result.error));
 		} catch (error) {
 			if (!controller.signal.aborted) {
 				console.error(error);
-				toast.error("Could not reach the server. Try again.");
+				toast.error(errorText({ key: "serverUnreachable" }));
 			}
 		} finally {
 			setRequest(null);

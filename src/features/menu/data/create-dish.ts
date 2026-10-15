@@ -29,7 +29,7 @@ export async function writeNewDish(
 			where: { id: sectionId, group: { menu: { userId } } },
 			select: { id: true },
 		});
-		if (!section) throw new RecordNotFoundError("Section not found.");
+		if (!section) throw new RecordNotFoundError({ key: "sectionNotFound" });
 
 		const created = await writeCatalogChanges(tx, changes, recipe);
 		const catalog = await getIngredientNames(tx);

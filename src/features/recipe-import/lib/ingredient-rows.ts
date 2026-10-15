@@ -5,6 +5,7 @@ import type {
 import type { CatalogIngredient } from "@/features/ingredient/types";
 import type { RecipeDraft } from "@/features/recipe/schema";
 import { type LocalizedText, localize, locales } from "@/lib/i18n/localized";
+import { type ErrorMessage, plainMessage } from "@/lib/i18n/messages";
 
 import { normalize, wordingNamesIngredient } from "./match-catalog";
 import type { FreshIngredient, ImportedRecipe } from "./to-draft";
@@ -165,8 +166,8 @@ const names =
 export function rowProblems(
 	choices: IngredientChoices,
 	catalog: CatalogIngredient[]
-): Map<string, string> {
-	const byKey = new Map<string, string>();
+): Map<string, ErrorMessage> {
+	const byKey = new Map<string, ErrorMessage>();
 	const taken: { id: string; name: LocalizedText; aliases: string[] }[] = [
 		...catalog,
 	];
@@ -175,28 +176,28 @@ export function rowProblems(
 			.map((locale) => item.name[locale]?.trim())
 			.filter((t): t is string => Boolean(t));
 		if (texts.length === 0) {
-			byKey.set(item.key, "Enter a name.");
+			byKey.set(item.key, plainMessage("nameRequired"));
 			continue;
 		}
 		const clash = taken.find((other) => texts.some(names(other)));
 		if (clash) {
-			byKey.set(
-				item.key,
-				`"${localize(clash.name)}" already exists. Link to it instead.`
-			);
+			byKey.set(item.key, {
+				key: "alreadyInCatalog",
+				values: { name: localize(clash.name) ?? "" },
+			});
 			continue;
 		}
 		taken.push({ id: item.key, name: item.name, aliases: [] });
 	}
 
-	const problems = new Map<string, string>();
+	const problems = new Map<string, ErrorMessage>();
 	for (const row of choices.rows) {
 		const { choice } = row;
 		const problem =
 			choice.kind === "catalog"
 				? choice.ingredientId
 					? undefined
-					: "Pick an ingredient."
+					: plainMessage("pickIngredient")
 				: byKey.get(choice.key);
 		if (problem) problems.set(row.id, problem);
 	}

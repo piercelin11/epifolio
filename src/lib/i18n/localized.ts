@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { PlainErrorKey } from "./messages";
+
 // Content is stored once per field with a value for each locale, e.g.
 // { en: "Mushroom Velouté", zh: "蘑菇濃湯" } (ADR-0013).
 
@@ -49,10 +51,12 @@ function trimLocalizedText(text: LocalizedText): LocalizedText {
 	);
 }
 
-/** Text written in at least one locale; blank locales are dropped. */
-/** Text filled in for at least one locale; `message` names what is missing. */
+/**
+ * Text filled in for at least one locale; blank locales are dropped.
+ * `message` is the key of the message saying what is missing.
+ */
 export const requiredLocalizedText = (
-	message = "Enter text in at least one language."
+	message: PlainErrorKey = "textRequired"
 ) =>
 	localizedTextSchema
 		.transform(trimLocalizedText)

@@ -19,14 +19,14 @@ export async function loadRecipeDraft(
 	const draft = await getRecipeDraft(await getCurrentUserId(), recipeId);
 	return draft
 		? { ok: true, data: draft }
-		: { ok: false, error: "Recipe not found." };
+		: { ok: false, error: { key: "recipeNotFound" } };
 }
 
 /** Saves the recipe card's draft of an existing recipe. */
 export async function saveRecipe(draft: RecipeDraft): Promise<ActionResult> {
 	const parsed = recipeDraftSchema.safeParse(draft);
 	if (!parsed.success) return invalidInput(parsed.error);
-	if (!parsed.data.id) return { ok: false, error: "Recipe not found." };
+	if (!parsed.data.id) return { ok: false, error: { key: "recipeNotFound" } };
 	try {
 		await writeRecipe(await getCurrentUserId(), parsed.data.id, parsed.data);
 	} catch (error) {

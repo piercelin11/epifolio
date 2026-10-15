@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { PlainErrorKey } from "@/lib/i18n/messages";
+
 /**
  * Units an ingredient line can be measured in. The database stores the id;
  * this list is the only source of valid values (ADR-0016).
@@ -24,7 +26,7 @@ export const units = [
 export type Unit = (typeof units)[number];
 
 export const unitSchema = z.enum(units, {
-	error: "Pick a unit from the list.",
+	error: "unitInvalid" satisfies PlainErrorKey,
 });
 
 export function isUnit(value: string): value is Unit {

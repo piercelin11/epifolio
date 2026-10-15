@@ -15,8 +15,8 @@ const capitalized = (text: string) =>
 export const newIngredientDraftSchema = z.object({
 	key: z.string().min(1),
 	/** The English name starts with a capital, however it was typed. */
-	name: requiredLocalizedText("Each new ingredient needs a name.").transform(
-		(name) => (name.en ? { ...name, en: capitalized(name.en) } : name)
+	name: requiredLocalizedText("newIngredientNeedsName").transform((name) =>
+		name.en ? { ...name, en: capitalized(name.en) } : name
 	),
 	aliases: z.array(z.string().trim().min(1)),
 	/** Per 100 g: calories in kcal, the rest in grams. */

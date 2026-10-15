@@ -9,6 +9,7 @@ import { newIngredientDraftSchema } from "@/features/ingredient/schema";
 import type { CatalogIngredient } from "@/features/ingredient/types";
 import { dishDraftSchema } from "@/features/menu/schema";
 import { recipeDraftSchema } from "@/features/recipe/schema";
+import { type ErrorMessage, plainMessage } from "@/lib/i18n/messages";
 
 import { type ImportFileType, importConfig } from "../config";
 import { importUsage } from "../lib/cost";
@@ -23,11 +24,19 @@ export type ImportSource =
 	| { kind: "text"; text: string }
 	| { kind: "files"; files: { type: ImportFileType; data: string }[] };
 
-/** A failed import; the message is safe to show. */
+/** A failed import, with the message to show (ADR-0029). */
 export class ImportError extends Error {
 	/** Set when the model was called before the import failed. */
 	usage?: ImportUsage;
+
+	constructor(readonly userMessage: ErrorMessage) {
+		super(userMessage.key);
+	}
 }
+
+/** An ImportError for a message that takes no values. */
+export const importError = (key: Parameters<typeof plainMessage>[0]) =>
+	new ImportError(plainMessage(key));
 
 let client: Anthropic | undefined;
 
@@ -63,24 +72,27 @@ function apiMessage(error: InstanceType<typeof Anthropic.APIError>) {
 }
 
 /** Turns an SDK error into one to show; rethrows a cancelled request. */
-function importError(error: unknown): unknown {
+function fromSdkError(error: unknown): unknown {
 	if (error instanceof Anthropic.APIUserAbortError) return error;
 	if (error instanceof Anthropic.APIConnectionTimeoutError) {
-		return new ImportError("Reading the recipe took too long. Try again.");
+		return importError("importTimeout");
 	}
 	if (error instanceof Anthropic.APIConnectionError) {
-		return new ImportError("Could not reach the Anthropic API.");
+		return importError("apiUnreachable");
 	}
 	if (error instanceof Anthropic.AuthenticationError) {
-		return new ImportError("The Anthropic API key is missing or invalid.");
+		return importError("apiKeyInvalid");
 	}
 	if (error instanceof Anthropic.RateLimitError) {
-		return new ImportError("Too many requests. Try again in a minute.");
+		return importError("rateLimited");
 	}
 	if (error instanceof Anthropic.APIError) {
 		console.error(error);
+		const detail = apiMessage(error);
 		return new ImportError(
-			apiMessage(error) ?? `The Anthropic API failed (${error.status}).`
+			detail
+				? { key: "apiMessage", values: { detail } }
+				: { key: "apiFailed", values: { status: error.status } }
 		);
 	}
 	return error;
@@ -96,7 +108,7 @@ export async function importRecipe(
 	signal?: AbortSignal
 ): Promise<{ imported: ImportedRecipe; usage: ImportUsage }> {
 	if (!process.env.ANTHROPIC_API_KEY) {
-		throw new ImportError("Set ANTHROPIC_API_KEY in .env to import recipes.");
+		throw importError("apiKeyMissing");
 	}
 	const content: Anthropic.ContentBlockParam[] = [
 		...(source.kind === "files" ? source.files.map(fileBlock) : []),
@@ -125,7 +137,7 @@ export async function importRecipe(
 			{ signal }
 		);
 	} catch (error) {
-		throw importError(error);
+		throw fromSdkError(error);
 	}
 
 	await saveRawResponse(source.kind, response);
@@ -134,17 +146,17 @@ export async function importRecipe(
 		`recipe-import: ${usage.inputTokens} in / ${usage.outputTokens} out, about US$${usage.costUsd.toFixed(4)}`
 	);
 	/** An ImportError that reports the call's usage. */
-	const failure = (message: string) =>
-		Object.assign(new ImportError(message), { usage });
+	const failure = (key: Parameters<typeof plainMessage>[0]) =>
+		Object.assign(importError(key), { usage });
 
 	if (response.stop_reason === "refusal") {
-		throw failure("The model declined to read this source.");
+		throw failure("modelDeclined");
 	}
 	if (response.stop_reason === "max_tokens") {
-		throw failure("The recipe is too long to read in one go.");
+		throw failure("recipeTooLong");
 	}
 	if (!response.parsed_output) {
-		throw failure("Could not read the recipe. Try again.");
+		throw failure("importFailed");
 	}
 	let imported: ImportedRecipe;
 	try {
@@ -152,7 +164,7 @@ export async function importRecipe(
 			console.warn(`recipe-import: ${message}`)
 		);
 	} catch {
-		throw failure("No recipe found in this source.");
+		throw failure("noRecipeFound");
 	}
 	// The cards save through these schemas; an answer they reject is a bug.
 	const checks = [
@@ -163,7 +175,7 @@ export async function importRecipe(
 	const failed = checks.find((check) => !check.success);
 	if (failed) {
 		console.error(failed.error);
-		throw failure("Could not read the recipe. Try again.");
+		throw failure("importFailed");
 	}
 	return { imported, usage };
 }

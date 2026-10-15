@@ -8,7 +8,7 @@ import { parseHTML } from "linkedom";
 
 import { importConfig } from "../config";
 import { findRecipeNode, recipeNodeToText } from "../lib/recipe-json-ld";
-import { ImportError } from "./import-recipe";
+import { ImportError, importError } from "./import-recipe";
 
 // Fetches a recipe page for the import and keeps only the recipe text
 // (ADR-0023): the page's JSON-LD Recipe when it has one, else its article
@@ -38,13 +38,13 @@ for (const [network, prefix] of [
 /** Throws unless the address is http(s) on a host that resolves publicly. */
 async function checkAddress(url: URL): Promise<void> {
 	if (url.protocol !== "http:" && url.protocol !== "https:") {
-		throw new ImportError("Enter a web address starting with http or https.");
+		throw importError("urlScheme");
 	}
 	const host = url.hostname.replace(/^\[|\]$/g, "");
 	const addresses = isIP(host)
 		? [{ address: host, family: isIP(host) }]
 		: await lookup(host, { all: true }).catch(() => {
-				throw new ImportError("Could not find that website.");
+				throw importError("siteNotFound");
 			});
 	const blocked = addresses.some(({ address, family }) => {
 		const mapped = address.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/)?.[1];
@@ -52,7 +52,7 @@ async function checkAddress(url: URL): Promise<void> {
 			? privateRanges.check(mapped, "ipv4")
 			: privateRanges.check(address, family === 6 ? "ipv6" : "ipv4");
 	});
-	if (blocked) throw new ImportError("That address is not a public website.");
+	if (blocked) throw importError("notPublicSite");
 }
 
 /** The body as text, failing once it passes the size limit. */
@@ -67,7 +67,7 @@ async function readBody(response: Response): Promise<string> {
 		size += value.byteLength;
 		if (size > importConfig.url.maxBytes) {
 			await reader.cancel();
-			throw new ImportError("That page is too large to read.");
+			throw importError("pageTooLarge");
 		}
 		chunks.push(value);
 	}
@@ -93,15 +93,18 @@ async function fetchPage(
 			continue;
 		}
 		if (!response.ok) {
-			throw new ImportError(`The page could not be read (${response.status}).`);
+			throw new ImportError({
+				key: "pageStatus",
+				values: { status: response.status },
+			});
 		}
 		const type = response.headers.get("content-type") ?? "";
 		if (!/html/i.test(type)) {
-			throw new ImportError("That address is not a web page.");
+			throw importError("notWebPage");
 		}
 		return readBody(response);
 	}
-	throw new ImportError("That page redirects too many times.");
+	throw importError("tooManyRedirects");
 }
 
 /** The recipe text of the page at `address`. Throws ImportError. */
@@ -117,7 +120,7 @@ export async function readWebPage(
 		);
 	} catch (error) {
 		if (error instanceof ImportError || signal.aborted) throw error;
-		throw new ImportError("Could not load that page.");
+		throw importError("pageLoadFailed");
 	}
 
 	const { document } = parseHTML(html);
@@ -138,9 +141,7 @@ export async function readWebPage(
 		.replace(/\s*\n\s*/g, "\n")
 		.trim();
 	if (!text) {
-		throw new ImportError(
-			"No recipe text on that page. Paste the text or a screenshot instead."
-		);
+		throw importError("noRecipeText");
 	}
 	const title = article?.title ? `${article.title}\n\n` : "";
 	return (title + text).slice(0, importConfig.url.maxTextLength);

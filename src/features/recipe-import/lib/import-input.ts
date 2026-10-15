@@ -1,3 +1,5 @@
+import { type ErrorMessage, plainMessage } from "@/lib/i18n/messages";
+
 import { importConfig, isImportFileType } from "../config";
 import type { ImportResponse } from "../types";
 
@@ -33,21 +35,25 @@ interface FileSize {
 const megabytes = (bytes: number) => bytes / 1024 / 1024;
 
 /** Why a file cannot be imported, or undefined when it can. */
-export function fileProblem(file: FileSize): string | undefined {
-	if (!isImportFileType(file.type)) return "Use JPEG, PNG, WebP or PDF.";
+export function fileProblem(file: FileSize): ErrorMessage | undefined {
+	if (!isImportFileType(file.type)) return plainMessage("fileType");
 	const { maxImageBytes, maxPdfBytes } = importConfig.files;
 	const max = file.type === "application/pdf" ? maxPdfBytes : maxImageBytes;
-	if (file.size > max) return `Larger than ${megabytes(max)} MB.`;
+	if (file.size > max) {
+		return { key: "fileTooLarge", values: { mb: megabytes(max) } };
+	}
 	return undefined;
 }
 
 /** Why the files together cannot be imported, or undefined when they can. */
-export function filesProblem(files: FileSize[]): string | undefined {
+export function filesProblem(files: FileSize[]): ErrorMessage | undefined {
 	const { maxCount, maxTotalBytes } = importConfig.files;
-	if (files.length > maxCount) return `Choose up to ${maxCount} files.`;
+	if (files.length > maxCount) {
+		return { key: "tooManyFiles", values: { count: maxCount } };
+	}
 	const total = files.reduce((sum, file) => sum + file.size, 0);
 	if (total > maxTotalBytes) {
-		return `The files add up to more than ${megabytes(maxTotalBytes)} MB.`;
+		return { key: "filesTooLarge", values: { mb: megabytes(maxTotalBytes) } };
 	}
 	return undefined;
 }
@@ -96,6 +102,6 @@ export async function requestImport(
 	try {
 		return (await response.json()) as ImportResponse;
 	} catch {
-		return { ok: false, error: "Could not read the recipe. Try again." };
+		return { ok: false, error: plainMessage("importFailed") };
 	}
 }

@@ -19,7 +19,7 @@ export async function updateBookTheme(input: {
 	themeId: string;
 }): Promise<ActionResult> {
 	const parsed = inputSchema.safeParse(input);
-	if (!parsed.success) return { ok: false, error: "Unknown theme." };
+	if (!parsed.success) return { ok: false, error: { key: "unknownTheme" } };
 	const { bookId, themeId } = parsed.data;
 
 	const userId = await getCurrentUserId();
@@ -28,10 +28,10 @@ export async function updateBookTheme(input: {
 			where: { id: bookId, menu: { userId } },
 			data: { themeId },
 		});
-		if (count === 0) return { ok: false, error: "Menu not found." };
+		if (count === 0) return { ok: false, error: { key: "menuNotFound" } };
 	} catch (error) {
 		console.error(error);
-		return { ok: false, error: "Could not save the theme." };
+		return { ok: false, error: { key: "themeSaveFailed" } };
 	}
 	refresh();
 	return { ok: true, data: undefined };
