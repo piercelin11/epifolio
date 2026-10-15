@@ -9,6 +9,7 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLocale, useMessages } from "@/lib/i18n/locale-provider";
 
 import { type MenuThemeId, isMenuThemeId, menuThemes } from "../menu-themes";
 
@@ -19,10 +20,12 @@ interface MenuThemePickerProps {
 
 /** A small button that opens the list of menu themes. */
 export function MenuThemePicker({ themeId, onChange }: MenuThemePickerProps) {
+	const locale = useLocale();
+	const t = useMessages();
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger
-				aria-label="Change menu theme"
+				aria-label={t.menuSheet.changeTheme}
 				className="text-primary grid size-6 cursor-pointer place-items-center focus-visible:outline-2 focus-visible:outline-offset-2"
 			>
 				<Palette className="size-4" />
@@ -44,7 +47,7 @@ export function MenuThemePicker({ themeId, onChange }: MenuThemePickerProps) {
 									background: `linear-gradient(135deg, ${theme.colors.background} 55%, ${theme.colors.primary} 55%)`,
 								}}
 							/>
-							{theme.label}
+							{theme.label[locale]}
 						</DropdownMenuRadioItem>
 					))}
 				</DropdownMenuRadioGroup>

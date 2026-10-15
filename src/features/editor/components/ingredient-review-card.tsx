@@ -22,7 +22,7 @@ import {
 	rowProblems,
 } from "@/features/recipe-import/lib/ingredient-rows";
 import { normalize } from "@/features/recipe-import/lib/match-catalog";
-import { useErrorText } from "@/lib/i18n/locale-provider";
+import { useErrorText, useMessages } from "@/lib/i18n/locale-provider";
 import type { LocalizedText } from "@/lib/i18n/localized";
 import type { ErrorMessage } from "@/lib/i18n/messages";
 
@@ -78,6 +78,7 @@ function IngredientPicker({
 	ingredientId: string | null;
 	onPick: (ingredientId: string | null) => void;
 }) {
+	const t = useMessages();
 	const [open, setOpen] = useState(false);
 	const items = options(row, catalog);
 	const selected = items.find((item) => item.id === ingredientId) ?? null;
@@ -96,8 +97,10 @@ function IngredientPicker({
 		>
 			<div className="border-editor-card-foreground flex items-center border-b">
 				<ComboboxPrimitive.Input
-					aria-label={`Ingredient for ${bilingual(row.wording)}`}
-					placeholder="Search ingredients"
+					aria-label={t.reviewCard.ingredientFor({
+						wording: bilingual(row.wording),
+					})}
+					placeholder={t.reviewCard.search}
 					// Typing replaces the picked name instead of adding to it.
 					onFocus={(event) => event.currentTarget.select()}
 					// Esc closes the list here; it must not also close the card.
@@ -107,14 +110,14 @@ function IngredientPicker({
 					className="placeholder:text-editor-card-foreground/40 min-w-0 flex-1 bg-transparent py-1.5 font-bold uppercase focus:outline-none"
 				/>
 				<ComboboxPrimitive.Trigger
-					aria-label="Show ingredients"
+					aria-label={t.reviewCard.showList}
 					className="cursor-pointer p-1"
 				>
 					<ChevronDown className="size-[1.1em]" />
 				</ComboboxPrimitive.Trigger>
 			</div>
 			<ComboboxContent>
-				<ComboboxEmpty>No ingredient found.</ComboboxEmpty>
+				<ComboboxEmpty>{t.reviewCard.noneFound}</ComboboxEmpty>
 				<ComboboxList>
 					{(item: Option) => (
 						<ComboboxItem key={item.id} value={item}>
@@ -141,6 +144,7 @@ function ReviewRow({
 	problem?: ErrorMessage;
 	onChange: (choices: IngredientChoices) => void;
 }) {
+	const t = useMessages();
 	const errorText = useErrorText();
 	const name = useId();
 	const { choice } = row;
@@ -171,8 +175,8 @@ function ReviewRow({
 		<li className="flex flex-col gap-3 py-4">
 			<p className="text-body font-bold uppercase">{bilingual(row.wording)}</p>
 			<div className="text-caption flex gap-8 uppercase">
-				{radio("new", "Create new")}
-				{radio("catalog", "Link to")}
+				{radio("new", t.reviewCard.createNew)}
+				{radio("catalog", t.reviewCard.linkTo)}
 			</div>
 			{choice.kind === "catalog" ? (
 				<IngredientPicker
@@ -187,7 +191,11 @@ function ReviewRow({
 						{(["en", "zh"] as const).map((locale) => (
 							<input
 								key={locale}
-								aria-label={`${locale === "en" ? "English" : "Chinese"} name`}
+								aria-label={
+									locale === "en"
+										? t.reviewCard.englishName
+										: t.reviewCard.chineseName
+								}
 								value={created.name[locale] ?? ""}
 								onChange={(event) =>
 									onChange(
@@ -197,7 +205,11 @@ function ReviewRow({
 										})
 									)
 								}
-								placeholder={locale === "en" ? "EN name" : "ZH name"}
+								placeholder={
+									locale === "en"
+										? t.reviewCard.englishPlaceholder
+										: t.reviewCard.chinesePlaceholder
+								}
 								className={fieldClass}
 							/>
 						))}
@@ -224,6 +236,7 @@ export function IngredientReviewCard({
 	onBack,
 	onCancel,
 }: IngredientReviewCardProps) {
+	const t = useMessages();
 	const [showMatched, setShowMatched] = useState(false);
 	const problems = rowProblems(choices, catalog);
 	const toReview = choices.rows.filter((row) => !row.matched);
@@ -246,9 +259,14 @@ export function IngredientReviewCard({
 				variant="review"
 				header={
 					<div className="flex flex-col gap-1">
-						<h2 className="text-subheading font-bold uppercase">Ingredients</h2>
+						<h2 className="text-subheading font-bold uppercase">
+							{t.reviewCard.heading}
+						</h2>
 						<p className="text-body uppercase">
-							{matched.length} matched · {toReview.length} not matched
+							{t.reviewCard.summary({
+								matched: matched.length,
+								unmatched: toReview.length,
+							})}
 						</p>
 					</div>
 				}
@@ -259,13 +277,13 @@ export function IngredientReviewCard({
 							onClick={onNext}
 							disabled={problems.size > 0}
 						>
-							Next
+							{t.editor.next}
 						</CardButton>
 						<CardButton variant="outline" onClick={onBack}>
-							Back
+							{t.editor.back}
 						</CardButton>
 						<CardButton variant="outline" onClick={onCancel}>
-							Cancel
+							{t.editor.cancel}
 						</CardButton>
 					</div>
 				}
@@ -279,7 +297,9 @@ export function IngredientReviewCard({
 							onClick={() => setShowMatched(!showMatched)}
 							className="text-caption cursor-pointer font-bold uppercase"
 						>
-							{showMatched ? "Hide" : "Show"} matched ({matched.length})
+							{(showMatched
+								? t.reviewCard.hideMatched
+								: t.reviewCard.showMatched)({ count: matched.length })}
 						</button>
 						{showMatched && <ul>{matched.map(row)}</ul>}
 					</div>

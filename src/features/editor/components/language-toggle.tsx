@@ -1,3 +1,4 @@
+import { useMessages } from "@/lib/i18n/locale-provider";
 import { type Locale, locales } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 
@@ -8,10 +9,11 @@ interface LanguageToggleProps {
 
 /** EN | ZH: which language the card's text fields are editing. */
 export function LanguageToggle({ value, onChange }: LanguageToggleProps) {
+	const t = useMessages();
 	return (
 		<div
 			role="group"
-			aria-label="Editing language"
+			aria-label={t.editor.editingLanguage}
 			className="text-caption flex items-center gap-1.5 uppercase"
 		>
 			{locales.map((locale, i) => (

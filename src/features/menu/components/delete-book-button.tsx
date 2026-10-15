@@ -14,6 +14,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { useMessages } from "@/lib/i18n/locale-provider";
 
 interface DeleteBookButtonProps {
 	/** The book's name, for the confirmation. */
@@ -24,6 +25,7 @@ interface DeleteBookButtonProps {
 
 /** A small button on the menu sheet that deletes the book after asking. */
 export function DeleteBookButton({ label, onDelete }: DeleteBookButtonProps) {
+	const t = useMessages();
 	// Closed explicitly: the shelf reuses this button for the book that
 	// takes the deleted one's place, so it would stay open, naming that book.
 	const [open, setOpen] = useState(false);
@@ -31,22 +33,19 @@ export function DeleteBookButton({ label, onDelete }: DeleteBookButtonProps) {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger
-				aria-label="Delete menu"
+				aria-label={t.menuSheet.delete}
 				className="text-primary grid size-6 cursor-pointer place-items-center focus-visible:outline-2 focus-visible:outline-offset-2"
 			>
 				<Trash2 className="size-4" />
 			</DialogTrigger>
 			<DialogContent showCloseButton={false}>
 				<DialogHeader>
-					<DialogTitle>Delete “{label}”?</DialogTitle>
-					<DialogDescription>
-						The menu and its sections are deleted. The recipes behind its dishes
-						are kept.
-					</DialogDescription>
+					<DialogTitle>{t.deleteBook.title({ name: label })}</DialogTitle>
+					<DialogDescription>{t.deleteBook.description}</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>
 					<DialogClose render={<Button variant="outline" />}>
-						Cancel
+						{t.editor.cancel}
 					</DialogClose>
 					<Button
 						variant="destructive"
@@ -57,7 +56,7 @@ export function DeleteBookButton({ label, onDelete }: DeleteBookButtonProps) {
 							setDeleting(false);
 						}}
 					>
-						{deleting ? "Deleting" : "Delete"}
+						{deleting ? t.deleteBook.deleting : t.deleteBook.delete}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

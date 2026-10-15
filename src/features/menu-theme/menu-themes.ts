@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+import type { Locale } from "@/lib/i18n/localized";
+
 /** Colours that make up one menu theme; every other token derives from these. */
 export interface MenuThemeColors {
 	/** Menu sheet paper. */
@@ -20,7 +22,8 @@ export interface MenuThemeTexture {
 
 export interface MenuTheme {
 	id: string;
-	label: string;
+	/** The theme's name in each locale. */
+	label: Record<Locale, string>;
 	colors: MenuThemeColors;
 	texture: MenuThemeTexture;
 }
@@ -40,7 +43,7 @@ const darkPaperTexture: MenuThemeTexture = { paper: 0.4, primary: 0.4 };
 export const menuThemes = [
 	{
 		id: "classic",
-		label: "Classic",
+		label: { en: "Classic", zh: "經典" },
 		colors: {
 			background: "#eae0d0",
 			foreground: "#000000",
@@ -51,7 +54,7 @@ export const menuThemes = [
 	},
 	{
 		id: "olive",
-		label: "Olive",
+		label: { en: "Olive", zh: "橄欖" },
 		colors: {
 			background: "#363b20",
 			foreground: "#ced2be",
@@ -62,7 +65,7 @@ export const menuThemes = [
 	},
 	{
 		id: "navy",
-		label: "Navy",
+		label: { en: "Navy", zh: "海軍藍" },
 		colors: {
 			background: "#202c3c",
 			foreground: "#929291",
@@ -73,7 +76,7 @@ export const menuThemes = [
 	},
 	{
 		id: "cocoa",
-		label: "Cocoa",
+		label: { en: "Cocoa", zh: "可可" },
 		colors: {
 			background: "#4b3326",
 			foreground: "#c3b0a4",
@@ -84,7 +87,7 @@ export const menuThemes = [
 	},
 	{
 		id: "sand",
-		label: "Sand",
+		label: { en: "Sand", zh: "沙色" },
 		colors: {
 			background: "#bcb39d",
 			foreground: "#3a3b2d",
@@ -95,7 +98,7 @@ export const menuThemes = [
 	},
 	{
 		id: "espresso",
-		label: "Espresso",
+		label: { en: "Espresso", zh: "濃縮咖啡" },
 		colors: {
 			background: "#2e2a24",
 			foreground: "#a49c92",
@@ -106,7 +109,7 @@ export const menuThemes = [
 	},
 	{
 		id: "fern",
-		label: "Fern",
+		label: { en: "Fern", zh: "蕨綠" },
 		colors: {
 			background: "#dfc5a9",
 			foreground: "#594c4a",
@@ -117,7 +120,7 @@ export const menuThemes = [
 	},
 	{
 		id: "lavender",
-		label: "Lavender",
+		label: { en: "Lavender", zh: "薰衣草" },
 		colors: {
 			background: "#e1ccd0",
 			foreground: "#655455",

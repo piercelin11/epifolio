@@ -6,8 +6,12 @@ import { toast } from "sonner";
 import { loadRecipeDraft } from "@/features/recipe/actions/recipe-editor";
 import type { RecipeDraft } from "@/features/recipe/schema";
 import { scalingConfig } from "@/features/recipe/scaling";
-import { units } from "@/features/recipe/units";
-import { useErrorText, useLocale } from "@/lib/i18n/locale-provider";
+import { unitLabel, units } from "@/features/recipe/units";
+import {
+	useErrorText,
+	useLocale,
+	useMessages,
+} from "@/lib/i18n/locale-provider";
 import {
 	type Locale,
 	type LocalizedText,
@@ -72,6 +76,7 @@ function ServingsField({
 	serves: number | null;
 	onChange: (serves: number) => void;
 }) {
+	const t = useMessages();
 	const { min, max } = scalingConfig.servings;
 	const step = (by: number) =>
 		onChange(Math.min(Math.max((serves ?? min) + by, min), max));
@@ -80,7 +85,7 @@ function ServingsField({
 		<div className="text-body flex items-center gap-2">
 			<button
 				type="button"
-				aria-label="Fewer servings"
+				aria-label={t.recipeSheet.fewerServings}
 				className={button}
 				disabled={serves !== null && serves <= min}
 				onClick={() => step(-1)}
@@ -92,14 +97,14 @@ function ServingsField({
 			</strong>
 			<button
 				type="button"
-				aria-label="More servings"
+				aria-label={t.recipeSheet.moreServings}
 				className={button}
 				disabled={serves !== null && serves >= max}
 				onClick={() => step(serves === null ? 0 : 1)}
 			>
 				<SquareIcon sign="plus" className="size-[1.25em]" />
 			</button>
-			<span className="text-caption">servings</span>
+			<span className="text-caption">{t.recipeSheet.servings}</span>
 		</div>
 	);
 }
@@ -119,6 +124,7 @@ export function RecipeCard({
 	onCancel,
 }: RecipeCardProps) {
 	const siteLocale = useLocale();
+	const t = useMessages();
 	const errorText = useErrorText();
 	// Starts in the site language; the toggle only picks what is being edited.
 	const [locale, setLocale] = useState<Locale>(siteLocale);
@@ -162,7 +168,7 @@ export function RecipeCard({
 								onChange={(value) =>
 									set({ name: { ...model.name, [locale]: value } })
 								}
-								placeholder="Recipe name"
+								placeholder={t.recipeCard.recipeName}
 								className="text-heading text-center font-semibold uppercase"
 							/>
 						) : (
@@ -180,17 +186,17 @@ export function RecipeCard({
 							onClick={save}
 							disabled={!model || saving}
 						>
-							{saving ? "Saving" : "Save"}
+							{saving ? t.editor.saving : t.editor.save}
 						</CardButton>
 						<CardButton variant="outline" onClick={onCancel}>
-							Cancel
+							{t.editor.cancel}
 						</CardButton>
 					</div>
 				}
 			>
 				{model ? (
 					<div>
-						<SectionTitle title="Ingredients">
+						<SectionTitle title={t.recipeSheet.ingredients}>
 							<ServingsField
 								serves={model.serves}
 								onChange={(serves) => set({ serves })}
@@ -200,7 +206,8 @@ export function RecipeCard({
 							rows={model.ingredients}
 							onChange={(ingredients) => set({ ingredients })}
 							locale={locale}
-							entryLabel="Ingredient"
+							entryLabel={t.recipeCard.ingredient}
+							removeEntryLabel={t.recipeCard.removeIngredient}
 							newEntry={emptyLine}
 							isEmptyEntry={(line) =>
 								!line.quantity.trim() &&
@@ -217,7 +224,9 @@ export function RecipeCard({
 							}
 							renderEntry={(line) =>
 								lineText(line, locale) || (
-									<span className="opacity-50">Empty ingredient</span>
+									<span className="opacity-50">
+										{t.recipeCard.emptyIngredient}
+									</span>
 								)
 							}
 							renderEditor={(line, editor) => (
@@ -232,8 +241,8 @@ export function RecipeCard({
 											editor.onFirstFieldKeyDown(event);
 											editor.onFieldKeyDown(event);
 										}}
-										placeholder="Qty"
-										aria-label="Quantity"
+										placeholder={t.recipeCard.quantityShort}
+										aria-label={t.recipeCard.quantity}
 										className={cn(fieldClass, "w-16")}
 									/>
 									<select
@@ -245,17 +254,17 @@ export function RecipeCard({
 											})
 										}
 										onKeyDown={editor.onFieldKeyDown}
-										aria-label="Unit"
+										aria-label={t.recipeCard.unit}
 										className={cn(
 											fieldClass,
 											"w-20",
 											!line.unit && "opacity-50"
 										)}
 									>
-										<option value="">Unit</option>
+										<option value="">{t.recipeCard.unit}</option>
 										{units.map((unit) => (
 											<option key={unit} value={unit}>
-												{unit}
+												{unitLabel(unit, locale)}
 											</option>
 										))}
 									</select>
@@ -268,8 +277,8 @@ export function RecipeCard({
 											})
 										}
 										onKeyDown={editor.onFieldKeyDown}
-										placeholder="Ingredient"
-										aria-label="Ingredient"
+										placeholder={t.recipeCard.ingredient}
+										aria-label={t.recipeCard.ingredient}
 										className={cn(fieldClass, "flex-1")}
 									/>
 									<input
@@ -281,20 +290,21 @@ export function RecipeCard({
 											})
 										}
 										onKeyDown={editor.onFieldKeyDown}
-										placeholder="Note"
-										aria-label="Note"
+										placeholder={t.recipeCard.note}
+										aria-label={t.recipeCard.note}
 										className={cn(fieldClass, "w-1/4")}
 									/>
 								</div>
 							)}
 						/>
 
-						<SectionTitle title="Instructions" />
+						<SectionTitle title={t.recipeSheet.instructions} />
 						<OutlineList<StepEntry>
 							rows={model.steps}
 							onChange={(steps) => set({ steps })}
 							locale={locale}
-							entryLabel="Step"
+							entryLabel={t.recipeCard.step}
+							removeEntryLabel={t.recipeCard.removeStep}
 							newEntry={emptyStep}
 							isEmptyEntry={(step) =>
 								!hasText(step.title) && !hasText(step.text)
@@ -324,8 +334,8 @@ export function RecipeCard({
 											editor.onFirstFieldKeyDown(event);
 											editor.onFieldKeyDown(event);
 										}}
-										placeholder="Highlight (optional)"
-										aria-label="Highlight"
+										placeholder={t.recipeCard.highlightOptional}
+										aria-label={t.recipeCard.highlight}
 										className={cn(fieldClass, "w-1/3")}
 									/>
 									<textarea
@@ -337,8 +347,8 @@ export function RecipeCard({
 											})
 										}
 										onKeyDown={editor.onFieldKeyDown}
-										placeholder="Instruction"
-										aria-label="Instruction"
+										placeholder={t.recipeCard.instruction}
+										aria-label={t.recipeCard.instruction}
 										rows={1}
 										className={cn(
 											fieldClass,
@@ -349,7 +359,7 @@ export function RecipeCard({
 							)}
 						/>
 
-						<SectionTitle title="References" />
+						<SectionTitle title={t.recipeCard.references} />
 						{/* Level with the group headings: links have no groups */}
 						<div className="text-body pl-6">
 							{model.references.map((link, i) => (
@@ -358,7 +368,7 @@ export function RecipeCard({
 									className="group border-editor-card-foreground relative border-b py-1.5"
 								>
 									<RemoveButton
-										label="Remove reference"
+										label={t.recipeCard.removeReference}
 										onClick={() =>
 											set({
 												references: model.references.filter((_, j) => j !== i),
@@ -380,7 +390,7 @@ export function RecipeCard({
 								</div>
 							))}
 							<AddRow
-								label="URL"
+								label={t.recipeCard.url}
 								onClick={() => {
 									const key = newKey();
 									setAutoEditUrl(key);
@@ -390,7 +400,7 @@ export function RecipeCard({
 						</div>
 					</div>
 				) : (
-					<p className="text-body opacity-50">Loading…</p>
+					<p className="text-body opacity-50">{t.editor.loading}</p>
 				)}
 			</EditorCardLayout>
 		</EditorCard>
@@ -401,7 +411,8 @@ export function RecipeCard({
 function lineText(line: LineEntry, locale: Locale): string {
 	const name = text(line.name, locale);
 	const note = text(line.note, locale);
-	const main = [line.quantity, line.unit, name].filter(Boolean).join(" ");
+	const unit = line.unit && unitLabel(line.unit, locale);
+	const main = [line.quantity, unit, name].filter(Boolean).join(" ");
 	return note ? `${main} (${note})` : main;
 }
 
@@ -412,9 +423,12 @@ function StepText({
 	step: OutlineRow<StepEntry> & StepEntry;
 	locale: Locale;
 }) {
+	const t = useMessages();
 	const title = text(step.title, locale);
 	const body = text(step.text, locale);
-	if (!title && !body) return <span className="opacity-50">Empty step</span>;
+	if (!title && !body) {
+		return <span className="opacity-50">{t.recipeCard.emptyStep}</span>;
+	}
 	return (
 		<span className="whitespace-pre-line">
 			{title && <strong className="font-semibold">{title}. </strong>}

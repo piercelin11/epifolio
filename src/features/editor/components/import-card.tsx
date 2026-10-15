@@ -16,7 +16,11 @@ import {
 	requestImport,
 } from "@/features/recipe-import/lib/import-input";
 import type { ImportResponseData } from "@/features/recipe-import/types";
-import { useErrorText, useLocale } from "@/lib/i18n/locale-provider";
+import {
+	useErrorText,
+	useLocale,
+	useMessages,
+} from "@/lib/i18n/locale-provider";
 import type { Locale } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 
@@ -24,14 +28,9 @@ import { CardButton, EditorCard, EditorCardLayout } from "./editor-card";
 import { LanguageToggle } from "./language-toggle";
 
 /** Where a new dish comes from: typed by hand, or read by the LLM (#52). */
-const sources = [
-	{ id: "scratch", label: "Scratch" },
-	{ id: "text", label: "Text" },
-	{ id: "photo", label: "Photo" },
-	{ id: "url", label: "URL" },
-] as const;
+const sources = ["scratch", "text", "photo", "url"] as const;
 
-export type Source = (typeof sources)[number]["id"];
+export type Source = (typeof sources)[number];
 
 interface ImportCardProps {
 	dish: DishDraft;
@@ -75,9 +74,10 @@ function Field({
 
 /** The import card's heading, level with the language toggle. */
 export function ImportHeading({ id }: { id?: string }) {
+	const t = useMessages();
 	return (
 		<p id={id} className="text-subheading font-bold uppercase">
-			Import from
+			{t.importCard.heading}
 		</p>
 	);
 }
@@ -92,6 +92,7 @@ function FilePicker({
 	onChange: (files: File[]) => void;
 	disabled?: boolean;
 }) {
+	const t = useMessages();
 	const errorText = useErrorText();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [over, setOver] = useState(false);
@@ -132,13 +133,14 @@ function FilePicker({
 					over && "bg-editor-card-foreground/10"
 				)}
 			>
-				<span className="font-bold uppercase">
-					Choose files or drag them here
-				</span>
+				<span className="font-bold uppercase">{t.importCard.chooseFiles}</span>
 				<span className="text-caption">
-					Photos (JPEG, PNG, WebP) up to {mb(maxImageBytes)} MB, PDFs up to{" "}
-					{mb(maxPdfBytes)} MB; up to {maxCount} files, {mb(maxTotalBytes)} MB
-					in all
+					{t.importCard.fileLimits({
+						imageMb: mb(maxImageBytes),
+						pdfMb: mb(maxPdfBytes),
+						count: maxCount,
+						totalMb: mb(maxTotalBytes),
+					})}
 				</span>
 			</button>
 			<input
@@ -164,7 +166,7 @@ function FilePicker({
 								)}
 								<button
 									type="button"
-									aria-label={`Remove ${file.name}`}
+									aria-label={t.importCard.removeFile({ name: file.name })}
 									disabled={disabled}
 									onClick={() => onChange(files.filter((_, j) => j !== i))}
 									className="ml-auto cursor-pointer disabled:cursor-default"
@@ -207,6 +209,7 @@ export function ImportForm({
 	/** Id of the heading that names the source choice. */
 	labelledBy?: string;
 }) {
+	const t = useMessages();
 	// Unique per form: the mirrored copy on the menu card's back has its own
 	// radios, and one shared name would make them a single group.
 	const name = useId();
@@ -216,7 +219,7 @@ export function ImportForm({
 		<div className="text-body flex flex-col gap-4">
 			<fieldset aria-labelledby={labelledBy} disabled={busy}>
 				<div className="flex gap-6">
-					{sources.map(({ id, label }) => (
+					{sources.map((id) => (
 						<label
 							key={id}
 							className="flex cursor-pointer items-center gap-2 uppercase"
@@ -229,7 +232,7 @@ export function ImportForm({
 								onChange={() => onSourceChange(id)}
 								className="border-editor-card-foreground checked:bg-editor-card-foreground size-[1em] cursor-pointer appearance-none rounded-full border checked:shadow-[inset_0_0_0_2px_var(--editor-menu-card)]"
 							/>
-							{label}
+							{t.importCard.sources[id]}
 						</label>
 					))}
 				</div>
@@ -241,7 +244,7 @@ export function ImportForm({
 						onChange={(value) =>
 							onChange({ ...dish, name: { ...dish.name, [locale]: value } })
 						}
-						placeholder="Dish name"
+						placeholder={t.importCard.dishName}
 					/>
 					<Field
 						value={dish.description?.[locale] ?? ""}
@@ -251,7 +254,7 @@ export function ImportForm({
 								description: { ...dish.description, [locale]: value },
 							})
 						}
-						placeholder="Description (optional)"
+						placeholder={t.importCard.descriptionOptional}
 					/>
 				</div>
 			)}
@@ -261,7 +264,7 @@ export function ImportForm({
 					onChange={(event) => setInput({ text: event.target.value })}
 					disabled={busy}
 					maxLength={importConfig.maxTextLength}
-					placeholder="Paste a recipe here: ingredients, steps or a whole post."
+					placeholder={t.importCard.pasteRecipe}
 					className={cn(fieldClass, "h-32 resize-none border p-2")}
 				/>
 			)}
@@ -298,6 +301,7 @@ export function ImportCard({
 	ghost,
 }: ImportCardProps) {
 	const siteLocale = useLocale();
+	const t = useMessages();
 	const errorText = useErrorText();
 	// Starts in the site language; the toggle only picks what is being edited.
 	const [locale, setLocale] = useState<Locale>(siteLocale);
@@ -349,18 +353,21 @@ export function ImportCard({
 						>
 							{busy ? (
 								<span className="flex items-center justify-center gap-2">
-									<Spinner className="size-[1em]" />
-									Reading…
+									<Spinner
+										aria-label={t.editor.loading}
+										className="size-[1em]"
+									/>
+									{t.importCard.reading}
 								</span>
 							) : (
-								"Next"
+								t.editor.next
 							)}
 						</CardButton>
 						<CardButton
 							variant="outline"
 							onClick={() => (busy ? request.abort() : onCancel())}
 						>
-							Cancel
+							{t.editor.cancel}
 						</CardButton>
 					</div>
 				}

@@ -1,4 +1,5 @@
 import type { DishDraft } from "@/features/menu/schema";
+import { useMessages } from "@/lib/i18n/locale-provider";
 import { type Locale, localize } from "@/lib/i18n/localized";
 
 import type { MenuModel } from "../menu-model";
@@ -17,6 +18,7 @@ export function MenuGhost({
 	model: MenuModel | null;
 	locale: Locale;
 }) {
+	const t = useMessages();
 	const text = (value: Parameters<typeof localize<string>>[0]) =>
 		localize(value, locale) ?? "";
 	return (
@@ -29,8 +31,8 @@ export function MenuGhost({
 			}
 			footer={
 				<div className="flex gap-3">
-					<CardButton variant="primary">Save</CardButton>
-					<CardButton variant="outline">Cancel</CardButton>
+					<CardButton variant="primary">{t.editor.save}</CardButton>
+					<CardButton variant="outline">{t.editor.cancel}</CardButton>
 				</div>
 			}
 		>
@@ -62,14 +64,15 @@ export function ImportGhost({
 	dish: DishDraft;
 	locale: Locale;
 }) {
+	const t = useMessages();
 	return (
 		<EditorCardLayout
 			variant="menu"
 			header={<ImportHeading />}
 			footer={
 				<div className="flex gap-3">
-					<CardButton variant="primary">Next</CardButton>
-					<CardButton variant="outline">Cancel</CardButton>
+					<CardButton variant="primary">{t.editor.next}</CardButton>
+					<CardButton variant="outline">{t.editor.cancel}</CardButton>
 				</div>
 			}
 		>

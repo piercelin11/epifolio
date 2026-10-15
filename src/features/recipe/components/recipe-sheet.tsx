@@ -1,8 +1,11 @@
 import { Minus, Plus } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { useLocale, useMessages } from "@/lib/i18n/locale-provider";
+
 import { clampServings, formatQuantity, scaleQuantity } from "../lib/quantity";
 import type { Recipe, RecipeIngredient, RecipeProgress } from "../types";
+import { unitLabel } from "../units";
 
 interface RecipeSheetProps {
 	recipe?: Recipe;
@@ -44,6 +47,7 @@ function ServingsControl({
 	servings: number;
 	onChange: (servings: number) => void;
 }) {
+	const t = useMessages();
 	const step = (by: number) => onChange(clampServings(servings + by));
 	const button =
 		"bg-primary-foreground text-primary grid size-5 cursor-pointer place-items-center disabled:cursor-default disabled:opacity-40";
@@ -51,7 +55,7 @@ function ServingsControl({
 		<div className="flex items-center gap-2">
 			<button
 				type="button"
-				aria-label="Fewer servings"
+				aria-label={t.recipeSheet.fewerServings}
 				className={button}
 				disabled={clampServings(servings - 1) === servings}
 				onClick={() => step(-1)}
@@ -63,7 +67,7 @@ function ServingsControl({
 			</strong>
 			<button
 				type="button"
-				aria-label="More servings"
+				aria-label={t.recipeSheet.moreServings}
 				className={button}
 				disabled={clampServings(servings + 1) === servings}
 				onClick={() => step(1)}
@@ -73,10 +77,10 @@ function ServingsControl({
 			{/* Sized for the plural, so the controls stay put at one serving */}
 			<span className="text-caption ml-1 inline-grid">
 				<span aria-hidden className="invisible col-start-1 row-start-1">
-					servings
+					{t.recipeSheet.servings}
 				</span>
 				<span className="col-start-1 row-start-1">
-					{servings === 1 ? "serving" : "servings"}
+					{servings === 1 ? t.recipeSheet.serving : t.recipeSheet.servings}
 				</span>
 			</span>
 		</div>
@@ -96,6 +100,8 @@ function IngredientLine({
 	onCheckedChange: (checked: boolean) => void;
 	onSelectIngredient?: (ingredientId: string) => void;
 }) {
+	const locale = useLocale();
+	const t = useMessages();
 	const { ingredientId } = item;
 	return (
 		<li>
@@ -110,8 +116,14 @@ function IngredientLine({
 				<span>
 					<strong className="font-semibold">
 						{item.quantity !== undefined
-							? formatQuantity(scaleQuantity(item.quantity, factor), item.unit)
-							: (item.unit ?? "To taste")}{" "}
+							? formatQuantity(
+									scaleQuantity(item.quantity, factor),
+									item.unit,
+									locale
+								)
+							: item.unit
+								? unitLabel(item.unit, locale)
+								: t.recipeSheet.toTaste}{" "}
 					</strong>
 					{/* A button inside the label opens the card instead of checking the line */}
 					{ingredientId && onSelectIngredient ? (
@@ -142,6 +154,7 @@ export function RecipeSheet({
 	onProgressChange,
 	onSelectIngredient,
 }: RecipeSheetProps) {
+	const t = useMessages();
 	if (!recipe) return null;
 
 	const servings = progress.servings ?? recipe.serves;
@@ -172,7 +185,7 @@ export function RecipeSheet({
 			</div>
 
 			<section className="flex flex-col gap-6">
-				<RecipeSectionHeader title="Ingredients">
+				<RecipeSectionHeader title={t.recipeSheet.ingredients}>
 					{servings && (
 						<ServingsControl
 							servings={servings}
@@ -205,7 +218,7 @@ export function RecipeSheet({
 			</section>
 
 			<section className="flex flex-col gap-6">
-				<RecipeSectionHeader title="Instructions" />
+				<RecipeSectionHeader title={t.recipeSheet.instructions} />
 				{recipe.stepGroups.map((group, g) => (
 					<div key={g} className="flex flex-col gap-3">
 						{group.label && <GroupLabel>{group.label}</GroupLabel>}

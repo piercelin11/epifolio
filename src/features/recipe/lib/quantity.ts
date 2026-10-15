@@ -1,5 +1,8 @@
+import type { Locale } from "@/lib/i18n/localized";
+
 import { scalingConfig } from "../scaling";
 import type { Quantity } from "../types";
+import { unitLabel } from "../units";
 
 /** Keeps a number of servings within the configured range. */
 export function clampServings(servings: number): number {
@@ -36,16 +39,19 @@ function formatValue(value: number, unit?: string): string {
 }
 
 /**
- * Formats a quantity with its unit, e.g. "1 1/2 tbsp", "80–100 g",
- * "2 cloves". A range whose ends format the same shows one value.
+ * Formats a quantity with its unit in `locale`, e.g. "1 1/2 tbsp",
+ * "80–100 g", "2 cloves". A range whose ends format the same shows one value.
  */
-export function formatQuantity(quantity: Quantity, unit?: string): string {
+export function formatQuantity(
+	quantity: Quantity,
+	unit: string | undefined,
+	locale: Locale
+): string {
 	const [low, high] =
 		typeof quantity === "number" ? [quantity, quantity] : quantity;
 	const lowText = formatValue(low, unit);
 	const highText = formatValue(high, unit);
 	const amount = lowText === highText ? lowText : `${lowText}–${highText}`;
 	if (!unit) return amount;
-	const plural = high > 1 ? scalingConfig.plurals[unit] : undefined;
-	return `${amount} ${plural ?? unit}`;
+	return `${amount} ${unitLabel(unit, locale, high)}`;
 }

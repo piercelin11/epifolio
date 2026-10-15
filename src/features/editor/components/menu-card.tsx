@@ -26,7 +26,7 @@ import { ArrowUpRight } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { useLocale } from "@/lib/i18n/locale-provider";
+import { useLocale, useMessages } from "@/lib/i18n/locale-provider";
 import type { Locale } from "@/lib/i18n/localized";
 
 import { editorDrag } from "../editor-motion";
@@ -115,6 +115,7 @@ function ItemRow({
 	onChange: (item: MenuItemModel) => void;
 	onRemove: () => void;
 }) {
+	const t = useMessages();
 	const {
 		setNodeRef,
 		transform,
@@ -135,21 +136,21 @@ function ItemRow({
 			{...rowListeners(listeners)}
 			className="group border-editor-card-foreground ml-8 border-b py-1.5 outline-none focus-visible:outline-2"
 		>
-			<RemoveButton label="Remove dish from menu" onClick={onRemove} />
+			<RemoveButton label={t.menuCard.removeDish} onClick={onRemove} />
 			<div className="flex items-center gap-1.5">
 				<InlineText
 					value={item.name[locale] ?? ""}
 					onChange={(value) =>
 						onChange({ ...item, name: { ...item.name, [locale]: value } })
 					}
-					placeholder="Dish name"
+					placeholder={t.menuCard.dishName}
 					onEditingChange={(editing) => onEditing(item.key, editing)}
 					className="w-auto leading-snug font-medium uppercase"
 				/>
 				{recipeId && (
 					<button
 						type="button"
-						aria-label="Edit recipe"
+						aria-label={t.menuCard.editRecipe}
 						onClick={() => onOpenRecipe(recipeId)}
 						className="cursor-pointer opacity-0 group-hover:opacity-100 group-has-focus-visible:opacity-100"
 					>
@@ -165,7 +166,7 @@ function ItemRow({
 						description: { ...item.description, [locale]: value },
 					})
 				}
-				placeholder="Description"
+				placeholder={t.menuCard.description}
 				onEditingChange={(editing) => onEditing(item.key, editing)}
 				className="text-caption font-light"
 			/>
@@ -190,6 +191,7 @@ function SectionBlock({
 	onAddDish: () => void;
 	children: ReactNode;
 }) {
+	const t = useMessages();
 	const {
 		setNodeRef,
 		transform,
@@ -216,7 +218,7 @@ function SectionBlock({
 				{...rowListeners(listeners)}
 				className="group border-editor-card-foreground relative border-b py-1.5 outline-none focus-visible:outline-2"
 			>
-				<RemoveButton label="Remove section" onClick={onRemove} />
+				<RemoveButton label={t.menuCard.removeSection} onClick={onRemove} />
 				<InlineText
 					value={section.label?.[locale] ?? ""}
 					onChange={(value) =>
@@ -225,7 +227,7 @@ function SectionBlock({
 							label: { ...section.label, [locale]: value },
 						})
 					}
-					placeholder="Section name"
+					placeholder={t.menuCard.sectionName}
 					autoEdit={autoEditKey === section.key}
 					onEditingChange={(editing) => onEditing(section.key, editing)}
 					className="font-bold uppercase"
@@ -239,10 +241,10 @@ function SectionBlock({
 					{children}
 				</SortableContext>
 				<AddRow
-					label="Dish"
+					label={t.menuCard.dish}
 					onClick={onAddDish}
 					disabled={!section.id}
-					title={section.id ? undefined : "Save the menu to add dishes here"}
+					title={section.id ? undefined : t.menuCard.saveToAddDishes}
 					className="ml-8 w-[calc(100%-2rem)]"
 				/>
 			</div>
@@ -260,6 +262,7 @@ function DragPreview({
 	activeKey: string | null;
 	locale: Locale;
 }) {
+	const t = useMessages();
 	const section = model.sections.find((s) => s.key === activeKey);
 	const item = model.sections
 		.flatMap((s) => s.items)
@@ -270,7 +273,9 @@ function DragPreview({
 		<div className="bg-editor-menu-card text-editor-card-foreground text-body cursor-grabbing px-3 py-1.5 uppercase shadow-lg">
 			{section ? (
 				<>
-					<p className="font-bold">{text(section.label) || "Section"}</p>
+					<p className="font-bold">
+						{text(section.label) || t.menuCard.section}
+					</p>
 					{section.items.map((i) => (
 						<p key={i.key} className="pl-8">
 							{text(i.name)}
@@ -297,6 +302,7 @@ export function MenuCard({
 	ghost,
 }: MenuCardProps) {
 	const siteLocale = useLocale();
+	const t = useMessages();
 	// Starts in the site language; the toggle only picks what is being edited.
 	const [locale, setLocale] = useState<Locale>(siteLocale);
 	const [editingKey, setEditingKey] = useState<string | null>(null);
@@ -405,7 +411,7 @@ export function MenuCard({
 										label: { ...model.label, [locale]: value },
 									})
 								}
-								placeholder="Menu name"
+								placeholder={t.menuCard.menuName}
 								className="text-subheading font-bold uppercase"
 							/>
 						) : (
@@ -421,10 +427,10 @@ export function MenuCard({
 							onClick={onSave}
 							disabled={!model || saving}
 						>
-							{saving ? "Saving" : "Save"}
+							{saving ? t.editor.saving : t.editor.save}
 						</CardButton>
 						<CardButton variant="outline" onClick={onCancel}>
-							Cancel
+							{t.editor.cancel}
 						</CardButton>
 					</div>
 				}
@@ -504,13 +510,13 @@ export function MenuCard({
 								)}
 						</DndContext>
 						<AddRow
-							label="Section"
+							label={t.menuCard.section}
 							onClick={addSection}
 							className="font-bold"
 						/>
 					</div>
 				) : (
-					<p className="text-body opacity-50">Loading…</p>
+					<p className="text-body opacity-50">{t.editor.loading}</p>
 				)}
 			</EditorCardLayout>
 		</EditorCard>

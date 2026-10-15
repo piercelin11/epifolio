@@ -8,7 +8,7 @@ export const zh = {
 	},
 	shelf: {
 		menu: "菜單",
-		openBook: ({ name }) => `打開${name}`,
+		openBook: ({ name }) => `打開「${name}」`,
 	},
 	stack: {
 		showMenu: "顯示菜單",

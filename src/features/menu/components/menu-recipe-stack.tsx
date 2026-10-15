@@ -8,6 +8,7 @@ import { usePaperStack } from "@/features/paper-stack/hooks/use-paper-stack";
 import type { StackPosition } from "@/features/paper-stack/types";
 import { RecipeSheet } from "@/features/recipe/components/recipe-sheet";
 import type { Recipe, RecipeProgress } from "@/features/recipe/types";
+import { useMessages } from "@/lib/i18n/locale-provider";
 import { cn } from "@/lib/utils";
 
 import type { MenuGroup } from "../types";
@@ -65,6 +66,7 @@ export function MenuRecipeStack({
 	onProgressChange,
 	blankBackRecipe = false,
 }: MenuRecipeStackProps) {
+	const t = useMessages();
 	const stack = usePaperStack(front, onFrontChange);
 	const recipe = recipes.find((r) => r.id === recipeId);
 	const selectIngredient =
@@ -82,7 +84,7 @@ export function MenuRecipeStack({
 			inactive={inactive}
 			overlay={overlay}
 			base={{
-				label: "menu",
+				label: t.stack.showMenu,
 				content: (
 					<PaperSheet tone="paper">
 						<MenuSheet
@@ -97,7 +99,7 @@ export function MenuRecipeStack({
 				),
 			}}
 			offset={{
-				label: "recipe",
+				label: t.stack.showRecipe,
 				content: (
 					<PaperSheet tone="primary" perforated>
 						<div

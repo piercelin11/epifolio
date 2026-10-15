@@ -154,7 +154,7 @@ export function MenuShelf({
 								reading && (
 									<>
 										<EditButton
-											label="Edit menu"
+											label={t.menuSheet.edit}
 											onClick={() => {
 												card.close();
 												editor.go({ card: "menu", bookId: book.id });
@@ -181,7 +181,7 @@ export function MenuShelf({
 							recipeActions={(recipeId) =>
 								reading && (
 									<EditButton
-										label="Edit recipe"
+										label={t.recipeSheet.edit}
 										onClick={() => {
 											card.close();
 											editor.go({ card: "recipe", recipeId });
@@ -213,7 +213,7 @@ export function MenuShelf({
 								open
 									? undefined
 									: {
-											label: `Open ${book.group.label}`,
+											label: t.shelf.openBook({ name: book.group.label }),
 											onActivate: () => {
 												card.close();
 												if (reading) shelf.goTo(k);

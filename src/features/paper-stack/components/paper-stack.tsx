@@ -116,7 +116,7 @@ export function PaperStack({
 									onBringToFront && (
 										<button
 											type="button"
-											aria-label={`Show ${sheets[position].label}`}
+											aria-label={sheets[position].label}
 											className="absolute inset-0 cursor-pointer"
 											onClick={() => onBringToFront(position)}
 										/>

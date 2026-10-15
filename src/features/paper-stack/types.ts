@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 export type StackPosition = "base" | "offset";
 
 export interface StackSheet {
-	/** Short name used in the "bring to front" control, e.g. "menu". */
+	/** Accessible name of the "bring to front" control, e.g. "Show menu". */
 	label: string;
 	content: ReactNode;
 }

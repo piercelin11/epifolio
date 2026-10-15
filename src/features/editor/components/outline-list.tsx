@@ -28,6 +28,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
+import { useMessages } from "@/lib/i18n/locale-provider";
 import type { Locale, LocalizedText } from "@/lib/i18n/localized";
 import { cn } from "@/lib/utils";
 
@@ -61,6 +62,8 @@ interface OutlineListProps<E> {
 	locale: Locale;
 	/** "Ingredient" or "Step", for the add buttons. */
 	entryLabel: string;
+	/** "Remove ingredient" or "Remove step", for the remove buttons. */
+	removeEntryLabel: string;
 	newEntry: () => E;
 	/** An entry with nothing filled in; it is dropped when editing ends. */
 	isEmptyEntry: (entry: E) => boolean;
@@ -134,6 +137,7 @@ export function OutlineList<E>({
 	onChange,
 	locale,
 	entryLabel,
+	removeEntryLabel,
 	newEntry,
 	isEmptyEntry,
 	entryToHeading,
@@ -142,6 +146,7 @@ export function OutlineList<E>({
 	renderEditor,
 	rowText,
 }: OutlineListProps<E>) {
+	const t = useMessages();
 	const [editingKey, setEditingKey] = useState<string | null>(null);
 	const [autoEditKey, setAutoEditKey] = useState<string | null>(null);
 	const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -341,7 +346,7 @@ export function OutlineList<E>({
 										className="group border-editor-card-foreground relative border-b py-1.5 outline-none focus-visible:outline-2"
 									>
 										<RemoveButton
-											label="Remove group"
+											label={t.editor.removeGroup}
 											onClick={() => remove(row)}
 										/>
 										<InlineText
@@ -352,7 +357,7 @@ export function OutlineList<E>({
 													label: { ...row.label, [locale]: value },
 												})
 											}
-											placeholder="Group (optional)"
+											placeholder={t.editor.groupPlaceholder}
 											autoEdit={autoEditKey === row.key}
 											onEditingChange={(editing) =>
 												setEditingKey((current) =>
@@ -390,7 +395,7 @@ export function OutlineList<E>({
 									)}
 								>
 									<RemoveButton
-										label={`Remove ${entryLabel.toLowerCase()}`}
+										label={removeEntryLabel}
 										onClick={() => remove(row)}
 									/>
 									{editing ? (
@@ -435,7 +440,7 @@ export function OutlineList<E>({
 						document.body
 					)}
 			</DndContext>
-			<AddRow label="Group" onClick={addGroup} className="font-bold" />
+			<AddRow label={t.editor.group} onClick={addGroup} className="font-bold" />
 		</div>
 	);
 }
