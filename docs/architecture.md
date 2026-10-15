@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-13
+updated: 2026-10-15
 ---
 
 # 架構
@@ -15,6 +15,7 @@ Next.js 16（App Router）+ TypeScript + Tailwind CSS v4 的單人本機網站�
 | -------- | ------------------------------------------------------ | ------------------------------------------ |
 | 資料     | Prisma 7 + SQLite；頁面以 `data/` 模組讀取，寫入走 Server Actions | [ADR-0001](adr/0001-prisma-with-sqlite.md) |
 | 內容語言 | 需要翻譯的文字存成欄位層 JSON `{ en, zh }`               | [ADR-0013](adr/0013-localized-json-fields.md) |
+| 介面語言 | cookie 記住目前語言，頁面依它讀資料；介面文字放 TS 字典，server 訊息以 key 傳遞 | [ADR-0028](adr/0028-locale-cookie.md)、[ADR-0029](adr/0029-ui-dictionary.md) |
 | 使用者   | 一個預設使用者，使用者資料帶 `userId`；食材目錄共用       | [ADR-0014](adr/0014-default-user.md) |
 | 圖片     | 本機 `public/uploads/`，DB 只存路徑                    | [ADR-0002](adr/0002-local-image-storage.md) |
 | UI 元件  | shadcn（Base UI）+ Tailwind design tokens              | [ADR-0003](adr/0003-shadcn-base-ui.md)     |
@@ -35,6 +36,7 @@ flowchart LR
 ```
 
 - 首頁每次請求都讀資料庫（`<Suspense>` 內先 `connection()`），build 時不連資料庫；寫入後 Server Action 以 `refresh()` 重新整理畫面。
+- 同一個 `<Suspense>` 內讀 cookie 取得[介面語言](features/bilingual-ui.md)，傳給資料存取函式與 `LocaleProvider`；root layout 不讀 cookie，維持靜態。
 - 編輯在書上的[編輯卡](features/editor.md)進行：卡片以 Server Action 讀取雙語草稿，Save 時把草稿交給同一份 zod schema 驗證後在一個 transaction 內寫入；目前的卡記在網址 `?edit=`（[ADR-0017](adr/0017-editor-cards-with-push-state.md)）。
 - [食譜匯入](features/recipe-import.md)是唯一的 Route Handler（`POST /api/recipe-import`）：要收大檔案，也要能中止 LLM 請求。它只回傳草稿，寫入仍走 `createDish`。外部服務見[資料來源](data-sources.md)。
 - 元件只依賴 `src/features/*/types.ts` 的呈現型別，不 import Prisma 型別。
@@ -81,7 +83,7 @@ erDiagram
 | ------------------------ | -------------------------------------- |
 | `src/app/`               | 路由（App Router）；`api/recipe-import/` 為匯入的 Route Handler |
 | `src/components/ui/`     | shadcn 元件                            |
-| `src/components/`        | 專案共用元件                           |
+| `src/components/`        | 專案共用元件；`locale-switch.tsx` 為頁首的語言切換 |
 | `src/features/<feature>/` | 功能模組（components / hooks / lib / data / actions）；目前有 `menu`、`recipe`、`ingredient`、`paper-stack`、`menu-theme`、`menu-shelf`、`editor`、`recipe-import`（`server/` 為呼叫 LLM 與抓網頁的 server-only 程式） |
 | `src/features/<feature>/data/` | 讀資料庫的 server-only 函式，回傳呈現型別 |
 | `src/features/<feature>/actions/` | Server Actions（寫入） |
@@ -89,7 +91,7 @@ erDiagram
 | `public/stationery/`     | 疊在紙上的文具：長尾夾、迴紋針（[ADR-0020](adr/0020-stationery-assets.md)） |
 | `public/ingredients/`    | 食材目錄的照片（進 git）               |
 | `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例、`current-user.ts` 為目前使用者 |
-| `src/lib/i18n/`          | 雙語內容的型別與 `localize()`          |
+| `src/lib/i18n/`          | 雙語內容的型別與 `localize()`；介面語言的 cookie、`LocaleProvider` 與字典 `messages/` |
 | `src/generated/prisma/`  | Prisma 產出（gitignored）              |
 | `prisma/`                | schema、migrations、`seed.ts` 與範例資料 `seed-data.json` |
 | `docs/`                  | 專案文件（MkDocs）                     |

@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-13
+updated: 2026-10-15
 source:
   - src/app/page.tsx
   - src/features/menu-shelf/
@@ -18,7 +18,7 @@ plan: PLAN-003
 
 ## 一句話
 
-首頁有多本菜單書（`MenuBook`），每本是一個大類加一組菜單主題（`MenuTheme`），主題可從菜單紙上換；目前這本在畫面正中間，左右露出上一本與下一本，右上角的 menu 按鈕把所有書縮小排成一列（總覽）。
+首頁有多本菜單書（`MenuBook`），每本是一個大類加一組菜單主題（`MenuTheme`），主題可從菜單紙上換；目前這本在畫面正中間，左右露出上一本與下一本，右上角的 menu 按鈕把所有書縮小排成一列（總覽），它左邊是[語言切換](bilingual-ui.md)。
 
 ## 流程
 
@@ -70,7 +70,7 @@ stateDiagram-v2
 
 ## 參數
 
-- 書寬、兩側露出寬度（`--shelf-peek`，隨視窗寬度縮放，書距由它推算）、菜單紙與食譜紙的最小高度、總覽縮放比例、總覽與頁首區的最小間距、總覽左側內距與書距、頁首標題與 menu 按鈕字級（`--text-masthead`、`--text-masthead-nav`）：見 `src/app/globals.css`。（待校準）
+- 書寬、兩側露出寬度（`--shelf-peek`，隨視窗寬度縮放，書距由它推算）、菜單紙與食譜紙的最小高度、總覽縮放比例、總覽與頁首區的最小間距、總覽左側內距與書距、頁首標題與 menu、語言按鈕字級（`--text-masthead`、`--text-masthead-nav`）：見 `src/app/globals.css`。（待校準）
 - 平移、傾斜角度、總覽縮放、滾輪門檻與時長：見 `src/features/menu-shelf/shelf-motion.ts`。（待校準）
 - 配色：見 `src/features/menu-theme/menu-themes.ts`。（待校準）
 - 滾輪手勢辨識用 `wheel-gestures`，見 [ADR-0009](../adr/0009-shelf-wheel-snap.md)。

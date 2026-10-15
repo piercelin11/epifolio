@@ -12,6 +12,7 @@
 - 字典是 `src/lib/i18n/messages/` 的 TS 物件：`en.ts` 定義結構與型別，`zh.ts` 以 `satisfies Messages` 檢查，少一條或多一條都是型別錯誤。有參數的訊息寫成函式（`fileTooLarge: ({ mb }) => ...`）。
 - 元件以 `useMessages()` 取得目前語言的字典（`LocaleProvider` 提供）。
 - server 產生、要給使用者看的訊息一律是訊息 key（`ErrorMessage`：`{ key, values? }`，key 是字典 `errors` 區的名稱），在畫面上翻譯。zod schema 的 message 寫 key；`ActionResult`、`ImportError`、匯入回應都帶 `ErrorMessage`。
+- 程式碼清單自己的顯示名稱（菜單主題名稱、單位寫法）跟著清單放，各帶兩種語言（ADR-0016），不放字典。
 - 不用 i18n 函式庫。
 
 ## 考慮過的替代方案

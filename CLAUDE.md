@@ -43,7 +43,7 @@
 ## 4. 目錄結構
 
 - `src/app/`：路由（`api/recipe-import/` 為食譜匯入的 Route Handler）；`src/components/ui/`：shadcn 元件；`src/components/`：共用元件
-- `src/features/<feature>/`：功能模組（`data/` 讀資料庫、`actions/` 為 Server Actions；`recipe-import/server/` 呼叫 LLM 與抓網頁）；`src/lib/`：共用函式庫（`db.ts` 為 Prisma 單例、`current-user.ts`、`i18n/` 雙語內容）
+- `src/features/<feature>/`：功能模組（`data/` 讀資料庫、`actions/` 為 Server Actions；`recipe-import/server/` 呼叫 LLM 與抓網頁）；`src/lib/`：共用函式庫（`db.ts` 為 Prisma 單例、`current-user.ts`、`i18n/` 雙語內容、介面語言與字典）；`src/components/locale-switch.tsx`：頁首語言切換
 - `src/generated/prisma/`：Prisma 產出（gitignored）；`prisma/`：schema、migrations、`seed.ts` 與 `seed-data.json`
 - `public/`：靜態檔（`textures/` 紙張與卡紙材質；`stationery/` 長尾夾、迴紋針等文具；`ingredients/` 食材目錄照片；`uploads/` 上傳圖片，gitignored）
 - `docs/`：專案文件（MkDocs）；`.claude/`：Claude 規則與指令；`.github/`：CI 與 issue 模板；`scripts/`：工具腳本
@@ -52,7 +52,7 @@
 
 ## 5. 程式碼規範
 
-- 語言：識別字、檔名、註解、commit 訊息、`README.md` 用英文；`docs/` 文件與溝通用繁體中文；**UI 顯示文字一律英文**。
+- 語言：識別字、檔名、註解、commit 訊息、`README.md` 用英文；`docs/` 文件與溝通用繁體中文；**UI 顯示文字一律放字典**（`src/lib/i18n/messages/`，中英都要寫，ADR-0029），元件不寫死文字；server 端要給使用者看的訊息傳 `ErrorMessage` key。
 - 領域詞彙一律使用 `docs/glossary.md` 的對應英文識別字，不自創同義詞。
 - 資料與呈現分離：資料模型與商業邏輯放在不依賴 UI 的模組，元件只負責呈現。
 - 樣式與主題用 design tokens（CSS variables / Tailwind theme）管理，不在元件內寫死顏色與頁面尺寸。

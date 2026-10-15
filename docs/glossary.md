@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-14
+updated: 2026-10-15
 ---
 
 # 詞彙表
@@ -43,3 +43,6 @@ updated: 2026-10-14
 | 食譜編輯卡 | `RecipeCard`  | 編輯一份食譜的票券形卡片：名稱、份數、用量、步驟、參考連結。                   |
 | 草稿     | `draft`         | 編輯卡上尚未存檔的內容；格式由 zod schema 定義（`MenuBookDraft`、`RecipeDraft`），Save 時一次寫入。 |
 | 雙語文字 | `LocalizedText` | 一段可有中英兩種語言的文字 `{ en, zh }`；顯示時用 `localize()` 取值，缺的語言退回另一種。 |
+| 介面語言 | `locale`        | 網站目前顯示的語言（`en` / `zh`），由頁首切換按鈕決定、記在 cookie；與編輯卡上「正在編輯哪種語言」不同。 |
+| 字典     | `messages`      | 介面文字的中英對照（`src/lib/i18n/messages/`）；元件以 `useMessages()` 取用。 |
+| 訊息 key | `ErrorMessage`  | server 端要給使用者看的訊息，以字典 `errors` 區的 key（可帶參數）傳遞，畫面依介面語言顯示。 |

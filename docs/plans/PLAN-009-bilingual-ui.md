@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-009-bilingual-ui
 issue: 53
 created: 2026-10-15
@@ -80,7 +80,7 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：`docs/features/bilingual-ui.md`、`features/index.md`
-- [ ] ADR：ADR-0028、ADR-0029、ADR-0030；ADR-0006 補充中文字型
-- [ ] glossary：介面語言、字典、訊息 key
-- [ ] `docs/architecture.md`：語言的資料流、`src/lib/i18n/`
+- [x] 功能頁：`docs/features/bilingual-ui.md`、`features/index.md`
+- [x] ADR：ADR-0028、ADR-0029、ADR-0030；ADR-0006 補充中文字型
+- [x] glossary：介面語言、字典、訊息 key
+- [x] `docs/architecture.md`：語言的資料流、`src/lib/i18n/`
