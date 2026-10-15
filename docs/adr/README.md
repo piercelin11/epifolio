@@ -33,6 +33,9 @@
 | 0025 | [匯入的新食材在食譜存檔時寫入，營養標記為估計值](0025-imported-ingredients.md) | Accepted | 2026-10-13 |
 | 0026 | [匯入的食材對應改由程式比對，LLM 只整理食譜](0026-ingredient-matching-pipeline.md) | Accepted | 2026-10-14 |
 | 0027 | [沒寫種類的高湯一律對應雞高湯](0027-unspecified-stock-is-chicken.md) | Accepted | 2026-10-14 |
+| 0028 | [介面語言存在 cookie，html lang 由內嵌 script 設定](0028-locale-cookie.md) | Accepted | 2026-10-15 |
+| 0029 | [介面文字放自寫的 TS 字典，錯誤以訊息 key 傳遞](0029-ui-dictionary.md) | Accepted | 2026-10-15 |
+| 0030 | [中文用 Noto Sans TC 與 Noto Serif TC，接在拉丁字型之後](0030-chinese-fonts.md) | Accepted | 2026-10-15 |
 
 ## 模板
 
