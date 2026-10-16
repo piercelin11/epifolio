@@ -25,12 +25,14 @@ function screenMiddle(area: HTMLElement): number {
 }
 
 /**
- * Which ingredient card is up. Picking the same ingredient again puts it
- * away; picking another swaps it. Picks made mid-animation are ignored;
- * closing always goes through.
+ * Which ingredient card is up, and whether it is turned over for editing.
+ * Picking the same ingredient again puts it away; picking another swaps it.
+ * Picks made mid-animation or while editing are ignored; closing always goes
+ * through and drops any unsaved edit.
  */
 export function useIngredientCard() {
 	const [open, setOpen] = useState<OpenCard | null>(null);
+	const [editing, setEditing] = useState(false);
 	const busy = useRef(false);
 
 	/** `scrollArea` is the area the sheets scroll in; the card scrolls with them. */
@@ -39,7 +41,7 @@ export function useIngredientCard() {
 		scrollArea: HTMLElement | null,
 		owner: string | number
 	) {
-		if (busy.current || !scrollArea) return;
+		if (busy.current || editing || !scrollArea) return;
 		busy.current = true;
 		setOpen(
 			open?.ingredientId === ingredientId
@@ -51,6 +53,7 @@ export function useIngredientCard() {
 	function close() {
 		if (!open) return;
 		busy.current = true;
+		setEditing(false);
 		setOpen(null);
 	}
 
@@ -59,7 +62,15 @@ export function useIngredientCard() {
 		busy.current = false;
 	}
 
-	return { open, toggle, close, settle };
+	return {
+		open,
+		toggle,
+		close,
+		settle,
+		editing,
+		startEditing: () => setEditing(true),
+		stopEditing: () => setEditing(false),
+	};
 }
 
 export type IngredientCardController = ReturnType<typeof useIngredientCard>;

@@ -8,10 +8,13 @@ import {
 } from "motion/react";
 import { useEffect } from "react";
 
+import { FlipCard } from "@/features/editor/components/flip-card";
+
 import { cardMotion } from "../card-motion";
 import type { IngredientCardController } from "../hooks/use-ingredient-card";
 import type { Ingredient } from "../types";
 import { IngredientCard } from "./ingredient-card";
+import { IngredientCardBack } from "./ingredient-card-back";
 
 interface IngredientCardLayerProps {
 	ingredients: Ingredient[];
@@ -25,14 +28,16 @@ interface IngredientCardLayerProps {
  * them natively. Every stack has a layer, so a stack that closes still
  * plays the card's exit. The card comes up from below the screen to a place set by
  * the screen when it was picked, not by the sheets. Escape or a click
- * anywhere but the card or an ingredient puts it away.
+ * anywhere but the card or an ingredient puts it away; while the card is
+ * turned over for editing, clicks elsewhere are ignored and Escape turns it
+ * back.
  */
 export function IngredientCardLayer({
 	ingredients,
 	card,
 	owner,
 }: IngredientCardLayerProps) {
-	const { close, settle } = card;
+	const { close, settle, editing, startEditing, stopEditing } = card;
 	const open = card.open?.owner === owner ? card.open : null;
 	const ingredient =
 		open && ingredients.find((item) => item.id === open.ingredientId);
@@ -43,9 +48,12 @@ export function IngredientCardLayer({
 	useEffect(() => {
 		if (!open) return;
 		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Escape") close();
+			if (event.key !== "Escape") return;
+			if (editing) stopEditing();
+			else close();
 		};
 		const onPointerDown = (event: PointerEvent) => {
+			if (editing) return;
 			const target = event.target as Element;
 			if (target.closest("[data-ingredient-card], [data-ingredient-trigger]"))
 				return;
@@ -57,7 +65,7 @@ export function IngredientCardLayer({
 			document.removeEventListener("keydown", onKeyDown);
 			document.removeEventListener("pointerdown", onPointerDown);
 		};
-	}, [open, close]);
+	}, [open, close, editing, stopEditing]);
 
 	return (
 		<AnimatePresence mode="wait" onExitComplete={settle}>
@@ -83,7 +91,19 @@ export function IngredientCardLayer({
 						}}
 						onAnimationComplete={settle}
 					>
-						<IngredientCard ingredient={ingredient} />
+						<FlipCard
+							flipped={editing}
+							front={
+								<IngredientCard ingredient={ingredient} onEdit={startEditing} />
+							}
+							back={
+								<IngredientCardBack
+									ingredient={ingredient}
+									editing={editing}
+									onDone={stopEditing}
+								/>
+							}
+						/>
 					</motion.div>
 				</div>
 			)}

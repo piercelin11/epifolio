@@ -1,17 +1,21 @@
 import Image from "next/image";
 
+import { EditButton } from "@/features/editor/components/edit-button";
 import { unitLabel } from "@/features/recipe/units";
 import { useLocale, useMessages } from "@/lib/i18n/locale-provider";
 import { type Messages } from "@/lib/i18n/messages";
 
 import { formatNutrient, formatPriceAmount } from "../lib/format";
 import type { Ingredient, Nutrition } from "../types";
+import { CardStock } from "./card-stock";
 
 interface IngredientCardProps {
 	ingredient: Ingredient;
+	/** Turns the card over to edit it. */
+	onEdit?: () => void;
 }
 
-const nutrients: {
+export const nutrients: {
 	key: keyof Nutrition & keyof Messages["ingredientCard"];
 	unit: string;
 }[] = [
@@ -22,33 +26,22 @@ const nutrients: {
 ];
 
 /**
- * An ingredient's photo, price and nutrition per 100 g, on textured card
- * stock held by a binder clip. Missing fields are left out; without a photo
- * the top stays blank.
+ * The front of the ingredient card: photo, price and nutrition per 100 g.
+ * Missing fields are left out; without a photo the top stays blank.
  */
-export function IngredientCard({ ingredient }: IngredientCardProps) {
+export function IngredientCard({ ingredient, onEdit }: IngredientCardProps) {
 	const t = useMessages();
 	const locale = useLocale();
 	const { name, image, price, nutrition } = ingredient;
 	const known = nutrients.filter(({ key }) => nutrition[key] !== null);
 
 	return (
-		<article
-			data-ingredient-card
-			className="bg-ingredient-card text-ingredient-card-foreground relative isolate flex w-(--ingredient-card-width) flex-col gap-3 p-(--ingredient-card-padding) shadow-lg"
-		>
-			<div
-				aria-hidden
-				className="paper-texture pointer-events-none absolute inset-0"
-			/>
-			{/*
-			 * The clip image is 263 by 240; its jaw starts at 0.56 of its width
-			 * from the top, so lifting it by that much puts the jaw on the edge.
-			 */}
-			<div
-				aria-hidden
-				className="absolute top-[calc(var(--ingredient-card-clip-width)*-0.56)] left-(--ingredient-card-clip-left) z-10 aspect-240/263 w-(--ingredient-card-clip-width) bg-(image:--ingredient-card-clip) bg-contain bg-no-repeat"
-			/>
+		<CardStock side="front" className="gap-3">
+			{onEdit && (
+				<div className="bg-ingredient-card absolute top-(--ingredient-card-padding) right-(--ingredient-card-padding) z-10">
+					<EditButton label={t.ingredientCard.edit} onClick={onEdit} />
+				</div>
+			)}
 			{image ? (
 				<Image
 					src={image}
@@ -75,6 +68,10 @@ export function IngredientCard({ ingredient }: IngredientCardProps) {
 			</div>
 			{known.length > 0 && (
 				<dl className="text-caption relative border-t border-current uppercase">
+					<div className="flex justify-between border-b border-current/40 py-0.5 font-semibold">
+						<dt>{t.ingredientCard.nutrition}</dt>
+						<dd>{t.ingredientCard.per100g}</dd>
+					</div>
 					{known.map(({ key, unit }) => (
 						<div
 							key={key}
@@ -86,6 +83,6 @@ export function IngredientCard({ ingredient }: IngredientCardProps) {
 					))}
 				</dl>
 			)}
-		</article>
+		</CardStock>
 	);
 }

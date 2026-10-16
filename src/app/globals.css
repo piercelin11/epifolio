@@ -252,6 +252,15 @@
 	--ingredient-card-texture-opacity: 0.7;
 	/* Blank band at the top of a card without a photo, under the clip */
 	--ingredient-card-blank: 4.5rem;
+	/*
+	 * Every card is as tall as one with a photo and full nutrition: the
+	 * 4:3 photo plus the name and nutrition rows below it. Both faces share it.
+	 */
+	--ingredient-card-height: calc(
+		var(--ingredient-card-padding) * 2 +
+			(var(--ingredient-card-width) - var(--ingredient-card-padding) * 2) * 3 /
+			4 + 10.75rem
+	);
 	/* Binder clip on the card's top edge */
 	--ingredient-card-clip: url("/stationery/binder-clip.webp");
 	--ingredient-card-clip-width: 5rem;
