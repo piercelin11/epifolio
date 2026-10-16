@@ -36,6 +36,8 @@
 | 0028 | [介面語言存在 cookie，html lang 由內嵌 script 設定](0028-locale-cookie.md) | Accepted | 2026-10-15 |
 | 0029 | [介面文字放自寫的 TS 字典，錯誤以訊息 key 傳遞](0029-ui-dictionary.md) | Accepted | 2026-10-15 |
 | 0030 | [中文用 Noto Sans TC 與 Noto Serif TC，接在拉丁字型之後](0030-chinese-fonts.md) | Accepted | 2026-10-15 |
+| 0031 | [單位換算用程式係數加上食材自己的重量與密度，資料庫保留原文單位](0031-unit-conversion-data.md) | Accepted | 2026-10-16 |
+| 0032 | [品項價格由食材成本即時計算，不存資料庫](0032-dish-cost-computed.md) | Accepted | 2026-10-16 |
 
 ## 模板
 
