@@ -1,7 +1,8 @@
 import Image from "next/image";
 
+import { unitLabel } from "@/features/recipe/units";
+import { useLocale, useMessages } from "@/lib/i18n/locale-provider";
 import { type Messages } from "@/lib/i18n/messages";
-import { useMessages } from "@/lib/i18n/locale-provider";
 
 import { formatNutrient, formatPriceAmount } from "../lib/format";
 import type { Ingredient, Nutrition } from "../types";
@@ -27,7 +28,9 @@ const nutrients: {
  */
 export function IngredientCard({ ingredient }: IngredientCardProps) {
 	const t = useMessages();
+	const locale = useLocale();
 	const { name, image, price, nutrition } = ingredient;
+	const known = nutrients.filter(({ key }) => nutrition[key] !== null);
 
 	return (
 		<article
@@ -63,19 +66,22 @@ export function IngredientCard({ ingredient }: IngredientCardProps) {
 				{price && (
 					<p className="text-title whitespace-nowrap">
 						{formatPriceAmount(price)}{" "}
-						<span className="text-caption">/ {price.unit}</span>
+						<span className="text-caption">
+							/ {price.quantity === 1 ? "" : `${price.quantity} `}
+							{unitLabel(price.unit, locale, price.quantity)}
+						</span>
 					</p>
 				)}
 			</div>
-			{nutrition && (
+			{known.length > 0 && (
 				<dl className="text-caption relative border-t border-current uppercase">
-					{nutrients.map(({ key, unit }) => (
+					{known.map(({ key, unit }) => (
 						<div
 							key={key}
 							className="flex justify-between border-b border-current/40 py-0.5"
 						>
 							<dt>{t.ingredientCard[key]}</dt>
-							<dd>{formatNutrient(nutrition[key], unit)}</dd>
+							<dd>{formatNutrient(nutrition[key]!, unit)}</dd>
 						</div>
 					))}
 				</dl>

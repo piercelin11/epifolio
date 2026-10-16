@@ -28,7 +28,6 @@ interface SeedDish {
 	originalName?: string;
 	category: string;
 	description: { text: string; ingredientId?: string }[];
-	price: number;
 	serves?: number;
 	timeMinutes?: number;
 	ingredients?: { group?: string; items: SeedLine[] }[];
@@ -200,7 +199,6 @@ function menuData(): Prisma.MenuCreateInput {
 									description: dish.description.length
 										? { en: dish.description }
 										: undefined,
-									price: dish.price,
 									position: i,
 								})),
 							},
@@ -212,6 +210,12 @@ function menuData(): Prisma.MenuCreateInput {
 	};
 }
 
+/** A unit id from the seed data, checked against the unit list. */
+function unitId(unit: string): string {
+	if (!isUnit(unit)) throw new Error(`unknown unit "${unit}"`);
+	return unit;
+}
+
 function ingredientData(
 	ingredient: (typeof seedData.ingredients)[number]
 ): Prisma.IngredientCreateInput {
@@ -221,8 +225,13 @@ function ingredientData(
 		aliases: [],
 		image: ingredient.image,
 		priceAmount: ingredient.price?.amount,
-		priceUnit: ingredient.price?.unit,
+		priceQuantity: ingredient.price?.quantity,
+		priceUnit: ingredient.price && unitId(ingredient.price.unit),
 		...ingredient.nutrition,
+		defaultUnit: unitId(ingredient.units.default),
+		unitWeights: ingredient.units.weights,
+		density: ingredient.units.density,
+		unitsEstimated: true,
 	};
 }
 

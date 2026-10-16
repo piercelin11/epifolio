@@ -53,7 +53,6 @@ export async function getMenuBooks(
 						id: item.id,
 						name: readLocalizedText(item.name, locale),
 						description: description?.length ? description : undefined,
-						price: item.price ?? undefined,
 						recipeId: item.recipeId,
 					};
 				}),

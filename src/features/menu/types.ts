@@ -2,6 +2,7 @@
 // never on the shape of the database rows (see the data/ modules).
 
 import type { MenuThemeId } from "@/features/menu-theme/menu-themes";
+import type { Estimate } from "@/features/recipe/types";
 
 /** One phrase of a menu item description, e.g. "Golden garlic". */
 export interface DescriptionPart {
@@ -15,8 +16,11 @@ export interface MenuItem {
 	name: string;
 	/** Phrases shown joined by " · ". */
 	description?: DescriptionPart[];
-	/** Absent until it is worked out from ingredient prices. */
-	price?: number;
+	/**
+	 * The ingredient cost of one serving, worked out from the recipe when
+	 * the page loads (ADR-0032); absent when nothing could be priced.
+	 */
+	price?: Estimate<number>;
 	/** The recipe this item presents; a reference, not a copy. */
 	recipeId: string;
 }

@@ -1,13 +1,18 @@
 import "server-only";
 
+import { z } from "zod";
+
 import { prisma } from "@/lib/db";
 import {
 	defaultLocale,
 	type Locale,
+	localizedTextSchema,
 	readLocalizedText,
 } from "@/lib/i18n/localized";
 
 import type { Ingredient } from "../types";
+
+const weightsSchema = z.record(z.string(), z.number());
 
 /** The shared ingredient catalog. */
 export async function getIngredients(
@@ -18,20 +23,32 @@ export async function getIngredients(
 	});
 
 	return ingredients.map((ingredient) => {
-		const { priceAmount, priceUnit, calories, protein, carbs, fat } =
-			ingredient;
+		const { priceAmount, priceQuantity, priceUnit } = ingredient;
 		return {
 			id: ingredient.id,
 			name: readLocalizedText(ingredient.name, locale),
+			names: localizedTextSchema.parse(ingredient.name),
+			aliases: z.array(z.string()).parse(ingredient.aliases),
 			image: ingredient.image ?? undefined,
 			price:
 				priceAmount !== null && priceUnit !== null
-					? { amount: priceAmount, unit: priceUnit }
+					? {
+							amount: priceAmount,
+							quantity: priceQuantity ?? 1,
+							unit: priceUnit,
+						}
 					: undefined,
-			nutrition:
-				calories !== null && protein !== null && carbs !== null && fat !== null
-					? { calories, protein, carbs, fat }
-					: undefined,
+			nutrition: {
+				calories: ingredient.calories,
+				protein: ingredient.protein,
+				carbs: ingredient.carbs,
+				fat: ingredient.fat,
+			},
+			units: {
+				defaultUnit: ingredient.defaultUnit ?? undefined,
+				weights: weightsSchema.parse(ingredient.unitWeights),
+				density: ingredient.density ?? undefined,
+			},
 		};
 	});
 }

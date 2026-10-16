@@ -1,10 +1,16 @@
 import { Minus, Plus } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { formatNutrient } from "@/features/ingredient/lib/format";
 import { useLocale, useMessages } from "@/lib/i18n/locale-provider";
 
 import { clampServings, formatQuantity, scaleQuantity } from "../lib/quantity";
-import type { Recipe, RecipeIngredient, RecipeProgress } from "../types";
+import type {
+	Recipe,
+	RecipeIngredient,
+	RecipeProgress,
+	RecipeTotals,
+} from "../types";
 import { unitLabel } from "../units";
 
 interface RecipeSheetProps {
@@ -146,6 +152,40 @@ function IngredientLine({
 	);
 }
 
+/**
+ * The recipe's nutrition per serving (or for the whole recipe), on one
+ * line under the ingredients. It does not follow the servings control.
+ */
+function NutritionLine({ totals }: { totals: RecipeTotals }) {
+	const t = useMessages();
+	const { nutrition } = totals;
+	if (!nutrition) return null;
+	const { calories, protein, carbs, fat } = nutrition.value;
+	const values = [
+		formatNutrient(calories, " kcal", 0),
+		`${t.ingredientCard.protein} ${formatNutrient(protein, " g", 0)}`,
+		`${t.ingredientCard.carbs} ${formatNutrient(carbs, " g", 0)}`,
+		`${t.ingredientCard.fat} ${formatNutrient(fat, " g", 0)}`,
+	];
+	return (
+		<div className="text-caption flex flex-col gap-1">
+			<p>
+				<strong className="font-semibold uppercase">
+					{t.recipeSheet.nutrition} ·{" "}
+					{totals.perServing
+						? t.recipeSheet.perServing
+						: t.recipeSheet.wholeRecipe}
+				</strong>{" "}
+				{values.join(" · ")}
+				{nutrition.incomplete && " *"}
+			</p>
+			{nutrition.incomplete && (
+				<p className="opacity-70">* {t.recipeSheet.nutritionIncomplete}</p>
+			)}
+		</div>
+	);
+}
+
 /** A recipe laid out for the recipe sheet of the stack. */
 export function RecipeSheet({
 	recipe,
@@ -215,6 +255,7 @@ export function RecipeSheet({
 						</div>
 					))}
 				</div>
+				{recipe.totals && <NutritionLine totals={recipe.totals} />}
 			</section>
 
 			<section className="flex flex-col gap-6">

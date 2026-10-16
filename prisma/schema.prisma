@@ -77,8 +77,6 @@ model MenuItem {
   name        Json
   /// { en?: DescriptionPart[], zh?: DescriptionPart[] }, a part being { text, ingredientId? }
   description Json?
-  /// Empty until it is worked out from ingredient prices (#42).
-  price       Float?
   position    Int
 
   @@index([sectionId, position])
@@ -188,8 +186,10 @@ model Ingredient {
   aliases            Json
   /// Path under public/, e.g. /ingredients/garlic.webp
   image              String?
-  /// A price for priceUnit of the ingredient, e.g. 25 per "100 g"
+  /// A price for an amount of the ingredient, e.g. 25 per 100 g:
+  /// priceAmount 25, priceQuantity 100, priceUnit "g" (a unit id)
   priceAmount        Float?
+  priceQuantity      Float?
   priceUnit          String?
   /// Nutrition per 100 g: calories in kcal, the rest in grams.
   calories           Float?
@@ -198,6 +198,15 @@ model Ingredient {
   fat                Float?
   /// True while the nutrition is an LLM estimate nobody has checked.
   nutritionEstimated Boolean            @default(false)
+  /// Unit id the ingredient is usually counted in, e.g. "clove" for garlic;
+  /// a line with an amount but no unit is read in it (ADR-0031).
+  defaultUnit        String?
+  /// { [count unit id]: grams }, e.g. { "clove": 5, "head": 50 }
+  unitWeights        Json               @default("{}")
+  /// Grams per millilitre, for weighing volume units such as tbsp
+  density            Float?
+  /// True while the unit data is an estimate nobody has checked.
+  unitsEstimated     Boolean            @default(false)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
   lines              RecipeIngredient[]

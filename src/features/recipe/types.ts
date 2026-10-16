@@ -1,3 +1,5 @@
+import type { Nutrition } from "@/features/ingredient/types";
+
 // Presentation types for recipes. A recipe is functional data and stays
 // separate from MenuItem, which only references it by id.
 
@@ -41,6 +43,21 @@ export interface StepGroup {
 	steps: Step[];
 }
 
+/** A worked-out value that may leave out lines it could not work out. */
+export interface Estimate<T> {
+	value: T;
+	/** Some counted lines could not be worked out and are left out. */
+	incomplete: boolean;
+}
+
+/** A recipe's ingredient cost and nutrition (ADR-0032). */
+export interface RecipeTotals {
+	/** True when the totals are per serving, false for the whole recipe. */
+	perServing: boolean;
+	cost?: Estimate<number>;
+	nutrition?: Estimate<Nutrition>;
+}
+
 export interface Recipe {
 	id: string;
 	name: string;
@@ -50,6 +67,8 @@ export interface Recipe {
 	ingredientGroups: IngredientGroup[];
 	stepGroups: StepGroup[];
 	notes: string[];
+	/** Worked out from the ingredient catalog when the page loads. */
+	totals?: RecipeTotals;
 }
 
 /** What the cook has done with a recipe while the page is open. */

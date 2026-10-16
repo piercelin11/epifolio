@@ -104,7 +104,6 @@
 					"ingredientId": "heavy-cream"
 				}
 			],
-			"price": 280,
 			"rating": 4.5,
 			"serves": 2,
 			"timeMinutes": 70,
@@ -251,7 +250,6 @@
 					"ingredientId": "parmigiano"
 				}
 			],
-			"price": 320,
 			"rating": 3.5,
 			"serves": 1,
 			"timeMinutes": 20,
@@ -386,7 +384,6 @@
 					"ingredientId": "parmigiano"
 				}
 			],
-			"price": 380,
 			"rating": 4.5,
 			"serves": 1,
 			"timeMinutes": 35,
@@ -512,7 +509,6 @@
 					"text": "lemon"
 				}
 			],
-			"price": 580,
 			"rating": 4.0,
 			"serves": 1,
 			"timeMinutes": 50,
@@ -684,7 +680,6 @@
 					"ingredientId": "parmigiano"
 				}
 			],
-			"price": 520,
 			"rating": 5.0,
 			"serves": 1,
 			"timeMinutes": 45,
@@ -889,13 +884,22 @@
 			"image": "/ingredients/garlic.webp",
 			"price": {
 				"amount": 25,
-				"unit": "100 g"
+				"quantity": 100,
+				"unit": "g"
 			},
 			"nutrition": {
 				"calories": 149,
 				"protein": 6.4,
 				"carbs": 33,
 				"fat": 0.5
+			},
+			"units": {
+				"default": "clove",
+				"weights": {
+					"clove": 5,
+					"head": 50
+				},
+				"density": null
 			}
 		},
 		{
@@ -903,13 +907,19 @@
 			"name": "Olive oil",
 			"price": {
 				"amount": 45,
-				"unit": "100 ml"
+				"quantity": 100,
+				"unit": "ml"
 			},
 			"nutrition": {
 				"calories": 884,
 				"protein": 0,
 				"carbs": 0,
 				"fat": 100
+			},
+			"units": {
+				"default": "tbsp",
+				"weights": {},
+				"density": 0.91
 			}
 		},
 		{
@@ -920,6 +930,13 @@
 				"protein": 1.9,
 				"carbs": 8.8,
 				"fat": 0.4
+			},
+			"units": {
+				"default": "piece",
+				"weights": {
+					"piece": 10
+				},
+				"density": null
 			}
 		},
 		{
@@ -927,13 +944,19 @@
 			"name": "Parmigiano",
 			"price": {
 				"amount": 180,
-				"unit": "100 g"
+				"quantity": 100,
+				"unit": "g"
 			},
 			"nutrition": {
 				"calories": 392,
 				"protein": 35.8,
 				"carbs": 3.2,
 				"fat": 25.8
+			},
+			"units": {
+				"default": "g",
+				"weights": {},
+				"density": 0.35
 			}
 		},
 		{
@@ -941,13 +964,21 @@
 			"name": "Button mushroom",
 			"price": {
 				"amount": 40,
-				"unit": "100 g"
+				"quantity": 100,
+				"unit": "g"
 			},
 			"nutrition": {
 				"calories": 22,
 				"protein": 3.1,
 				"carbs": 3.3,
 				"fat": 0.3
+			},
+			"units": {
+				"default": "piece",
+				"weights": {
+					"piece": 18
+				},
+				"density": null
 			}
 		},
 		{
@@ -955,13 +986,19 @@
 			"name": "Butter",
 			"price": {
 				"amount": 60,
-				"unit": "100 g"
+				"quantity": 100,
+				"unit": "g"
 			},
 			"nutrition": {
 				"calories": 717,
 				"protein": 0.9,
 				"carbs": 0.1,
 				"fat": 81
+			},
+			"units": {
+				"default": "g",
+				"weights": {},
+				"density": 0.95
 			}
 		},
 		{
@@ -969,13 +1006,19 @@
 			"name": "Heavy cream",
 			"price": {
 				"amount": 35,
-				"unit": "100 ml"
+				"quantity": 100,
+				"unit": "ml"
 			},
 			"nutrition": {
 				"calories": 340,
 				"protein": 2.8,
 				"carbs": 2.7,
 				"fat": 36
+			},
+			"units": {
+				"default": "ml",
+				"weights": {},
+				"density": 1.0
 			}
 		},
 		{
@@ -983,13 +1026,21 @@
 			"name": "Onion",
 			"price": {
 				"amount": 8,
-				"unit": "100 g"
+				"quantity": 100,
+				"unit": "g"
 			},
 			"nutrition": {
 				"calories": 40,
 				"protein": 1.1,
 				"carbs": 9.3,
 				"fat": 0.1
+			},
+			"units": {
+				"default": "piece",
+				"weights": {
+					"piece": 150
+				},
+				"density": null
 			}
 		},
 		{
@@ -997,13 +1048,21 @@
 			"name": "Cherry tomato",
 			"price": {
 				"amount": 30,
-				"unit": "100 g"
+				"quantity": 100,
+				"unit": "g"
 			},
 			"nutrition": {
 				"calories": 18,
 				"protein": 0.9,
 				"carbs": 3.9,
 				"fat": 0.2
+			},
+			"units": {
+				"default": "piece",
+				"weights": {
+					"piece": 15
+				},
+				"density": null
 			}
 		},
 		{
@@ -1011,7 +1070,13 @@
 			"name": "Dry white wine",
 			"price": {
 				"amount": 50,
-				"unit": "100 ml"
+				"quantity": 100,
+				"unit": "ml"
+			},
+			"units": {
+				"default": "ml",
+				"weights": {},
+				"density": 0.99
 			}
 		},
 		{
@@ -1019,13 +1084,21 @@
 			"name": "Prawn",
 			"price": {
 				"amount": 90,
-				"unit": "100 g"
+				"quantity": 100,
+				"unit": "g"
 			},
 			"nutrition": {
 				"calories": 85,
 				"protein": 20,
 				"carbs": 0,
 				"fat": 0.5
+			},
+			"units": {
+				"default": "piece",
+				"weights": {
+					"piece": 20
+				},
+				"density": null
 			}
 		}
 	]

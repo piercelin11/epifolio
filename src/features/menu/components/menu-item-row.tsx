@@ -1,5 +1,7 @@
 import { Fragment } from "react";
 
+import { useMessages } from "@/lib/i18n/locale-provider";
+
 import { formatPrice } from "../lib/format";
 import type { MenuItem } from "../types";
 
@@ -15,6 +17,8 @@ export function MenuItemRow({
 	onSelect,
 	onSelectIngredient,
 }: MenuItemRowProps) {
+	const t = useMessages();
+	const { price } = item;
 	return (
 		<li className="grid grid-cols-[1fr_auto] items-baseline gap-x-10">
 			<button
@@ -26,7 +30,12 @@ export function MenuItemRow({
 			</button>
 			{/* Kept when empty, so the description still starts on its own row */}
 			<span className="text-body tabular-nums">
-				{item.price !== undefined && formatPrice(item.price)}
+				{price && formatPrice(price.value)}
+				{price?.incomplete && (
+					<abbr title={t.menuSheet.priceIncomplete} className="no-underline">
+						+
+					</abbr>
+				)}
 			</span>
 			{item.description && (
 				<p className="text-caption col-span-full font-light">

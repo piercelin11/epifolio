@@ -45,7 +45,6 @@ export async function writeNewDish(
 				// DescriptionPart is an interface, which Prisma's Json type rejects.
 				description:
 					(description as Prisma.InputJsonValue | null) ?? Prisma.DbNull,
-				price: null,
 				position: await tx.menuItem.count({ where: { sectionId } }),
 			},
 		});
