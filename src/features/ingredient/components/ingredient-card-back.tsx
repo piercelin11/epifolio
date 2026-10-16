@@ -214,7 +214,7 @@ export function IngredientCardBack({
 					</div>
 				</div>
 
-				<div className="flex flex-col items-center gap-2">
+				<div className="flex flex-col items-center gap-2 pt-3">
 					{message && (
 						<p role="alert" className="text-caption font-bold">
 							{errorText(message)}
