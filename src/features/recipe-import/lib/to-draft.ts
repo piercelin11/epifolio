@@ -66,6 +66,25 @@ function unique(texts: string[]): string[] {
 const nutrient = (value: number | null) =>
 	value !== null && Number.isFinite(value) && value >= 0 ? value : null;
 
+const positive = (value: number | null) =>
+	value !== null && Number.isFinite(value) && value > 0 ? value : null;
+
+/** The model's unit data, without unusable numbers or repeated units. */
+function unitData(food: LlmFood): FreshIngredient["units"] {
+	const seen = new Set<string>();
+	const weights = food.unitWeights.flatMap(({ unit, grams }) => {
+		const value = positive(grams);
+		if (value === null || seen.has(unit)) return [];
+		seen.add(unit);
+		return [{ unit, grams: value }];
+	});
+	return {
+		defaultUnit: food.defaultUnit || null,
+		weights,
+		density: positive(food.density),
+	};
+}
+
 function isWebAddress(text: string): boolean {
 	try {
 		const url = new URL(text);
@@ -127,11 +146,17 @@ export function toImportedRecipe(
 			carbs: nutrient(food.carbs),
 			fat: nutrient(food.fat),
 		};
+		const units = unitData(food);
 		return {
 			name,
 			aliases: unique(aliases),
 			nutrition,
 			nutritionEstimated: Object.values(nutrition).some((v) => v !== null),
+			units,
+			unitsEstimated:
+				units.defaultUnit !== null ||
+				units.weights.length > 0 ||
+				units.density !== null,
 		};
 	}
 
@@ -142,6 +167,15 @@ export function toImportedRecipe(
 		const same = created.get(id);
 		if (same) {
 			same.aliases = unique([...same.aliases, ...fresh.aliases]);
+			// Lines may weigh different units, e.g. cloves and a head of garlic.
+			const known = new Set(same.units.weights.map((weight) => weight.unit));
+			same.units = {
+				...same.units,
+				weights: [
+					...same.units.weights,
+					...fresh.units.weights.filter((weight) => !known.has(weight.unit)),
+				],
+			};
 			return same.key;
 		}
 		const key = `new-${created.size + 1}`;

@@ -1,4 +1,4 @@
-import { units } from "@/features/recipe/units";
+import { countUnits, units } from "@/features/recipe/units";
 
 // What the model is told. The instructions stay the same for every import;
 // the source goes in the user message. The model never sees the catalog:
@@ -39,6 +39,9 @@ What each ingredient is
   - name: the plain name of the product as bought, in both languages, without preparation words or "fresh", keeping the form the recipe uses (dried, ground or whole products stay distinct): "Garlic, minced" is Garlic / 蒜頭; whole peppercorns are "Black peppercorns" / "黑胡椒粒", not "Black pepper".
   - terms: other names people use for the same product, in English and in Chinese (e.g. for porcini: "cep", "penny bun", "牛肝菌菇"). Do not list different products: garlic powder is not garlic, chicken breast is not chicken thigh.
   - calories (kcal), protein, carbs and fat (g): your best estimate per 100 g of the raw ingredient; null when you cannot estimate.
+  - defaultUnit: the unit the ingredient is usually counted or measured in: a count unit for things counted ("clove" for garlic, "piece" for an onion or an egg, "head" for lettuce, "bunch" for spring onions), "g" for things weighed, "ml" for liquids.
+  - unitWeights: your best estimate of the grams in one of each count unit (${countUnits.map((u) => `"${u}"`).join(", ")}) that this line uses or that is the defaultUnit, e.g. garlic [{"unit": "clove", "grams": 5}]. A line with an amount but no unit counts as one "piece" (or as the defaultUnit). Empty when neither uses a count unit.
+  - density: grams per millilitre when the ingredient can be measured by volume (liquids, oils, powders, grains, chopped herbs), e.g. olive oil 0.91, flour 0.53; null when it is never measured by volume.
 - Give the same name every time the same ingredient appears.
 
 Dish and references

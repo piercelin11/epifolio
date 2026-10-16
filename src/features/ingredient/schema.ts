@@ -64,6 +64,9 @@ export const newIngredientDraftSchema = z.object({
 	}),
 	/** True while the nutrition is still the LLM's estimate. */
 	nutritionEstimated: z.boolean(),
+	units: ingredientUnitsSchema,
+	/** True while the unit data is still the LLM's estimate. */
+	unitsEstimated: z.boolean(),
 });
 
 /** Another name for an existing ingredient, e.g. "Golden garlic". */

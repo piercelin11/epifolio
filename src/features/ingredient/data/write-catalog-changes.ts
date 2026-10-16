@@ -12,7 +12,7 @@ import {
 } from "@/lib/i18n/localized";
 
 import { matchIngredient } from "../lib/match-ingredient";
-import type { CatalogChangesData } from "../schema";
+import { type CatalogChangesData, unitColumns } from "../schema";
 import { getIngredientNames } from "./get-ingredient-names";
 
 /** Keys of the new ingredients that some line of the recipe still cites. */
@@ -83,6 +83,8 @@ export async function writeCatalogChanges(
 				),
 				...ingredient.nutrition,
 				nutritionEstimated: ingredient.nutritionEstimated,
+				...unitColumns(ingredient.units),
+				unitsEstimated: ingredient.unitsEstimated,
 			},
 		});
 		created.set(ingredient.key, id);

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { units } from "@/features/recipe/units";
+import { countUnits, units } from "@/features/recipe/units";
 
 // The shape the model must answer in (structured outputs, ADR-0022). Kept
 // plain on purpose: no length or number limits, which structured outputs
@@ -14,8 +14,8 @@ const run = z.object({ text: z.string(), line: z.string().nullable() });
 
 /**
  * What a line's ingredient is, without the catalog (ADR-0026): its plain
- * name, other names to look it up by, and estimated nutrition; or not a
- * food at all. The catalog match is made in code.
+ * name, other names to look it up by, estimated nutrition and unit weights
+ * (ADR-0031); or not a food at all. The catalog match is made in code.
  */
 const lineIngredient = z.discriminatedUnion("kind", [
 	z.object({
@@ -29,6 +29,14 @@ const lineIngredient = z.discriminatedUnion("kind", [
 		protein: z.number().nullable(),
 		carbs: z.number().nullable(),
 		fat: z.number().nullable(),
+		/** The unit it is usually counted or measured in; "" when unsure. */
+		defaultUnit: z.enum([...units, ""]),
+		/** Grams in one of each count unit the recipe or defaultUnit uses. */
+		unitWeights: z.array(
+			z.object({ unit: z.enum(countUnits), grams: z.number() })
+		),
+		/** Grams per millilitre; null when it is never measured by volume. */
+		density: z.number().nullable(),
 	}),
 	z.object({ kind: z.literal("none") }),
 ]);
