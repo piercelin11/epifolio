@@ -244,22 +244,21 @@
 
 /* Ingredient card surface (IngredientCard) */
 :root {
-	--ingredient-card-width: 22rem;
+	--ingredient-card-width: 23.5rem;
 	--ingredient-card-padding: 0.75rem;
 	/* Gap between the card and the right edge of the screen; by default the card overhangs the open book's recipe sheet */
 	--ingredient-card-right: calc((100vw - var(--shelf-book-width)) / 2 - 2.5rem);
 	--ingredient-card-texture: url("/textures/card-stock.webp");
 	--ingredient-card-texture-opacity: 0.7;
-	/* Blank band at the top of a card without a photo, under the clip */
-	--ingredient-card-blank: 4.5rem;
 	/*
 	 * Every card is as tall as one with a photo and full nutrition: the
-	 * 4:3 photo plus the name and nutrition rows below it. Both faces share it.
+	 * 4:3 photo plus the name and nutrition rows below it, and a little room.
+	 * Both faces share it.
 	 */
 	--ingredient-card-height: calc(
 		var(--ingredient-card-padding) * 2 +
 			(var(--ingredient-card-width) - var(--ingredient-card-padding) * 2) * 3 /
-			4 + 10.75rem
+			4 + 11rem
 	);
 	/* Binder clip on the card's top edge */
 	--ingredient-card-clip: url("/stationery/binder-clip.webp");

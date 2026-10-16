@@ -27,7 +27,7 @@ export const nutrients: {
 
 /**
  * The front of the ingredient card: photo, price and nutrition per 100 g.
- * Missing fields are left out; without a photo the top stays blank.
+ * Missing fields are left out; the text sits on the bottom edge either way.
  */
 export function IngredientCard({ ingredient, onEdit }: IngredientCardProps) {
 	const t = useMessages();
@@ -38,11 +38,11 @@ export function IngredientCard({ ingredient, onEdit }: IngredientCardProps) {
 	return (
 		<CardStock side="front" className="gap-3">
 			{onEdit && (
-				<div className="bg-ingredient-card absolute top-(--ingredient-card-padding) right-(--ingredient-card-padding) z-10">
+				<div className="absolute top-(--ingredient-card-padding) right-(--ingredient-card-padding) z-10">
 					<EditButton label={t.ingredientCard.edit} onClick={onEdit} />
 				</div>
 			)}
-			{image ? (
+			{image && (
 				<Image
 					src={image}
 					alt=""
@@ -51,10 +51,9 @@ export function IngredientCard({ ingredient, onEdit }: IngredientCardProps) {
 					sizes="var(--ingredient-card-width)"
 					className="relative aspect-4/3 w-full object-cover"
 				/>
-			) : (
-				<div aria-hidden className="h-(--ingredient-card-blank)" />
 			)}
-			<div className="relative flex items-baseline justify-between gap-4">
+			{/* The text sits on the bottom edge, with or without a photo. */}
+			<div className="relative mt-auto flex items-baseline justify-between gap-4">
 				<h3 className="text-title uppercase">{name}</h3>
 				{price && (
 					<p className="text-title whitespace-nowrap">
@@ -68,10 +67,6 @@ export function IngredientCard({ ingredient, onEdit }: IngredientCardProps) {
 			</div>
 			{known.length > 0 && (
 				<dl className="text-caption relative border-t border-current uppercase">
-					<div className="flex justify-between border-b border-current/40 py-0.5 font-semibold">
-						<dt>{t.ingredientCard.nutrition}</dt>
-						<dd>{t.ingredientCard.per100g}</dd>
-					</div>
 					{known.map(({ key, unit }) => (
 						<div
 							key={key}

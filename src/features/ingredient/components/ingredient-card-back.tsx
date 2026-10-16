@@ -35,7 +35,6 @@ interface IngredientCardBackProps {
 
 const field =
 	"min-w-0 border-b border-current bg-transparent py-1 uppercase placeholder:text-current/40 focus:outline-none aria-invalid:border-b-2";
-const sectionLabel = "text-body font-semibold uppercase";
 
 /** The message key a field was rejected with, as a message to show. */
 function fieldMessage(error: FieldError | undefined): ErrorMessage | undefined {
@@ -129,7 +128,7 @@ export function IngredientCardBack({
 				className="text-body relative flex min-h-0 flex-1 flex-col gap-3"
 			>
 				{/* Clear of the clip on the right */}
-				<div className="text-title flex gap-4 pr-[calc(var(--ingredient-card-clip-width)+var(--ingredient-card-clip-left))] font-bold">
+				<div className="text-title flex flex-col pr-[calc(var(--ingredient-card-clip-width)+var(--ingredient-card-clip-left))] font-bold">
 					<input
 						{...register("name.en")}
 						aria-label={t.ingredientCard.englishName}
@@ -146,45 +145,40 @@ export function IngredientCardBack({
 					/>
 				</div>
 
-				{/* The sections sit low, as on the front; a long form scrolls. */}
+				{/* The fields sit low, as on the front; a long form scrolls. */}
 				<div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
-					<div className="flex min-h-full flex-col justify-end gap-5 pt-2">
-						<section className="flex flex-col gap-1">
-							<h4 className={sectionLabel}>{t.ingredientCard.priceTag}</h4>
-							<div className="grid grid-cols-[1fr_5rem_6.5rem] gap-3">
-								<input
-									{...register("price.amount")}
-									inputMode="decimal"
-									aria-label={t.ingredientCard.price}
-									aria-invalid={Boolean(errors.price?.amount)}
-									placeholder={t.ingredientCard.price}
-									className={field}
-								/>
-								<input
-									{...register("price.quantity")}
-									inputMode="decimal"
-									aria-label={t.ingredientCard.quantity}
-									aria-invalid={Boolean(errors.price?.quantity)}
-									placeholder={t.ingredientCard.quantity}
-									className={field}
-								/>
-								<select
-									{...register("price.unit")}
-									aria-label={t.ingredientCard.unit}
-									aria-invalid={Boolean(errors.price?.unit)}
-									className={field}
-								>
-									<option value="">{t.ingredientCard.unit}</option>
-									{unitOptions(units)}
-								</select>
-							</div>
-						</section>
+					<div className="flex min-h-full flex-col justify-end gap-3 pt-1">
+						<div className="grid grid-cols-[auto_1fr_5rem_6.5rem] items-baseline gap-x-3">
+							<span>$</span>
+							<input
+								{...register("price.amount")}
+								inputMode="decimal"
+								aria-label={t.ingredientCard.price}
+								aria-invalid={Boolean(errors.price?.amount)}
+								placeholder={t.ingredientCard.price}
+								className={field}
+							/>
+							<input
+								{...register("price.quantity")}
+								inputMode="decimal"
+								aria-label={t.ingredientCard.quantity}
+								aria-invalid={Boolean(errors.price?.quantity)}
+								placeholder={t.ingredientCard.quantity}
+								className={field}
+							/>
+							<select
+								{...register("price.unit")}
+								aria-label={t.ingredientCard.unit}
+								aria-invalid={Boolean(errors.price?.unit)}
+								className={field}
+							>
+								<option value="">{t.ingredientCard.unit}</option>
+								{unitOptions(units)}
+							</select>
+						</div>
 
-						<section className="text-caption uppercase">
-							<div className="flex justify-between border-b border-current pb-0.5">
-								<h4 className={sectionLabel}>{t.ingredientCard.nutrition}</h4>
-								<span className="self-end">{t.ingredientCard.per100g}</span>
-							</div>
+						{/* Per 100 g, as on the front */}
+						<div className="text-caption border-t border-current uppercase">
 							{nutrients.map(({ key, unit }) => (
 								<label
 									key={key}
@@ -196,97 +190,89 @@ export function IngredientCardBack({
 											{...register(`nutrition.${key}`)}
 											inputMode="decimal"
 											aria-invalid={Boolean(errors.nutrition?.[key])}
-											className="w-16 bg-transparent py-0.5 text-right focus:outline-none aria-invalid:underline"
+											className="w-16 bg-transparent text-right focus:outline-none aria-invalid:underline"
 										/>
 										<span className="w-9">{unit}</span>
 									</span>
 								</label>
 							))}
-						</section>
+						</div>
 
-						<section className="text-caption flex flex-col gap-1 uppercase">
-							<h4 className={sectionLabel}>{t.ingredientCard.units}</h4>
-							{/* A label column, then the value: units line up row by row. */}
-							<div className="grid grid-cols-[7.5rem_1fr] items-baseline gap-x-2">
-								<span>{t.ingredientCard.defaultUnit}</span>
-								<select
-									{...register("units.defaultUnit")}
-									aria-label={t.ingredientCard.defaultUnit}
-									className={cn(field, "w-28")}
-								>
-									<option value="">–</option>
-									{unitOptions(units)}
-								</select>
-								<span>{t.ingredientCard.density}</span>
-								<span className="flex items-baseline gap-2">
-									{t.ingredientCard.densityHint}
-									<input
-										{...register("units.density")}
-										inputMode="decimal"
-										aria-label={t.ingredientCard.density}
-										aria-invalid={Boolean(errors.units?.density)}
-										className={cn(field, "w-16 text-right")}
-									/>
-									g
-								</span>
-								{weights.fields.map((row, i) => (
-									<Fragment key={row.id}>
-										<span className="flex items-baseline gap-2">
-											1
-											<select
-												{...register(`units.weights.${i}.unit`)}
-												aria-label={t.ingredientCard.unit}
-												className={cn(field, "w-full")}
-											>
-												<option value="">{t.ingredientCard.unit}</option>
-												{unitOptions(countUnits)}
-											</select>
-										</span>
-										<span className="flex items-baseline gap-2">
-											=
-											<input
-												{...register(`units.weights.${i}.grams`)}
-												inputMode="decimal"
-												aria-label={t.ingredientCard.gramsPer({
-													unit: row.unit ? unitLabel(row.unit, locale) : "",
-												})}
-												aria-invalid={Boolean(
-													errors.units?.weights?.[i]?.grams
-												)}
-												className={cn(field, "w-16 text-right")}
-											/>
-											g
-											<button
-												type="button"
-												aria-label={t.ingredientCard.removeUnit}
-												onClick={() => weights.remove(i)}
-												className="ml-auto cursor-pointer"
-											>
-												<SquareIcon sign="minus" />
-											</button>
-										</span>
-									</Fragment>
-								))}
-							</div>
+						{/* A label column, then the value: rows line up. */}
+						<div className="text-caption grid grid-cols-[7.5rem_1fr] items-baseline gap-x-2 uppercase">
+							<span>{t.ingredientCard.defaultUnit}</span>
+							<select
+								{...register("units.defaultUnit")}
+								aria-label={t.ingredientCard.defaultUnit}
+								className={cn(field, "w-28")}
+							>
+								<option value="">–</option>
+								{unitOptions(units)}
+							</select>
+							<span>{t.ingredientCard.density}</span>
+							<span className="flex items-baseline gap-2">
+								{t.ingredientCard.densityHint}
+								<input
+									{...register("units.density")}
+									inputMode="decimal"
+									aria-label={t.ingredientCard.density}
+									aria-invalid={Boolean(errors.units?.density)}
+									className={cn(field, "w-16 text-right")}
+								/>
+								g
+							</span>
+							{weights.fields.map((row, i) => (
+								<Fragment key={row.id}>
+									<span className="flex items-baseline gap-2">
+										1
+										<select
+											{...register(`units.weights.${i}.unit`)}
+											aria-label={t.ingredientCard.unit}
+											className={cn(field, "w-full")}
+										>
+											<option value="">{t.ingredientCard.unit}</option>
+											{unitOptions(countUnits)}
+										</select>
+									</span>
+									<span className="flex items-baseline gap-2">
+										=
+										<input
+											{...register(`units.weights.${i}.grams`)}
+											inputMode="decimal"
+											aria-label={t.ingredientCard.gramsPer({
+												unit: row.unit ? unitLabel(row.unit, locale) : "",
+											})}
+											aria-invalid={Boolean(errors.units?.weights?.[i]?.grams)}
+											className={cn(field, "w-16 text-right")}
+										/>
+										g
+										<button
+											type="button"
+											aria-label={t.ingredientCard.removeUnit}
+											onClick={() => weights.remove(i)}
+											className="ml-auto cursor-pointer"
+										>
+											<SquareIcon sign="minus" />
+										</button>
+									</span>
+								</Fragment>
+							))}
 							<button
 								type="button"
 								onClick={() => weights.append({ unit: "", grams: "" })}
-								className="flex cursor-pointer items-center gap-1.5 self-start pt-1 font-semibold uppercase"
+								className="col-start-2 flex cursor-pointer items-center gap-1.5 justify-self-start pt-1 font-semibold uppercase"
 							>
 								<SquareIcon sign="plus" />
 								{t.ingredientCard.addUnit}
 							</button>
-						</section>
-
-						<section className="flex flex-col gap-1">
-							<h4 className={sectionLabel}>{t.ingredientCard.aliases}</h4>
+							<span className="pt-1">{t.ingredientCard.aliases}</span>
 							<input
 								{...register("aliases")}
 								aria-label={t.ingredientCard.aliases}
 								placeholder={t.ingredientCard.aliasesPlaceholder}
-								className={cn(field, "normal-case")}
+								className={cn(field, "mt-1 normal-case")}
 							/>
-						</section>
+						</div>
 					</div>
 				</div>
 
