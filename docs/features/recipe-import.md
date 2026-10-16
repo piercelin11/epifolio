@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-14
+updated: 2026-10-16
 source:
   - src/features/recipe-import/
   - src/app/api/recipe-import/route.ts
@@ -41,7 +41,7 @@ flowchart LR
     RH -->|URL| PAGE[抓網頁：JSON-LD 或正文]
     RH --> LLM[Claude Haiku 5.5<br/>structured outputs，不思考]
     PAGE --> LLM
-    LLM -->|每行：標準名稱、同義詞、營養| CONV[toImportedRecipe]
+    LLM -->|每行：標準名稱、同義詞、營養、單位換算| CONV[toImportedRecipe]
     CAT[(食材目錄)] --> MATCH[matchLine：程式比對]
     CONV --> MATCH
     MATCH -->|草稿 + 每行比對結果 + zod| CARD
@@ -65,11 +65,11 @@ flowchart LR
 | 整理內容 | 一次產生 en / zh；修順句子；每一步都要輸出；敘述拆成步驟、必要時分組並加 Highlight；原文沒寫的量留空、不猜；只在步驟出現、清單沒有的食材補成一行用量；原文的提示放在最後一步並標 Tip；名稱只寫食材，切法與補充放備註；「A 或 B」只取 A、備註寫「或 B」 |
 | 單位 | 只用單位清單（[ADR-0024](../adr/0024-more-units.md)）；清單外的寫法數量照填、不帶單位；沒有數量的用量在食譜紙顯示 To taste |
 | 步驟引用用量 | LLM 標出每一步提到的用量行，存檔後成為步驟片段的 `lineId`（[ADR-0015](../adr/0015-step-text-references-lines.md)）；在食譜卡改過的步驟退回純文字 |
-| 食材對應 | LLM 給每行標準名稱、中英同義詞與營養估計（或標為非食材）；程式正規化後（大小寫、全半形、標點、英文複數）比對目錄的名稱與別名；原文寫法優先於 LLM 給的名稱；粒度：價格或營養明顯不同才算不同食材 |
+| 食材對應 | LLM 給每行標準名稱、中英同義詞、營養估計，以及預設單位、用到的計數單位重量與密度（或標為非食材）；程式正規化後（大小寫、全半形、標點、英文複數）比對目錄的名稱與別名；原文寫法優先於 LLM 給的名稱；粒度：價格或營養明顯不同才算不同食材 |
 | 食材確認卡 | 食材小卡的卡紙與長尾夾；標題下顯示 N MATCHED · N NOT MATCHED；名稱一律中英並列（EN \| ZH），沒有語言切換。非食材的行不顯示、自動不連結；已對上的行收在最下方，可展開 |
 | 每一列 | 原文寫法（中英）與 `Create new` / `Link to` 單選。預設：有相符食材的選 Link to 並預選最可能的；沒有的選 Create new |
 | Link to | 可打字搜尋的選單（名稱、別名、中英文都可搜）；這一行的候選與可能是排在最上面。連到寫法不是其名稱或別名的食材時，存檔自動把寫法加為別名 |
-| Create new | EN NAME、ZH NAME 兩欄，預填 LLM 的名稱；別名用 LLM 的同義詞與原文寫法，營養直接寫入 LLM 估計值並標記為估計（[ADR-0025](../adr/0025-imported-ingredients.md)），畫面不顯示 |
+| Create new | EN NAME、ZH NAME 兩欄，預填 LLM 的名稱；別名用 LLM 的同義詞與原文寫法，營養與單位換算直接寫入 LLM 估計值並標記為估計（[ADR-0025](../adr/0025-imported-ingredients.md)、[ADR-0031](../adr/0031-unit-conversion-data.md)），畫面不顯示；同一個新食材被多行引用時合併各行的計數單位重量 |
 | 擋下 Next | Link to 沒選食材；新食材沒有名稱，或與目錄中的食材同名（提示改成連結） |
 | 跳過確認卡 | 每一行都是 Matched |
 | 存檔 | 新食譜的 Save 在同一個 transaction 中加別名、建立仍被引用的新食材、建立食譜與品項；用量行改過名稱就照名稱重新比對 |
@@ -96,11 +96,11 @@ flowchart LR
 - 每次匯入約 20 秒；畫面只有 Spinner，沒有進度（#83）。
 - 要 JavaScript 才有內容、要登入或擋爬蟲的網頁抓不到（Instagram、YouTube 等）；改貼文字或截圖（#84）。
 - 匯入只能新增品項；不能用指令修改既有食譜，也不能匯入成不在菜單上的食譜（等食譜庫 #57）。
-- 新食材只有名稱、別名與估計營養；價格與營養計算見 #42。
+- 對上既有食材時，不會補上該食材缺少的換算資料（#111）；新食材的價格要在食材卡片背面填。
 
 ## 相關連結
 
-- ADR：[ADR-0022](../adr/0022-llm-import-with-haiku.md)、[ADR-0023](../adr/0023-url-import-extraction.md)、[ADR-0024](../adr/0024-more-units.md)、[ADR-0025](../adr/0025-imported-ingredients.md)、[ADR-0026](../adr/0026-ingredient-matching-pipeline.md)、[ADR-0027](../adr/0027-unspecified-stock-is-chicken.md)
+- ADR：[ADR-0022](../adr/0022-llm-import-with-haiku.md)、[ADR-0023](../adr/0023-url-import-extraction.md)、[ADR-0024](../adr/0024-more-units.md)、[ADR-0025](../adr/0025-imported-ingredients.md)、[ADR-0026](../adr/0026-ingredient-matching-pipeline.md)、[ADR-0027](../adr/0027-unspecified-stock-is-chicken.md)、[ADR-0031](../adr/0031-unit-conversion-data.md)
 - 計畫：[PLAN-007](../plans/PLAN-007-llm-import.md)、[PLAN-010](../plans/PLAN-010-ingredient-matching.md)
 - 外部服務：[資料來源](../data-sources.md)
 - Issue：#52、#85

@@ -16,7 +16,7 @@
 | [PLAN-005](PLAN-005-database.md) | 資料庫基礎與菜單書主題切換 | done | #44 |
 | [PLAN-006](PLAN-006-menu-recipe-editor.md) | 菜單與食譜編輯卡 | done | #61 |
 | [PLAN-007](PLAN-007-llm-import.md) | LLM 匯入食譜 | done | #52 |
-| [PLAN-008](PLAN-008-ingredient-editing.md) | 食材卡片翻面編輯、單位換算、料理成本與營養 | in-progress | #42 |
+| [PLAN-008](PLAN-008-ingredient-editing.md) | 食材卡片翻面編輯、單位換算、料理成本與營養 | done | #42 |
 | [PLAN-009](PLAN-009-bilingual-ui.md) | 雙語介面與語言切換 | done | #53 |
 | [PLAN-010](PLAN-010-ingredient-matching.md) | 匯入的食材對應改由程式比對 | done | #85 |
 

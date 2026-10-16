@@ -6,9 +6,10 @@
 | -------- | ---- | -------- |
 | [紙張堆疊](paper-stack.md) | draft | 2026-10-12 |
 | [菜單書架](menu-shelf.md) | draft | 2026-10-13 |
-| [食材卡片](ingredient-card.md) | draft | 2026-10-12 |
+| [食材卡片](ingredient-card.md) | draft | 2026-10-16 |
+| [料理成本與營養](dish-totals.md) | draft | 2026-10-16 |
 | [編輯卡](editor.md) | draft | 2026-10-13 |
-| [食譜匯入](recipe-import.md) | draft | 2026-10-13 |
+| [食譜匯入](recipe-import.md) | draft | 2026-10-16 |
 | [雙語介面](bilingual-ui.md) | draft | 2026-10-16 |
 
 ## 功能頁模板

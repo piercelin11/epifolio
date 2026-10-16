@@ -60,7 +60,8 @@ erDiagram
 ```
 
 - 同一道食譜可以出現在多本菜單。
-- 菜單品項（MenuItem）有自己的顯示名稱、描述、價格，不影響底層食譜。
+- 菜單品項（MenuItem）有自己的顯示名稱與描述，不影響底層食譜；價格不存，載入頁面時由食譜用量與食材價格算出每份成本（[ADR-0032](adr/0032-dish-cost-computed.md)）。
+- 用量的單位換算：單位清單標記重量、體積或計數，食材自己記計數單位重量與密度；資料庫保留原文單位（[ADR-0031](adr/0031-unit-conversion-data.md)）。
 - 食材（Ingredient）是獨立的目錄資料，用量與品項描述以 id 引用（[ADR-0011](adr/0011-ingredient-catalog.md)）；品項描述片段的引用存在 JSON 內，沒有外鍵。
 - 步驟文字分段，片段以用量行 id 引用同一道食譜的用量（[ADR-0015](adr/0015-step-text-references-lines.md)）。
 - 菜單主題 id 與用量單位存字串，合法值由程式碼清單決定（[ADR-0016](adr/0016-code-lists-as-strings.md)）。

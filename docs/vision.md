@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-13
+updated: 2026-10-16
 ---
 
 # 願景
@@ -27,6 +27,7 @@ updated: 2026-10-13
 - 多人協作與帳號系統
 - 排程；LLM 以外的外部 API 整合（食譜匯入使用 Claude API，見 [資料來源](data-sources.md)）
 - 書本式翻頁（改以獨特的 UI 與動畫為特色，見 [ADR-0007](adr/0007-paper-stack-layout.md)）
+- 食材的購買紀錄、平均價與購買地點（每個食材只記一個價格，見 [ADR-0031](adr/0031-unit-conversion-data.md)）
 
 ## 設計取向
 

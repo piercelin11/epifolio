@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-008-ingredient-editing
 issue: 42
 created: 2026-10-16
@@ -99,6 +99,7 @@ flowchart LR
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：`docs/features/ingredient-card.md`（翻面編輯、成本與營養）、`docs/features/recipe-import.md`
-- [ ] ADR：ADR-0031、ADR-0032
-- [ ] glossary：單位換算、食材成本
+- [x] 功能頁：`docs/features/ingredient-card.md`（翻面編輯）、新增 `docs/features/dish-totals.md`（成本與營養）、`docs/features/recipe-import.md`
+- [x] ADR：ADR-0031、ADR-0032
+- [x] glossary：單位種類、計數單位、預設單位、密度、單位換算、料理成本與營養、估計換算
+- [x] `docs/architecture.md`、`docs/vision.md`（非目標：購買紀錄）
