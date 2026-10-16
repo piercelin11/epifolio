@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-15
+updated: 2026-10-16
 source:
   - src/lib/i18n/
   - src/components/locale-switch.tsx
@@ -43,6 +43,7 @@ sequenceDiagram
 | 項目 | 規則 |
 | ---- | ---- |
 | 切換按鈕 | 頁首 menu 按鈕左邊，只顯示目前語言（`en` / `zh`），點一下切成另一種；編輯卡開著時頁首不可操作 |
+| 版頭 | 站名 epifolio 與 menu 按鈕在中文介面也維持英文 |
 | 記住 | cookie `locale`，一年；沒有或無效的值是英文；重新整理、關掉再開都保持（[ADR-0028](../adr/0028-locale-cookie.md)） |
 | 切換後 | 書名、品項、食譜、食材卡片以新語言重新讀出；目前的書、紙張、份數、勾選不重設 |
 | 內容缺語言 | 欄位只有一種語言時顯示那一種（`localize()`，[ADR-0013](../adr/0013-localized-json-fields.md)） |

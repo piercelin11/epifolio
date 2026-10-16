@@ -7,7 +7,8 @@ export const zh = {
 		switchTo: "切換為英文",
 	},
 	shelf: {
-		menu: "菜單",
+		// Part of the masthead with the site name; stays in English.
+		menu: "Menu",
 		openBook: ({ name }) => `打開「${name}」`,
 	},
 	stack: {

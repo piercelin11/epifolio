@@ -150,3 +150,4 @@
 - R6. 改 Prisma schema 後，`migrate dev` 之外還要跑 `pnpm exec prisma generate`，並請使用者重啟 dev server：Prisma 7 的 `migrate dev` 不會自動 generate，而 `src/lib/db.ts` 在開發時把 client 存在 `globalThis`，熱更新不會換掉它（`MenuItem.price` 改選填後型別仍是必填；generate 之後 dev server 仍用舊 client，寫入 `price: null` 失敗，2026-10-13）
 - R7. Server Component 不要把 JSX 元素存成模組層級常數再傳給 Client Component（每次 render 重新建立，或寫成元件）：React 開發模式在元素上記錄 key 驗證狀態，同一個物件跨請求重複使用，`refresh()` 後會出現誤報的「Each child in a list should have a unique key」（`page.tsx` 的 `title`，存檔時間歇出現，加網路延遲才能穩定重現，2026-10-13）
 - R8. **測試的 API 花費上限：單次執行累計不超過 US$0.03。** 「單次執行」指使用者下一次指示到 Claude 回報完成之間，不是整個對話。測試會呼叫付費 API（目前是食譜匯入的 Claude API）時，每次呼叫後讀回應的 `usage.costUsd` 累加；下一次呼叫前，若「已花費 + 上一次的花費」可能超過上限，先停下來詢問使用者是否繼續，並報告已花費的金額。拿不到實際花費時（回應沒有 `usage`）視同可能超過，先問（使用者明確要求，2026-10-13）
+- R9. 頁首的站名 epifolio 與 menu 按鈕屬於版頭設計，切到中文也維持英文；翻譯介面時不要動它們（PLAN-009 把 menu 譯成「菜單」被糾正，2026-10-16）

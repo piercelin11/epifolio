@@ -9,7 +9,7 @@
 | [食材卡片](ingredient-card.md) | draft | 2026-10-12 |
 | [編輯卡](editor.md) | draft | 2026-10-13 |
 | [食譜匯入](recipe-import.md) | draft | 2026-10-13 |
-| [雙語介面](bilingual-ui.md) | draft | 2026-10-15 |
+| [雙語介面](bilingual-ui.md) | draft | 2026-10-16 |
 
 ## 功能頁模板
 
