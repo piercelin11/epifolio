@@ -1,20 +1,20 @@
 # STATUS
 
-更新：2026-10-16
+更新：2026-10-18
 
 > 交接筆記。每次對話結束前**覆蓋**更新，只寫現況，不累加歷史。
 
 ## 現在在做什麼
 
-PLAN-008（#42）完成，在分支 `plan-008-ingredient-editing`，**等使用者看過再合併**（CI 已通過）。內容：食材卡片翻面編輯（統一高度、edit 圖示、背面 Save / Cancel）、單位換算（ADR-0031）、菜單價格 = 每份食材成本、食譜紙每份營養（ADR-0032）、匯入的新食材帶換算估計。
+PLAN-008 已合併進 `main`；repo 已改為公開（https://github.com/piercelin11/epifolio）。
 
-本機 `prisma/dev.db` 已套用 migration `ingredient_units`（移除 `MenuItem.price`、價格改為金額 / 數量 / 單位），60 筆食材的換算數字已由 Claude 估計寫入並標記為估計。dev server 在 migration 後重啟過（R6）。
+在分支 `docs/doc-audit-fixes` 依 `/doc-audit` 報告修文件，**等使用者說「合併」**：`editor.md`、`paper-stack.md`、`menu-shelf.md` 補上 10-14～10-16 的變動並更新 `updated`；CLAUDE.md 刪掉只有一行連結的「文件撰寫規範」節，編號規則改為第 10 節（降到 150 行以下）。
 
 ## 下一步
 
-- 使用者檢查畫面後說「合併」才合併；合併後確認 `main` CI。
+- 使用者說「合併」才合併；合併後確認 `main` CI。
 - 之後的候選：#109 食材列表頁、#110 單位偏好、#108 描述片段連結、#111 匯入補既有食材換算；其他 #56、#57、#71、#83、#84、#97；2026-10-26 之後處理 #32。
-- 測試會呼叫 API 時遵守 R8；本次實測一次花費 US$0.0016。
+- 測試會呼叫 API 時遵守 R8。
 
 ## 卡點與待決定
 
