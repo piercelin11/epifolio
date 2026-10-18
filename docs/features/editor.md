@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-13
+updated: 2026-10-18
 source:
   - src/features/editor/
   - src/features/menu/schema.ts
@@ -51,6 +51,7 @@ flowchart LR
 
 - 目前的卡記在網址 `?edit=`，每次換卡以 `pushState` 加一筆紀錄；上一頁回到前一張卡，重新整理會回到同一張卡（[ADR-0017](../adr/0017-editor-cards-with-push-state.md)）。
 - 菜單卡的草稿與匯入卡填的菜名由 `EditorLayer` 保管，翻面、去食譜卡再回來都還在；關閉編輯器就丟棄。
+- 本頁的按鈕與欄位名稱用英文介面的寫法；中文介面依字典顯示（見[雙語介面](bilingual-ui.md)）。
 - 表單、Server Action 共用 `src/features/menu/schema.ts` 與 `src/features/recipe/schema.ts`；[食譜匯入](recipe-import.md)的結果也通過同一份 schema。
 
 ## 規則 / 狀態
@@ -89,7 +90,7 @@ flowchart LR
 - 沒有防呆：刪除不確認，未存檔就關閉或重新整理會失去草稿（#56）。
 - 移出菜單的食譜在畫面上看不到，要等食譜庫（#57）。
 - 新章節要先存檔才能加品項（#71）。
-- 食材別名目前都是空的，「Golden garlic」這類寫法不會自動連到食材（#42）。
+- 描述片段只在整段或第一個逗號前的文字完全等於食材名稱或別名時才連上，「Golden garlic」這類寫法連不到 Garlic；別名目前只會在匯入的食材確認卡選擇連結時加上（#108）。
 - 食譜的時間、筆記、步驟分鐘數不能編輯（#58）；不能新增書（#60）。
 - 窄螢幕仍用桌面版面（#10）。
 

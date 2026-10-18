@@ -1,10 +1,11 @@
 ---
 status: draft
-updated: 2026-10-13
+updated: 2026-10-18
 source:
   - src/features/paper-stack/
-  - src/features/menu/
-  - src/features/recipe/
+  - src/features/menu/components/
+  - src/features/recipe/components/
+  - src/features/recipe/scaling.ts
   - src/app/globals.css
   - public/textures/
 adr: [0006, 0007, 0008, 0011]
@@ -22,7 +23,7 @@ plan: PLAN-002
 ```mermaid
 flowchart LR
     BOOK[MenuBook] --> MENU[MenuGroup / Section / MenuItem]
-    JSON -->|getMockRecipes| RECIPE[Recipe]
+    DB[(SQLite)] -->|getRecipes| RECIPE[Recipe]
     MENU --> STACK[MenuRecipeStack]
     RECIPE --> STACK
     STACK --> PS[PaperStack：菜單紙 + 食譜紙]
@@ -50,9 +51,9 @@ stateDiagram-v2
 | 打孔 | 食譜紙右側一排圓洞，是真正透明的洞，看得到下層內容 |
 | 捲動區留白 | 捲動區左右比書本多留一段空間（不碰到鄰書露出的部分），只垂直捲動，換紙時傾斜的紙張與食材卡片不會在書本邊緣被切掉 |
 | 頁首 | 由書架提供，固定不捲動、沒有自己的底色，在紙張下層；網站標題在左、menu 按鈕在右 |
-| 菜單紙 | 顯示所在菜單書的大類；最上方是大類名稱（大字、大寫、結尾加句點、`primary`，略超出紙張左上角、超出部分被裁掉），右上角是編輯、主題、刪除按鈕（閱讀模式置中那本才有，見[菜單書架](menu-shelf.md)）；其餘內容有紙張內距；章節小標（選填；襯線、粗體、大寫、結尾加句點、`primary`）；品項顯示菜名（無襯線、大寫、一般字重與字距、`foreground`）、價格（靠右）、描述（小字、細體，無則不顯示）；點菜名換到食譜紙，點描述中的食材開[食材卡片](ingredient-card.md) |
+| 菜單紙 | 顯示所在菜單書的大類；最上方是大類名稱（大字、大寫、結尾加句點、`primary`，略超出紙張左上角、超出部分被裁掉），右上角是編輯、主題、刪除按鈕（閱讀模式置中那本才有，見[菜單書架](menu-shelf.md)）；其餘內容有紙張內距；章節小標（選填；襯線、粗體、大寫、結尾加句點、`primary`）；品項顯示菜名（無襯線、大寫、一般字重與字距、`foreground`）、價格（靠右，每份食材成本，算不完整時後加 `+`，見[料理成本與營養](dish-totals.md)）、描述（小字、細體，無則不顯示）；點菜名換到食譜紙，點描述中的食材開[食材卡片](ingredient-card.md) |
 | 字級 | 依用途分為 caption、body、title、subheading、heading、headline、display 七級，元件不使用 `text-sm` 等預設字級 |
-| 食譜紙 | 標題（閱讀模式置中那本的右上角有編輯按鈕，打開該食譜的[食譜編輯卡](editor.md)）→ 上下有分隔線的 `INGREDIENTS` 列（右側份數 `− n +`）→ 用量群組兩欄 → `INSTRUCTIONS` 列 → 步驟群組（編號跨群組連續）。群組小標與步驟重點（加粗的開頭）選填。不顯示時間與筆記。尚未選品項時顯示菜單上第一個品項的食譜 |
+| 食譜紙 | 標題（閱讀模式置中那本的右上角有編輯按鈕，打開該食譜的[食譜編輯卡](editor.md)）→ 上下有分隔線的 `INGREDIENTS` 列（右側份數 `− n +`）→ 用量群組兩欄 → 每份營養行（見[料理成本與營養](dish-totals.md)）→ `INSTRUCTIONS` 列 → 步驟群組（編號跨群組連續）。群組小標與步驟重點（加粗的開頭）選填。不顯示時間與筆記。尚未選品項時顯示菜單上第一個品項的食譜 |
 | 份數 | `+` / `−` 加減 1，範圍見設定檔；所有有數量的用量依「目前份數 ÷ 食譜份數」換算，範圍值兩端都換算，常見分數顯示為分數。食譜沒有份數時不顯示 |
 | 勾選 | 點用量的框框或文字切換勾選，勾選後劃掉變淡；勾選以用量行 id 記錄，份數與勾選以食譜為單位存在書架層，換食譜、換書後仍在，重新整理即重設 |
 | 捲軸 | 可以捲動，但不顯示捲軸 |
