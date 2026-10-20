@@ -28,7 +28,7 @@ pnpm exec prisma db seed    # sample menu, recipes and ingredients
 pnpm dev
 ```
 
-`prisma db seed` clears every table and loads the sample data again, so it can be rerun at any time.
+`prisma db seed` only adds missing sample data and never deletes or overwrites existing rows, so it can be rerun at any time. Back up the database with `pnpm db:backup` before changing the schema or editing data in bulk; see `docs/runbook.md` for restoring.
 
 ## Scripts
 
@@ -40,6 +40,7 @@ pnpm dev
 | `pnpm typecheck`    | Generate route types and run tsc     |
 | `pnpm format`       | Format with Prettier                 |
 | `pnpm format:check` | Check formatting                     |
+| `pnpm db:backup`    | Copy the SQLite database into `backups/` with a timestamp |
 | `pnpm docs:serve`   | Preview the docs site locally        |
 | `pnpm docs:build`   | Build the docs site in strict mode   |
 

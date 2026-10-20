@@ -36,7 +36,7 @@
 - 開發：`pnpm dev`（使用者自己開著，port 3000；**不要自己起 / 殺 dev server**，驗證用 `curl`；dev server 開著時不跑 `pnpm build`，見 R2）
 - 建置：`pnpm build` / `pnpm start`
 - 檢查：`pnpm typecheck`（`next typegen` + `tsc`）、`pnpm lint`、`pnpm format:check`（修正用 `pnpm format`）
-- 資料庫：`pnpm exec prisma migrate dev --name <name>`、`pnpm exec prisma validate`、`pnpm exec prisma db seed`（清空後重新寫入範例資料）
+- 資料庫：`pnpm exec prisma migrate dev --name <name>`、`pnpm exec prisma validate`、`pnpm exec prisma db seed`（只補缺少的範例資料，不刪除也不覆蓋）；備份：`pnpm db:backup`（複製到 `backups/`，還原見 `docs/runbook.md`）
 - 文件站預覽：`pnpm docs:serve`；建置檢查：`pnpm docs:build`（需先建 `.venv`，見 `README.md`）
 - 文件健檢：`/doc-audit`（只出報告，不自動修改）
 
@@ -46,7 +46,7 @@
 - `src/features/<feature>/`：功能模組（`data/` 讀資料庫、`actions/` 為 Server Actions；`recipe-import/server/` 呼叫 LLM 與抓網頁）；`src/lib/`：共用函式庫（`db.ts` 為 Prisma 單例、`current-user.ts`、`i18n/` 雙語內容、介面語言與字典）；`src/components/locale-switch.tsx`：頁首語言切換
 - `src/generated/prisma/`：Prisma 產出（gitignored）；`prisma/`：schema、migrations、`seed.ts` 與 `seed-data.json`
 - `public/`：靜態檔（`textures/` 紙張與卡紙材質；`stationery/` 長尾夾、迴紋針等文具；`ingredients/` 食材目錄照片；`uploads/` 上傳圖片，gitignored）
-- `docs/`：專案文件（MkDocs）；`.claude/`：Claude 規則與指令；`.github/`：CI 與 issue 模板；`scripts/`：工具腳本
+- `docs/`：專案文件（MkDocs）；`.claude/`：Claude 規則與指令；`.github/`：CI 與 issue 模板；`scripts/`：工具腳本（`db-backup.ts`）；`backups/`：資料庫備份（gitignored）
 
 新增重要目錄時同步更新本節與 `docs/architecture.md`。
 
@@ -147,3 +147,4 @@
 - R7. Server Component 不要把 JSX 元素存成模組層級常數再傳給 Client Component（每次 render 重新建立，或寫成元件）：React 開發模式在元素上記錄 key 驗證狀態，同一個物件跨請求重複使用，`refresh()` 後會出現誤報的「Each child in a list should have a unique key」（`page.tsx` 的 `title`，存檔時間歇出現，加網路延遲才能穩定重現，2026-10-13）
 - R8. **測試的 API 花費上限：單次執行累計不超過 US$0.03。** 「單次執行」指使用者下一次指示到 Claude 回報完成之間，不是整個對話。測試會呼叫付費 API（目前是食譜匯入的 Claude API）時，每次呼叫後讀回應的 `usage.costUsd` 累加；下一次呼叫前，若「已花費 + 上一次的花費」可能超過上限，先停下來詢問使用者是否繼續，並報告已花費的金額。拿不到實際花費時（回應沒有 `usage`）視同可能超過，先問（使用者明確要求，2026-10-13）
 - R9. 頁首的站名 epifolio 與 menu 按鈕屬於版頭設計，切到中文也維持英文；翻譯介面時不要動它們（PLAN-009 把 menu 譯成「菜單」被糾正，2026-10-16）
+- R10. 改 Prisma schema、跑 `migrate` 或 seed、大量修改資料庫內容之前，先跑 `pnpm db:backup`（`dev.db` 是 gitignored，食譜與食材只存在這個檔案；使用者要求避免資料遺失，2026-10-20）

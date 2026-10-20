@@ -11,4 +11,5 @@
 | 某功能現在怎麼運作 | [功能總覽](features/index.md) |
 | 為什麼這樣決定     | [決策紀錄](adr/README.md)    |
 | 用了哪些外部服務   | [資料來源](data-sources.md)  |
+| 備份、還原、seed   | [維運手冊](runbook.md)       |
 | 某功能的規格與任務 | [計畫](plans/README.md)      |

@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-15
+updated: 2026-10-20
 ---
 
 # 架構
@@ -94,11 +94,12 @@ erDiagram
 | `src/lib/`               | 共用函式庫；`db.ts` 為 Prisma 單例、`current-user.ts` 為目前使用者 |
 | `src/lib/i18n/`          | 雙語內容的型別與 `localize()`；介面語言的 cookie、`LocaleProvider` 與字典 `messages/` |
 | `src/generated/prisma/`  | Prisma 產出（gitignored）              |
-| `prisma/`                | schema、migrations、`seed.ts` 與範例資料 `seed-data.json` |
+| `prisma/`                | schema、migrations、`seed.ts` 與範例資料 `seed-data.json`（seed 只補缺少的資料，見[維運手冊](runbook.md)） |
 | `docs/`                  | 專案文件（MkDocs）                     |
 | `.claude/`               | Claude 規則與指令                      |
 | `.github/`               | CI workflow 與 issue 模板              |
-| `scripts/`               | 工具腳本                               |
+| `scripts/`               | 工具腳本；`db-backup.ts` 為資料庫備份  |
+| `backups/`               | `pnpm db:backup` 的資料庫備份（gitignored） |
 
 ## 待決定
 
