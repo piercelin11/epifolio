@@ -8,15 +8,22 @@ export interface MenuThemeColors {
 	background: string;
 	/** Menu sheet text. */
 	foreground: string;
-	/** Titles and the recipe sheet paper. */
+	/** Titles and the recipe folder. */
 	primary: string;
-	/** Recipe sheet text. */
+	/** Recipe folder text. */
 	primaryForeground: string;
+	/**
+	 * The folder's back flap. Derived from `primary` in globals.css when
+	 * absent (ADR-0035); set it where the derived colour looks wrong.
+	 */
+	primaryDeep?: string;
 }
 
 /** Opacity of the texture laid over each sheet; dark paper needs less. */
 export interface MenuThemeTexture {
+	/** The menu sheet. */
 	paper: number;
+	/** The recipe folder. */
 	primary: number;
 }
 
@@ -162,6 +169,7 @@ export function menuThemeStyle(theme: MenuTheme): CSSProperties {
 		"--foreground": colors.foreground,
 		"--primary": colors.primary,
 		"--primary-foreground": colors.primaryForeground,
+		...(colors.primaryDeep && { "--primary-deep": colors.primaryDeep }),
 		"--paper-texture-paper-opacity": texture.paper,
 		"--paper-texture-primary-opacity": texture.primary,
 	} as CSSProperties;

@@ -21,6 +21,13 @@
 	--color-editor-review-card: var(--editor-review-card);
 	--color-editor-card-foreground: var(--editor-card-foreground);
 	--color-editor-scrim: var(--editor-scrim);
+	--color-stationery-foreground: var(--stationery-foreground);
+	--color-instruction-sheet: var(--instruction-sheet);
+	--color-nutrition-card: var(--nutrition-card);
+	--color-nutrition-protein: var(--nutrition-protein);
+	--color-nutrition-carbs: var(--nutrition-carbs);
+	--color-nutrition-fat: var(--nutrition-fat);
+	--color-primary-deep: var(--primary-deep);
 	/*
 	 * Font roles (ADR-0006); typefaces are loaded in src/lib/fonts.ts. The
 	 * Chinese typeface follows the Latin one, so it only draws Chinese (ADR-0030).
@@ -118,15 +125,24 @@
 	/* Page surface behind the paper stack */
 	--backdrop: #1c1a12;
 	--backdrop-foreground: #ece2d0;
+	/* Text on the card stock and papers that do not follow the menu theme */
+	--stationery-foreground: #2e2a24;
 	/* Ingredient card (IngredientCard); the same in every menu theme */
 	--ingredient-card: #d7c9b2;
-	--ingredient-card-foreground: #2e2a24;
+	--ingredient-card-foreground: var(--stationery-foreground);
 	/* Editor cards (EditorLayer); the same in every menu theme */
 	--editor-menu-card: #b4b1ad;
 	--editor-recipe-card: #c2b8ae;
 	/* The ingredient review after an import: the ingredient card's stock */
 	--editor-review-card: var(--ingredient-card);
-	--editor-card-foreground: #212121;
+	--editor-card-foreground: var(--stationery-foreground);
+	/* Papers filed in the recipe folder (RecipeFolder); the same in every menu theme */
+	--instruction-sheet: #d9c9b7;
+	--nutrition-card: #b39b8c;
+	/* Nutrition card ring (NutritionRing), checked against the card colour */
+	--nutrition-protein: var(--stationery-foreground);
+	--nutrition-carbs: #6e6156;
+	--nutrition-fat: #e4d8ca;
 	/* Laid over the shelf while a card is open */
 	--editor-scrim: rgb(0 0 0 / 0.3);
 }
@@ -156,6 +172,11 @@
 	--border: color-mix(in oklab, var(--foreground) 75%, var(--background));
 	--input: var(--border);
 	--ring: var(--primary);
+	/*
+	 * The recipe folder's back flap (ADR-0035): the primary colour, darker.
+	 * A theme can set its own in menu-themes.ts (primaryDeep).
+	 */
+	--primary-deep: oklch(from var(--primary) calc(l - 0.08) c h);
 }
 
 @layer base {
@@ -202,7 +223,6 @@
 	);
 	/* Texture per sheet tone (PaperSheet); opacity comes from the menu theme */
 	--paper-texture-paper: url("/textures/fiber-paper.webp");
-	--paper-texture-primary: url("/textures/paper.webp");
 	/* Menu shelf (MenuShelf): one book is a whole paper stack */
 	--shelf-book-width: calc(var(--paper-base-width) + var(--paper-offset-x) * 2);
 	/* How much of each neighbouring book's menu sheet shows at the screen edge; narrower on laptop-sized screens */
@@ -231,7 +251,10 @@
 	--shelf-overview-min-top: 3rem;
 	/* Space between books before scaling */
 	--shelf-overview-gap: 5rem;
-	/* Punched holes along the right edge of the recipe sheet */
+	/*
+	 * Punched holes of a perforated sheet (paper-perforated). The book's
+	 * width still leaves room for these; the instruction sheet sets its own.
+	 */
 	--paper-hole-size: 1.875rem;
 	--paper-hole-pitch: 3.25rem;
 	--paper-hole-inset: 2.125rem;
@@ -294,8 +317,8 @@
 	/* The other face of a card, mirrored, showing faintly through the stock */
 	--editor-ghost-opacity: 0.07;
 	/* Paper clip over the menu card's top-right corner */
-	--editor-paper-clip: url("/stationery/paper-clip.webp");
-	--editor-paper-clip-width: 1.875rem;
+	--editor-paper-clip: url("/stationery/paper-clip-color.webp");
+	--editor-paper-clip-width: var(--paper-clip-width);
 	--editor-paper-clip-top: -1.5rem;
 	--editor-paper-clip-right: 0.75rem;
 	--editor-paper-clip-rotate: -42deg;
@@ -309,9 +332,68 @@
 	--paper-texture-opacity: var(--ingredient-card-texture-opacity);
 }
 
-[data-paper-tone="primary"] {
-	--paper-texture: var(--paper-texture-primary);
+/* Recipe folder (RecipeFolder) */
+:root {
+	/* Height of the front flap, tab not included; the same for every recipe */
+	--folder-height: 26rem;
+	/* Gap between the folder's bottom edge and the bottom of the screen */
+	--folder-bottom: 2.5rem;
+	/* How far the folder's left edge sits inside the menu sheet's; its right edge is the book's */
+	--folder-inset-x: 7rem;
+	--folder-padding: 2rem;
+	/* Tabs on the flaps' top edge: height, width, slant of each side, and the first tab's distance from the left edge */
+	--folder-tab-height: 2.25rem;
+	--folder-tab-width: 9.5rem;
+	--folder-tab-slant: 1.25rem;
+	--folder-tab-offset: 0.5rem;
+	/* How far the back flap's top edge shows above the front flap's */
+	--folder-back-rise: 0.375rem;
+	/* Width of one ingredient column while the list fits in two */
+	--folder-ingredient-column: 17rem;
+	--folder-column-gap: 2.5rem;
+	/* Instruction sheet: inset from the folder's sides, and the highest its top edge goes before it is pulled */
+	--instruction-inset-x: 0.5rem;
+	--instruction-top: calc(var(--header-height) + var(--paper-offset-y));
+	/* The least it shows when the screen is too short for the folder */
+	--instruction-min-reveal: 10rem;
+	--instruction-padding: 2rem;
+	--instruction-hole-size: 0.875rem;
+	--instruction-hole-pitch: 3.25rem;
+	--instruction-hole-inset: 1.25rem;
+	--instruction-texture: url("/textures/paper.webp");
+	--instruction-texture-opacity: 0.35;
+	/* Nutrition card: size, how far it rises above the folder, its place and tilt */
+	--nutrition-card-width: 20rem;
+	--nutrition-card-rise: 20rem;
+	--nutrition-card-right: 1.25rem;
+	--nutrition-card-rotate: 5deg;
+	/* How far below the folder's top edge it sits when put away, so its tilted corners and clip stay hidden */
+	--nutrition-card-tuck: 4.5rem;
+	--nutrition-card-texture-opacity: 0.35;
+	--nutrition-clip-left: 3rem;
+	--nutrition-clip-top: -2rem;
+	/* Paper clips: the colour and the mono clip share one size */
+	--paper-clip-width: 1.875rem;
+	--nutrition-paper-clip: url("/stationery/paper-clip-mono.webp");
+}
+
+[data-paper-tone="folder"],
+[data-paper-tone="folder-deep"] {
+	--paper-texture: var(--paper-texture-paper);
 	--paper-texture-opacity: var(--paper-texture-primary-opacity);
+}
+
+[data-paper-tone="instruction"] {
+	--paper-texture: var(--instruction-texture);
+	--paper-texture-opacity: var(--instruction-texture-opacity);
+	--paper-hole-size: var(--instruction-hole-size);
+	--paper-hole-pitch: var(--instruction-hole-pitch);
+	--paper-hole-inset: var(--instruction-hole-inset);
+}
+
+[data-paper-tone="nutrition"] {
+	--paper-texture: var(--paper-texture-paper);
+	--paper-texture-opacity: var(--nutrition-card-texture-opacity);
 }
 
 /* Texture layer laid over a sheet; blends with the sheet colour beneath */
@@ -391,6 +473,29 @@
 	&::-webkit-scrollbar {
 		display: none;
 	}
+}
+
+/*
+ * A folder flap with one tab on its top edge. Set --tab-left to the tab's
+ * distance from the left edge; the flap starts --folder-tab-height down.
+ */
+@utility folder-tab {
+	--tab-right: calc(var(--tab-left) + var(--folder-tab-width));
+	clip-path: polygon(
+		0 var(--folder-tab-height),
+		var(--tab-left) var(--folder-tab-height),
+		calc(var(--tab-left) + var(--folder-tab-slant)) 0,
+		calc(var(--tab-right) - var(--folder-tab-slant)) 0,
+		var(--tab-right) var(--folder-tab-height),
+		100% var(--folder-tab-height),
+		100% 100%,
+		0 100%
+	);
+}
+
+/* Clips everything below the element's bottom edge, nothing on the other sides */
+@utility clip-below {
+	clip-path: inset(-100vh -100vw 0 -100vw);
 }
 
 /* Cuts real, see-through holes down the right edge of the sheet */
