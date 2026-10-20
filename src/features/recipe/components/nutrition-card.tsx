@@ -35,10 +35,13 @@ function NutritionRing({
 	calories,
 	grams,
 	label,
+	incomplete,
 }: {
 	calories: number;
 	grams: Record<Macro, number>;
 	label: string;
+	/** Some lines are left out; marked with an asterisk explained in a tooltip. */
+	incomplete: boolean;
 }) {
 	const t = useMessages();
 	const kcal = macros.map(({ key }) => grams[key] * kcalPerGram[key]);
@@ -64,14 +67,17 @@ function NutritionRing({
 				aria-label={label}
 				className="size-full -rotate-90"
 			>
-				<circle
-					cx="50"
-					cy="50"
-					r={radius}
-					fill="none"
-					strokeWidth={ringWidth}
-					className="stroke-current opacity-15"
-				/>
+				{/* The segments are see-through, so the track shows only without them */}
+				{segments.length === 0 && (
+					<circle
+						cx="50"
+						cy="50"
+						r={radius}
+						fill="none"
+						strokeWidth={ringWidth}
+						className="stroke-current opacity-15"
+					/>
+				)}
 				{segments.map((segment) => {
 					const dash = Math.max(segment.length - gap, 0);
 					return (
@@ -89,14 +95,19 @@ function NutritionRing({
 					);
 				})}
 			</svg>
-			<p
-				aria-hidden
-				className="absolute inset-0 flex flex-col items-center justify-center"
-			>
-				<span className="text-subheading font-bold tabular-nums">
+			<p className="absolute inset-0 flex flex-col items-center justify-center">
+				<span
+					aria-hidden
+					className="text-subheading font-bold tabular-nums"
+					title={incomplete ? t.recipeSheet.nutritionIncomplete : undefined}
+				>
 					{formatNutrient(calories, "", 0)}
+					{incomplete && "*"}
 				</span>
-				<span className="text-caption uppercase">
+				{incomplete && (
+					<span className="sr-only">{t.recipeSheet.nutritionIncomplete}</span>
+				)}
+				<span aria-hidden className="text-caption uppercase">
 					{t.ingredientCard.calories}
 				</span>
 			</p>
@@ -126,26 +137,12 @@ export function NutritionCard({ totals }: { totals?: RecipeTotals }) {
 
 	return (
 		// Only the card's top --nutrition-card-rise shows, so everything stays in it.
-		<div className="flex h-(--nutrition-card-rise) flex-col gap-3 px-6 pt-8">
-			{/* The note on missing values is the asterisk's tooltip; there is no room for it */}
-			<p
-				className="text-caption text-right uppercase"
-				title={
-					nutrition.incomplete ? t.recipeSheet.nutritionIncomplete : undefined
-				}
-			>
-				{basis}
-				{nutrition.incomplete && (
-					<>
-						{" *"}
-						<span className="sr-only">{t.recipeSheet.nutritionIncomplete}</span>
-					</>
-				)}
-			</p>
+		<div className="flex h-(--nutrition-card-rise) flex-col gap-4 px-6 pt-10">
 			<div className="flex justify-center">
 				<NutritionRing
 					calories={calories}
 					grams={grams}
+					incomplete={nutrition.incomplete}
 					label={`${basis}: ${formatNutrient(calories, " kcal", 0)}`}
 				/>
 			</div>

@@ -137,12 +137,24 @@
 	--editor-review-card: var(--ingredient-card);
 	--editor-card-foreground: var(--stationery-foreground);
 	/* Papers filed in the recipe folder (RecipeFolder); the same in every menu theme */
-	--instruction-sheet: #d9c9b7;
-	--nutrition-card: #b39b8c;
-	/* Nutrition card ring (NutritionRing), checked against the card colour */
-	--nutrition-protein: var(--stationery-foreground);
-	--nutrition-carbs: #6e6156;
-	--nutrition-fat: #e4d8ca;
+	--instruction-sheet: #cfc7bf;
+	--nutrition-card: #afa097;
+	/* Nutrition card ring (NutritionRing): the text colour at three strengths */
+	--nutrition-protein: color-mix(
+		in oklab,
+		var(--stationery-foreground) 90%,
+		transparent
+	);
+	--nutrition-carbs: color-mix(
+		in oklab,
+		var(--stationery-foreground) 60%,
+		transparent
+	);
+	--nutrition-fat: color-mix(
+		in oklab,
+		var(--stationery-foreground) 30%,
+		transparent
+	);
 	/* Laid over the shelf while a card is open */
 	--editor-scrim: rgb(0 0 0 / 0.3);
 }
@@ -361,7 +373,7 @@
 	--instruction-hole-pitch: 3.25rem;
 	--instruction-hole-inset: 1.25rem;
 	--instruction-texture: url("/textures/paper.webp");
-	--instruction-texture-opacity: 0.35;
+	--instruction-texture-opacity: 0.45;
 	/* Nutrition card: size, how far it rises above the folder, its place and tilt */
 	--nutrition-card-width: 20rem;
 	--nutrition-card-rise: 20rem;
