@@ -1,11 +1,11 @@
 ---
 status: draft
-updated: 2026-10-16
+updated: 2026-10-20
 source:
   - src/features/ingredient/
   - src/features/editor/components/flip-card.tsx
   - src/features/menu/components/menu-item-row.tsx
-  - src/features/recipe/components/recipe-sheet.tsx
+  - src/features/recipe/components/ingredient-list.tsx
   - src/features/menu-shelf/components/menu-shelf.tsx
   - src/app/globals.css
   - public/textures/card-stock.webp
@@ -49,7 +49,7 @@ stateDiagram-v2
 
 | 項目 | 規則 |
 | ---- | ---- |
-| 可點的食材 | 有 `ingredientId` 的描述片段與用量名稱；沒有的外觀不變、不能點。點描述只開卡片，不換紙；點菜名照舊換到食譜紙 |
+| 可點的食材 | 有 `ingredientId` 的描述片段與用量名稱；沒有的外觀不變、不能點。點描述只開卡片，不換紙；點菜名照舊換到食譜資料夾 |
 | 用量那一行 | 名稱開卡片；框框與其他文字切換勾選 |
 | 位置 | 依開啟當下的螢幕決定：垂直置中，與螢幕右緣的距離由 token 決定，不依紙張位置 |
 | 捲動 | 卡片在紙張的捲動內容裡，與紙張完全同步，可能捲出畫面，不會自動關閉；在卡片上滾動會捲動紙張 |

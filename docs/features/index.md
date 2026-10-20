@@ -4,12 +4,13 @@
 
 | 功能     | 狀態 | 最後更新 |
 | -------- | ---- | -------- |
-| [紙張堆疊](paper-stack.md) | draft | 2026-10-12 |
+| [紙張堆疊](paper-stack.md) | draft | 2026-10-20 |
+| [食譜資料夾](recipe-folder.md) | draft | 2026-10-20 |
 | [菜單書架](menu-shelf.md) | draft | 2026-10-13 |
 | [食材卡片](ingredient-card.md) | draft | 2026-10-16 |
-| [料理成本與營養](dish-totals.md) | draft | 2026-10-16 |
+| [料理成本與營養](dish-totals.md) | draft | 2026-10-20 |
 | [編輯卡](editor.md) | draft | 2026-10-13 |
-| [食譜匯入](recipe-import.md) | draft | 2026-10-16 |
+| [食譜匯入](recipe-import.md) | draft | 2026-10-20 |
 | [雙語介面](bilingual-ui.md) | draft | 2026-10-16 |
 
 ## 功能頁模板

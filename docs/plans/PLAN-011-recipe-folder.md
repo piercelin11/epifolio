@@ -1,5 +1,5 @@
 ---
-status: in-progress
+status: done
 branch: plan-011-recipe-folder
 issue: 114
 created: 2026-10-20
@@ -129,6 +129,7 @@ flowchart TB
 
 ## 完成後遷移清單
 
-- [ ] 功能頁：`docs/features/paper-stack.md`、`docs/features/dish-totals.md`、`docs/features/recipe-import.md`、`docs/features/index.md`
-- [ ] ADR：ADR-0033（食譜資料夾與抽出）、ADR-0034（步驟時間與重點由 LLM 產生）、ADR-0035（後層資料夾顏色由主題推算）
-- [ ] glossary：食譜資料夾、做法紙、營養卡、食譜筆記
+- [x] 功能頁：新增 `docs/features/recipe-folder.md`；更新 `paper-stack.md`、`dish-totals.md`、`recipe-import.md`、`menu-shelf.md`、`editor.md`、`ingredient-card.md`、`features/index.md`
+- [x] ADR：ADR-0033（食譜資料夾與抽出）、ADR-0034（步驟時間與重點由 LLM 產生）、ADR-0035（後層資料夾顏色由主題推算）；ADR-0007 標註部分取代
+- [x] glossary：食譜資料夾、做法紙、營養卡、步驟時間、食譜筆記
+- [x] `docs/architecture.md`：首頁版面

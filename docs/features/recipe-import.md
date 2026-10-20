@@ -1,6 +1,6 @@
 ---
 status: draft
-updated: 2026-10-16
+updated: 2026-10-20
 source:
   - src/features/recipe-import/
   - src/app/api/recipe-import/route.ts
@@ -11,7 +11,7 @@ source:
   - src/features/ingredient/data/write-catalog-changes.ts
   - src/features/menu/data/create-dish.ts
   - src/features/recipe/data/recipe-draft.ts
-adr: [0022, 0023, 0024, 0025, 0026, 0027]
+adr: [0022, 0023, 0024, 0025, 0026, 0027, 0034]
 plan: PLAN-010
 ---
 
@@ -62,8 +62,8 @@ flowchart LR
 | 讀取中 | Next 變成 `Spinner` 與 `Reading…`，輸入鎖住；Cancel 或離開卡片會中止請求 |
 | 成功 | 菜名與描述填回 Scratch 欄位並切到 Scratch；之後在 Scratch 按 Next 仍沿用這次匯入的結果 |
 | 網址 | 只抓公開的 `http(s)` 網址，每次轉址都檢查；先讀頁面的 JSON-LD `Recipe`，沒有就抽正文；網址加進 References（[ADR-0023](../adr/0023-url-import-extraction.md)） |
-| 整理內容 | 一次產生 en / zh；修順句子；每一步都要輸出；敘述拆成步驟、必要時分組並加 Highlight；原文沒寫的量留空、不猜；只在步驟出現、清單沒有的食材補成一行用量；原文的提示放在最後一步並標 Tip；名稱只寫食材，切法與補充放備註；「A 或 B」只取 A、備註寫「或 B」 |
-| 單位 | 只用單位清單（[ADR-0024](../adr/0024-more-units.md)）；清單外的寫法數量照填、不帶單位；沒有數量的用量在食譜紙顯示 To taste |
+| 整理內容 | 一次產生 en / zh；修順句子；每一步都要輸出；敘述拆成步驟、必要時分組；每一步都有重點（Highlight）；原文寫明時長的步驟有時間，範圍取上限、多段加總，頻率與「炒到金黃」不算（[ADR-0034](../adr/0034-step-minutes-and-notes-from-llm.md)）；原文沒寫的量留空、不猜；只在步驟出現、清單沒有的食材補成一行用量；原文的提示存成食譜筆記；名稱只寫食材，切法與補充放備註；「A 或 B」只取 A、備註寫「或 B」 |
+| 單位 | 只用單位清單（[ADR-0024](../adr/0024-more-units.md)）；清單外的寫法數量照填、不帶單位；沒有數量的用量在資料夾顯示 To taste |
 | 步驟引用用量 | LLM 標出每一步提到的用量行，存檔後成為步驟片段的 `lineId`（[ADR-0015](../adr/0015-step-text-references-lines.md)）；在食譜卡改過的步驟退回純文字 |
 | 食材對應 | LLM 給每行標準名稱、中英同義詞、營養估計，以及預設單位、用到的計數單位重量與密度（或標為非食材）；程式正規化後（大小寫、全半形、標點、英文複數）比對目錄的名稱與別名；原文寫法優先於 LLM 給的名稱；粒度：價格或營養明顯不同才算不同食材 |
 | 食材確認卡 | 食材小卡的卡紙與長尾夾；標題下顯示 N MATCHED · N NOT MATCHED；名稱一律中英並列（EN \| ZH），沒有語言切換。非食材的行不顯示、自動不連結；已對上的行收在最下方，可展開 |

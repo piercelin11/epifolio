@@ -1,13 +1,13 @@
 ---
 status: draft
-updated: 2026-10-16
+updated: 2026-10-20
 source:
   - src/features/recipe/units.ts
   - src/features/ingredient/lib/convert.ts
   - src/features/recipe/lib/recipe-totals.ts
   - src/app/page.tsx
   - src/features/menu/components/menu-item-row.tsx
-  - src/features/recipe/components/recipe-sheet.tsx
+  - src/features/recipe/components/nutrition-card.tsx
 adr: [0031, 0032]
 plan: PLAN-008
 ---
@@ -16,7 +16,7 @@ plan: PLAN-008
 
 ## 一句話
 
-用食譜的用量和食材的價格、營養、換算資料，算出每份的食材成本與營養：菜單品項的價格就是每份成本，食譜紙在材料下方顯示每份營養。
+用食譜的用量和食材的價格、營養、換算資料，算出每份的食材成本與營養：菜單品項的價格就是每份成本，[食譜資料夾](recipe-folder.md)的營養卡顯示每份營養。
 
 ## 流程
 
@@ -27,7 +27,7 @@ flowchart LR
     LINES[(用量)] --> TOT[recipeTotals]
     CONV --> TOT
     TOT -->|每份成本| PRICE[菜單品項價格]
-    TOT -->|每份營養| SHEET[食譜紙營養行]
+    TOT -->|每份營養| SHEET[營養卡]
 ```
 
 每次載入頁面時在 `page.tsx` 計算，不存資料庫（[ADR-0032](../adr/0032-dish-cost-computed.md)）。食材在卡片背面存檔後，頁面重新整理，價格與營養跟著變。
@@ -43,10 +43,10 @@ flowchart LR
 | 沒寫單位 | 用食材的預設單位；沒有預設單位時當成「個」 |
 | 成本 | 換算成價格的單位後按比例計算（例如價格 25 / 100 g，用量 20 g 就是 5） |
 | 營養 | 換算成公克後依每 100 g 的值計算；四項營養任一項缺值，該行不計 |
-| 每份 | 除以食譜的份數；食譜沒寫份數時是整份，食譜紙標示「整份」 |
-| 不完整 | 有計入的用量算不出來（缺價格、密度或計數單位重量）：菜單價格後加 `+`（滑鼠停留有說明），營養行加 `*` 並附說明 |
-| 算不出來 | 沒有任何一行算得出來：菜單不顯示價格，食譜紙不顯示營養行 |
-| 份數控制 | 營養行固定是每份，不隨食譜紙的份數控制改變 |
+| 每份 | 除以食譜的份數；食譜沒寫份數時是整份，營養卡標示「整份」 |
+| 不完整 | 有計入的用量算不出來（缺價格、密度或計數單位重量）：菜單價格後加 `+`（滑鼠停留有說明），營養卡加 `*` 並附說明 |
+| 算不出來 | 沒有任何一行算得出來：菜單不顯示價格，營養卡顯示沒有資料 |
+| 份數控制 | 營養卡固定是每份，不隨資料夾的份數控制改變 |
 | 原文單位 | 資料庫永遠存食譜原本的數量與單位，換算只在計算時進行（[ADR-0031](../adr/0031-unit-conversion-data.md)） |
 
 ## 參數
