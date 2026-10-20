@@ -1,7 +1,7 @@
 // Fills the database with the sample menu, recipes and ingredient catalog
 // from seed-data.json.
-// Run with `pnpm exec prisma db seed`. Every table is cleared first, so it
-// can be run again at any time.
+// Run with `pnpm exec prisma db seed`. It only adds missing data and never
+// deletes or overwrites, so it is safe to run again at any time.
 
 import "dotenv/config";
 
@@ -235,26 +235,58 @@ function ingredientData(
 	};
 }
 
+/**
+ * Adds only what is missing and never changes existing rows. Ingredients are
+ * filled in by id; the sample recipes and menu are written only while the
+ * user has no menu, so sample recipes deleted later do not come back.
+ */
 async function main() {
-	await prisma.$transaction(async (tx) => {
-		// Menu items first: they keep their recipes from being deleted.
-		await tx.menuItem.deleteMany();
-		await tx.menu.deleteMany();
-		await tx.recipe.deleteMany();
-		await tx.ingredient.deleteMany();
-		await tx.user.deleteMany();
+	const added = await prisma.$transaction(async (tx) => {
+		const added = { ingredients: 0, recipes: 0, menu: false };
 
-		await tx.user.create({
-			data: { id: defaultUserId, name: defaultUserName },
+		await tx.user.upsert({
+			where: { id: defaultUserId },
+			create: { id: defaultUserId, name: defaultUserName },
+			update: {},
 		});
+
+		const existingIngredients = new Set(
+			(await tx.ingredient.findMany({ select: { id: true } })).map(
+				(ingredient) => ingredient.id
+			)
+		);
 		for (const ingredient of seedData.ingredients) {
+			if (existingIngredients.has(ingredient.id)) continue;
 			await tx.ingredient.create({ data: ingredientData(ingredient) });
+			added.ingredients++;
 		}
+
+		const hasMenu =
+			(await tx.menu.count({ where: { userId: defaultUserId } })) > 0;
+		if (hasMenu) return added;
+
+		const existingRecipes = new Set(
+			(
+				await tx.recipe.findMany({
+					where: { id: { in: dishes.map((dish) => dish.id) } },
+					select: { id: true },
+				})
+			).map((recipe) => recipe.id)
+		);
 		for (const dish of dishes) {
+			if (existingRecipes.has(dish.id)) continue;
 			await tx.recipe.create({ data: recipeData(dish) });
+			added.recipes++;
 		}
 		await tx.menu.create({ data: menuData() });
+		added.menu = true;
+		return added;
 	});
+
+	console.log(
+		`Seed added ${added.ingredients} ingredients, ${added.recipes} recipes` +
+			(added.menu ? " and the sample menu." : "; a menu already exists.")
+	);
 }
 
 main()
