@@ -49,6 +49,13 @@ function localized(text: Bilingual): LocalizedText {
 
 const isBlank = (text: LocalizedText) => Object.keys(text).length === 0;
 
+/** A step's minutes as whole minutes, or null when the model gave none that make sense. */
+function stepMinutes(minutes: number | null): number | null {
+	if (minutes === null || !Number.isFinite(minutes)) return null;
+	const whole = Math.round(minutes);
+	return whole > 0 ? whole : null;
+}
+
 const nameKey = (text: Bilingual) =>
 	`${text.en.trim().toLowerCase()}|${text.zh.trim()}`;
 
@@ -242,6 +249,7 @@ export function toImportedRecipe(
 				);
 			}
 			const title = localized(step.title);
+			const minutes = stepMinutes(step.minutes);
 			if (isBlank(text)) {
 				if (isBlank(title)) {
 					warn("Dropped a step with no text and no title.");
@@ -249,9 +257,9 @@ export function toImportedRecipe(
 				}
 				// A step that came back as a title alone keeps the title as its text.
 				warn("A step came back without text; its title stands in.");
-				return [{ title: {}, text: title }];
+				return [{ title: {}, text: title, minutes }];
 			}
-			return [{ title, text, parts }];
+			return [{ title, text, parts, minutes }];
 		}),
 	}));
 	const dishName = localized(output.dish.name);
@@ -280,6 +288,9 @@ export function toImportedRecipe(
 					: [{ label: {}, lines: [] }],
 			stepGroups:
 				stepGroups.length > 0 ? stepGroups : [{ label: {}, steps: [] }],
+			notes: output.recipe.notes
+				.map(localized)
+				.filter((note) => !isBlank(note)),
 			references: [
 				...new Set(output.recipe.references.map((url) => url.trim())),
 			]

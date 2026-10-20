@@ -24,6 +24,8 @@ export interface RecipeModel {
 	ingredients: OutlineRow<LineEntry>[];
 	steps: OutlineRow<StepEntry>[];
 	references: ReferenceRow[];
+	/** The recipe's notes, kept as they are; the card does not edit them. */
+	notes?: LocalizedText[];
 }
 
 export const emptyLine = (): LineEntry => ({
@@ -58,6 +60,7 @@ export function toRecipeModel(draft: RecipeDraft): RecipeModel {
 			key: newKey(),
 			url: link.url,
 		})),
+		notes: draft.notes,
 	};
 }
 
@@ -88,5 +91,6 @@ export function toRecipeDraft(model: RecipeModel): RecipeDraft {
 			steps: group.entries,
 		})),
 		references: model.references.map((row) => ({ url: row.url })),
+		notes: model.notes,
 	};
 }

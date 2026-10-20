@@ -68,9 +68,14 @@ export const ingredientGroupDraftSchema = z.object({
 
 export const stepDraftSchema = z.object({
 	id: z.string().min(1).optional(),
-	/** Optional highlight, e.g. "Emulsify". */
+	/** The step's key action, e.g. "Emulsify". */
 	title: optionalLocalizedTextSchema,
 	text: requiredLocalizedText("stepNeedsText"),
+	/**
+	 * Time the step takes (ADR-0034). Carried through the recipe card,
+	 * which does not edit it yet; null or absent for none.
+	 */
+	minutes: z.number().int().positive().nullable().optional(),
 	/**
 	 * The text split into runs citing lines by id or ref (ADR-0015). Used
 	 * for a locale only while its runs still join up to its text.
@@ -107,6 +112,11 @@ export const recipeDraftSchema = z.object({
 	ingredientGroups: z.array(ingredientGroupDraftSchema),
 	stepGroups: z.array(stepGroupDraftSchema),
 	references: z.array(referenceDraftSchema),
+	/**
+	 * Tips that are not steps (ADR-0034). Carried through the recipe card,
+	 * which does not edit them yet; absent leaves the saved notes as they are.
+	 */
+	notes: z.array(localizedTextSchema).optional(),
 });
 
 /** The editor's working copy; fields hold what was typed. */

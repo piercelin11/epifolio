@@ -78,9 +78,11 @@ export async function getRecipeDraft(
 				id: step.id,
 				title: readText(step.title),
 				text: joinStepText(stepTextSchema.parse(step.text)),
+				minutes: step.minutes,
 			})),
 		})),
 		references: recipe.referenceLinks.map((link) => ({ url: link.url })),
+		notes: z.array(localizedTextSchema).parse(recipe.notes),
 	};
 }
 
@@ -242,6 +244,7 @@ async function writeRecipeContent(
 				position: i,
 				title: step.title ?? Prisma.DbNull,
 				text,
+				minutes: step.minutes ?? null,
 			};
 			const { id } = step.id
 				? await tx.step.update({ where: { id: step.id }, data })
@@ -286,7 +289,11 @@ export async function writeRecipe(
 		if (!owned) throw new RecordNotFoundError({ key: "recipeNotFound" });
 		await tx.recipe.update({
 			where: { id: recipeId },
-			data: { name: recipe.name, serves: recipe.serves },
+			data: {
+				name: recipe.name,
+				serves: recipe.serves,
+				...(recipe.notes && { notes: recipe.notes }),
+			},
 		});
 		await writeRecipeContent(
 			tx,
@@ -309,7 +316,12 @@ export async function createRecipe(
 	created?: ReadonlyMap<string, string>
 ): Promise<string> {
 	const { id } = await tx.recipe.create({
-		data: { userId, name: recipe.name, serves: recipe.serves, notes: [] },
+		data: {
+			userId,
+			name: recipe.name,
+			serves: recipe.serves,
+			notes: recipe.notes ?? [],
+		},
 	});
 	await writeRecipeContent(tx, id, recipe, catalog, created);
 	return id;

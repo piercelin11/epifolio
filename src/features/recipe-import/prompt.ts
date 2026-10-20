@@ -20,8 +20,9 @@ Wording and structure
 - Smooth awkward or run-on sentences into clear, concise instructions.
 - If the method is a block of prose or has no clear steps, split it into short steps in cooking order.
 - Group ingredients and steps (e.g. "Sauce", "To serve") only when the recipe has distinct parts; otherwise use one group with an empty label.
-- Give a step a short title (a few words naming its key action, e.g. "Bloom the spices") only when it helps; otherwise leave it empty.
-- A tip or note in the source ("Note: keep the broth simmering") is not a step. Put such notes together as the last step, with the title "Tip" / "小提醒".
+- Give every step a short title: a few words in the imperative naming its key action, e.g. "Bloom the spices", "Caramelise the onion".
+- minutes: how long the step takes, only when its text states a duration ("simmer for 10 minutes" is 10, "1 hour 30 minutes" is 90). For a range use the upper end ("10-15 minutes" is 15); add up several durations in one step. A frequency is not a duration ("stir every 3-5 minutes" alone gives null), and neither is a state ("until golden"). Otherwise null; never guess.
+- A tip or note in the source ("Note: keep the broth simmering") is not a step. Put each one in recipe.notes, in the source's order.
 - Translate everything, including equipment (e.g. saucier, Dutch oven).
 
 Ingredient lines

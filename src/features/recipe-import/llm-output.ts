@@ -53,7 +53,10 @@ const line = z.object({
 });
 
 const step = z.object({
+	/** The step's key action, e.g. "Bloom the spices". */
 	title: bilingual,
+	/** Time the text states for the step, in minutes; null when it states none (ADR-0034). */
+	minutes: z.number().nullable(),
 	text: z.object({ en: z.array(run), zh: z.array(run) }),
 });
 
@@ -72,6 +75,8 @@ export const llmOutputSchema = z.object({
 			z.object({ label: bilingual, lines: z.array(line) })
 		),
 		stepGroups: z.array(z.object({ label: bilingual, steps: z.array(step) })),
+		/** Tips and remarks from the source that are not steps. */
+		notes: z.array(bilingual),
 		/** Web addresses the source itself gives. */
 		references: z.array(z.string()),
 	}),
