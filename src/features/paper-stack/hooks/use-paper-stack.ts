@@ -9,6 +9,9 @@ import type { StackPosition } from "../types";
 
 const positions: StackPosition[] = ["base", "offset"];
 
+/** Whether a sheet moves with the scroll area; the offset layer is fixed. */
+const scrolls = (position: StackPosition) => position === "base";
+
 /**
  * Distance that moves a sheet fully below the visible part of the scroll
  * area, given the sheet's top relative to the area's top edge.
@@ -59,10 +62,14 @@ export function usePaperStack(
 			const riseOrder = (position: StackPosition) =>
 				position === next ? 1 : 0;
 
-			// Sheet tops within the scrolled content, independent of scroll position.
+			// Sheet tops in view now, and once the area is scrolled back to the top.
 			const areaTop = area.getBoundingClientRect().top;
-			const contentTops = sheets.map(
-				({ el }) => el.getBoundingClientRect().top - areaTop + area.scrollTop
+			const topsInView = sheets.map(
+				({ el }) => el.getBoundingClientRect().top - areaTop
+			);
+			const restingTops = sheets.map(
+				({ position }, i) =>
+					topsInView[i] + (scrolls(position) ? area.scrollTop : 0)
 			);
 
 			await Promise.all(
@@ -70,7 +77,7 @@ export function usePaperStack(
 					animate(
 						el,
 						{
-							y: exitDistance(area, contentTops[i] - area.scrollTop),
+							y: exitDistance(area, topsInView[i]),
 							rotate: swapMotion.rotate[position].out,
 						},
 						{
@@ -92,7 +99,7 @@ export function usePaperStack(
 					animate(
 						el,
 						{
-							y: [exitDistance(area, contentTops[i]), 0],
+							y: [exitDistance(area, restingTops[i]), 0],
 							rotate: [swapMotion.rotate[position].in, 0],
 						},
 						{
@@ -107,7 +114,12 @@ export function usePaperStack(
 		}
 	}
 
-	return { front, swapTo, sheetRefs, scrollRef };
+	/** Ref callback that registers the element of the sheet at `position`. */
+	const sheetRef = (position: StackPosition) => (el: HTMLDivElement | null) => {
+		sheetRefs.current[position] = el;
+	};
+
+	return { front, swapTo, sheetRef, scrollRef };
 }
 
 export type PaperStackController = ReturnType<typeof usePaperStack>;

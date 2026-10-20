@@ -6,10 +6,9 @@ import { PaperSheet } from "@/features/paper-stack/components/paper-sheet";
 import { PaperStack } from "@/features/paper-stack/components/paper-stack";
 import { usePaperStack } from "@/features/paper-stack/hooks/use-paper-stack";
 import type { StackPosition } from "@/features/paper-stack/types";
-import { RecipeSheet } from "@/features/recipe/components/recipe-sheet";
+import { RecipeFolder } from "@/features/recipe/components/recipe-folder";
 import type { Recipe, RecipeProgress } from "@/features/recipe/types";
 import { useMessages } from "@/lib/i18n/locale-provider";
-import { cn } from "@/lib/utils";
 
 import type { MenuGroup } from "../types";
 import { MenuSheet } from "./menu-sheet";
@@ -19,14 +18,14 @@ interface MenuRecipeStackProps {
 	recipes: Recipe[];
 	/** Controls in the menu sheet's top-right corner. */
 	menuActions?: ReactNode;
-	/** Controls in the recipe sheet's top-right corner, for the recipe shown. */
+	/** Controls in the recipe folder's top-right corner, for the recipe shown. */
 	recipeActions?: (recipeId: string) => ReactNode;
 	/** Set on a book that is shown but not open; see PaperStack. */
 	inactive?: ComponentProps<typeof PaperStack>["inactive"];
 	/** Sheet in front; owned by the caller so it survives remounting. */
 	front: StackPosition;
 	onFrontChange: (front: StackPosition) => void;
-	/** Recipe on the recipe sheet; defaults to the first item on the menu. */
+	/** Recipe in the folder; defaults to the first item on the menu. */
 	recipeId?: string;
 	onRecipeChange: (recipeId: string) => void;
 	/** Called with an ingredient picked on either sheet and the area the sheets scroll in. */
@@ -38,17 +37,17 @@ interface MenuRecipeStackProps {
 	overlay?: ReactNode;
 	/** Called as the sheets start to swap. */
 	onSwapStart?: () => void;
-	/** Servings and ready ingredients per recipe id; owned by the caller. */
+	/** Servings, ready ingredients and open papers per recipe id; owned by the caller. */
 	progress: Record<string, RecipeProgress>;
 	onProgressChange: (recipeId: string, progress: RecipeProgress) => void;
 	/**
-	 * Leave the recipe sheet blank while it is behind the menu. The text is
-	 * hidden, not removed, so the sheet keeps its height.
+	 * Leave the recipe folder blank while it is behind the menu. The text is
+	 * hidden, not removed, so the papers keep their size.
 	 */
 	blankBackRecipe?: boolean;
 }
 
-/** The menu sheet over the recipe sheet; picking an item swaps them. */
+/** The menu sheet over the recipe folder; picking an item swaps them. */
 export function MenuRecipeStack({
 	group,
 	recipes,
@@ -100,26 +99,22 @@ export function MenuRecipeStack({
 			}}
 			offset={{
 				label: t.stack.showRecipe,
-				content: (
-					<PaperSheet tone="primary" perforated>
-						<div
-							className={cn(blankBackRecipe && front === "base" && "invisible")}
-						>
-							<RecipeSheet
-								recipe={recipe}
-								actions={recipe && recipeActions?.(recipe.id)}
-								progress={recipe && progress[recipe.id]}
-								onSelectIngredient={selectIngredient}
-								onProgressChange={(next) =>
-									recipe && onProgressChange(recipe.id, next)
-								}
-							/>
-						</div>
-					</PaperSheet>
+				render: (layer) => (
+					<RecipeFolder
+						recipe={recipe}
+						actions={recipe && recipeActions?.(recipe.id)}
+						progress={recipe && progress[recipe.id]}
+						onSelectIngredient={selectIngredient}
+						onProgressChange={(next) =>
+							recipe && onProgressChange(recipe.id, next)
+						}
+						layer={layer}
+						blank={blankBackRecipe && front === "base"}
+					/>
 				),
 			}}
 			onBringToFront={(position) => {
-				// The recipe sheet has nothing to show until an item is picked.
+				// The folder has nothing to show until an item is picked.
 				if (position === "offset" && !recipe) return;
 				swapTo(position);
 			}}

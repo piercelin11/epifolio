@@ -40,6 +40,16 @@ export const zh = {
 		perServing: "每份",
 		wholeRecipe: "整份",
 		nutritionIncomplete: "部分食材缺少營養或重量資料，未計入。",
+		noNutrition: "還沒有營養資料。",
+		notes: "筆記",
+		previousPage: "上一頁",
+		nextPage: "下一頁",
+		pageOf: ({ page, pages }: { page: number; pages: number }) =>
+			`${page} / ${pages}`,
+		stepTime: ({ hours, minutes }: { hours: number; minutes: number }) =>
+			[hours > 0 && `${hours} 小時`, minutes > 0 && `${minutes} 分`]
+				.filter(Boolean)
+				.join(" "),
 	},
 	ingredientCard: {
 		calories: "熱量",

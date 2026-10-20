@@ -5,15 +5,20 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 import type { PaperStackController } from "../hooks/use-paper-stack";
-import type { StackPosition, StackSheet } from "../types";
+import type {
+	StackCover,
+	StackLayer,
+	StackPosition,
+	StackSheet,
+} from "../types";
 
 interface PaperStackProps {
 	stack: PaperStackController;
-	/** Sheet at the stack origin. */
+	/** Sheet at the stack origin, in the scroll area. */
 	base: StackSheet;
-	/** Sheet shifted right and down by the paper offset tokens. */
-	offset: StackSheet;
-	/** Laid over both sheets inside the scrolled content, e.g. a card. */
+	/** Layer fixed over the whole stack; it does not scroll. */
+	offset: StackLayer;
+	/** Laid over the base sheet inside the scrolled content, e.g. a card. */
 	overlay?: ReactNode;
 	/** Called when the visible part of the back sheet is clicked. */
 	onBringToFront?: (position: StackPosition) => void;
@@ -28,21 +33,19 @@ interface PaperStackProps {
 	};
 }
 
-const positionClasses: Record<StackPosition, string> = {
-	base: "min-h-(--paper-base-min-height) w-(--paper-base-width)",
-	offset:
-		"mt-(--paper-offset-y) ml-(--paper-inset-x) min-h-(--paper-min-height) w-(--paper-width)",
-};
+// An inactive stack is clipped by the screen edge and overlaps the header
+// band, so it must not catch clicks meant for the header. Its sheets may run
+// past the bottom of the area, but stay clipped at the top like a scrolled
+// stack.
+const inactiveClip = "[clip-path:inset(0_-100vw_-100vh)]";
 
 /**
- * Two sheets in their own scroll area, which fills the space it is given.
- * The sheets start below the header band and scroll over whatever sits
- * there. They share one grid cell, so they scroll together; each is as tall
- * as its content, at least its minimum height token. The scroll bar is
- * hidden.
- * Only the stacking order changes. The base sheet is centred; the offset
- * sheet starts inside its left edge and sticks out past its right edge,
- * lower down.
+ * A sheet in a scroll area with a layer fixed over it (ADR-0033). The area
+ * fills the space it is given; the base sheet starts below the header band
+ * and scrolls over whatever sits there, as tall as its content and at least
+ * its minimum height token. The scroll bar is hidden. The layer fills the
+ * stack and does not scroll; while it is in front the area is locked.
+ * Only the stacking order changes. The base sheet is centred.
  */
 export function PaperStack({
 	stack,
@@ -52,81 +55,92 @@ export function PaperStack({
 	onBringToFront,
 	inactive,
 }: PaperStackProps) {
-	const { front, scrollRef, sheetRefs } = stack;
-	const sheets: Record<StackPosition, StackSheet> = { base, offset };
+	const { front, scrollRef, sheetRef } = stack;
+	const baseInFront = front === "base";
+	const layerInFront = front === "offset";
+	const layerCover: StackCover | null = inactive
+		? inactive
+		: !layerInFront && onBringToFront
+			? { label: offset.label, onActivate: () => onBringToFront("offset") }
+			: null;
 
 	return (
-		<div
-			ref={scrollRef}
-			data-paper-scroll
-			className={cn(
-				// The bleed widens the area past the book on both sides without
-				// moving the sheets; it scrolls only vertically.
-				"-mx-(--paper-scroll-bleed) min-h-0 flex-1 scrollbar-none overscroll-contain px-(--paper-scroll-bleed) pt-(--header-height)",
-				// An inactive stack is clipped by the screen edge and overlaps the
-				// header band, so it must not catch clicks meant for the header.
-				// It does not scroll either; its sheets may run past the bottom of
-				// the area, but stay clipped at the top like a scrolled stack.
-				inactive
-					? "pointer-events-none overflow-visible [clip-path:inset(0_-100vw_-100vh)]"
-					: "pointer-events-auto overflow-x-hidden overflow-y-auto"
-			)}
-		>
+		<div data-paper-stack className="relative flex min-h-0 flex-1 flex-col">
 			{/*
-			 * Clipping keeps sheets that drop out of view from growing the scroll
-			 * area; only vertically, so tilted sheets can lean into the bleed. The
-			 * left padding, matching the offset sheet's overhang on the right,
-			 * centres the base sheet.
+			 * Comes first, so the base sheet paints over it when neither is
+			 * raised. It only raises itself in front, leaving the overlay above.
 			 */}
 			<div
-				data-paper-content
-				className="pointer-events-none relative flex justify-center overflow-x-visible overflow-y-clip pb-24"
+				data-paper-position="offset"
+				ref={sheetRef("offset")}
+				className={cn(
+					"pointer-events-none absolute inset-0",
+					layerInFront && "z-10",
+					inactive && inactiveClip
+				)}
 			>
-				<div className="box-content grid w-[calc(var(--paper-base-width)+var(--paper-offset-x))] items-start pl-(--paper-offset-x)">
-					{(["base", "offset"] as const).map((position) => {
-						const inFront = front === position;
-						return (
+				{offset.render({ inFront: layerInFront, cover: layerCover })}
+			</div>
+			<div
+				ref={scrollRef}
+				data-paper-scroll
+				className={cn(
+					// The bleed widens the area past the book on both sides without
+					// moving the sheets; it scrolls only vertically.
+					"-mx-(--paper-scroll-bleed) min-h-0 flex-1 scrollbar-none overscroll-contain px-(--paper-scroll-bleed) pt-(--header-height)",
+					inactive
+						? cn("pointer-events-none overflow-visible", inactiveClip)
+						: "pointer-events-auto overflow-x-hidden",
+					!inactive && (layerInFront ? "overflow-y-hidden" : "overflow-y-auto")
+				)}
+			>
+				{/*
+				 * Clipping keeps a sheet that drops out of view from growing the
+				 * scroll area; only vertically, so a tilted sheet can lean into the
+				 * bleed. The left padding, matching the folder's overhang on the
+				 * right, centres the base sheet.
+				 */}
+				<div
+					data-paper-content
+					className="pointer-events-none relative flex justify-center overflow-x-visible overflow-y-clip pb-24"
+				>
+					<div className="box-content w-[calc(var(--paper-base-width)+var(--paper-offset-x))] pl-(--paper-offset-x)">
+						<div
+							data-paper-position="base"
+							ref={sheetRef("base")}
+							className={cn(
+								"pointer-events-auto relative flex min-h-(--paper-base-min-height) w-(--paper-base-width) flex-col",
+								baseInFront && "z-10"
+							)}
+						>
 							<div
-								key={position}
-								data-paper-position={position}
-								ref={(el) => {
-									sheetRefs.current[position] = el;
-								}}
-								className={cn(
-									"pointer-events-auto relative col-start-1 row-start-1 flex flex-col",
-									positionClasses[position],
-									inFront && "z-10"
-								)}
+								inert={!!inactive || !baseInFront}
+								className="flex flex-1 flex-col"
 							>
-								<div
-									inert={!!inactive || !inFront}
-									className="flex flex-1 flex-col"
-								>
-									{sheets[position].content}
-								</div>
-								{inactive ? (
+								{base.content}
+							</div>
+							{inactive ? (
+								<button
+									type="button"
+									aria-label={inactive.label}
+									className="absolute inset-0 cursor-pointer"
+									onClick={inactive.onActivate}
+								/>
+							) : (
+								!baseInFront &&
+								onBringToFront && (
 									<button
 										type="button"
-										aria-label={inactive.label}
+										aria-label={base.label}
 										className="absolute inset-0 cursor-pointer"
-										onClick={inactive.onActivate}
+										onClick={() => onBringToFront("base")}
 									/>
-								) : (
-									!inFront &&
-									onBringToFront && (
-										<button
-											type="button"
-											aria-label={sheets[position].label}
-											className="absolute inset-0 cursor-pointer"
-											onClick={() => onBringToFront(position)}
-										/>
-									)
-								)}
-							</div>
-						);
-					})}
+								)
+							)}
+						</div>
+					</div>
+					{overlay}
 				</div>
-				{overlay}
 			</div>
 		</div>
 	);

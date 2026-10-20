@@ -32,8 +32,9 @@ export interface StepPart {
 }
 
 export interface Step {
-	/** Optional highlight shown before the text, e.g. "Emulsify". */
+	/** The step's key action, e.g. "Emulsify"; shown above the text. */
 	title?: string;
+	/** Time the step takes, when its text states one (ADR-0034). */
 	minutes?: number;
 	text: StepPart[];
 }
@@ -71,10 +72,15 @@ export interface Recipe {
 	totals?: RecipeTotals;
 }
 
+/** A paper filed in the recipe folder, opened and closed by its tab. */
+export type FolderPanel = "instructions" | "nutrition";
+
 /** What the cook has done with a recipe while the page is open. */
 export interface RecipeProgress {
 	/** Servings picked; the recipe's own when absent. */
 	servings?: number;
 	/** Ids of the ingredient lines that are ready. */
 	checked: string[];
+	/** Papers opened or closed; the rest follow `defaultPanels`. */
+	panels?: Partial<Record<FolderPanel, boolean>>;
 }

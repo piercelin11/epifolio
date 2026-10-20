@@ -43,6 +43,16 @@ export const en = {
 		wholeRecipe: "Whole recipe",
 		nutritionIncomplete:
 			"Some ingredients are left out: their nutrition or weight is missing.",
+		noNutrition: "No nutrition data yet.",
+		notes: "Notes",
+		previousPage: "Previous page",
+		nextPage: "Next page",
+		pageOf: ({ page, pages }: { page: number; pages: number }) =>
+			`${page} / ${pages}`,
+		stepTime: ({ hours, minutes }: { hours: number; minutes: number }) =>
+			[hours > 0 && `${hours}h`, minutes > 0 && `${minutes}m`]
+				.filter(Boolean)
+				.join(" "),
 	},
 	ingredientCard: {
 		calories: "Calories",
