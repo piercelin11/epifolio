@@ -19,6 +19,7 @@
 | [PLAN-008](PLAN-008-ingredient-editing.md) | 食材卡片翻面編輯、單位換算、料理成本與營養 | done | #42 |
 | [PLAN-009](PLAN-009-bilingual-ui.md) | 雙語介面與語言切換 | done | #53 |
 | [PLAN-010](PLAN-010-ingredient-matching.md) | 匯入的食材對應改由程式比對 | done | #85 |
+| [PLAN-011](PLAN-011-recipe-folder.md) | 食譜資料夾 | in-progress | #114 |
 
 ## 模板
 

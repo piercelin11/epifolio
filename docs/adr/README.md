@@ -12,7 +12,7 @@
 | 0004 | [翻頁以 motion 與 CSS 3D 自製](0004-custom-page-flip.md)    | Superseded by 0007 | 2026-10-07 |
 | 0005 | [文件與任務管理：Issues + git + STATUS + plans](0005-docs-and-task-management.md) | Accepted | 2026-10-07 |
 | 0006 | [字體以 next/font 載入，Tailwind 依用途命名](0006-role-based-fonts-with-next-font.md) | Accepted | 2026-10-11 |
-| 0007 | [首頁改用紙張堆疊，取代左右跨頁](0007-paper-stack-layout.md) | Accepted | 2026-10-11 |
+| 0007 | [首頁改用紙張堆疊，取代左右跨頁](0007-paper-stack-layout.md) | Accepted（部分由 0033 取代） | 2026-10-11 |
 | 0008 | [菜單主題的配色放在 TS 設定檔，以 CSS 變數套用](0008-menu-theme-colors.md) | Accepted | 2026-10-12 |
 | 0009 | [總覽的滾輪卡點使用 wheel-gestures](0009-shelf-wheel-snap.md) | Accepted | 2026-10-12 |
 | 0010 | [Tailwind 改用 @tailwindcss/postcss 整合](0010-tailwind-postcss.md) | Accepted | 2026-10-12 |
@@ -38,6 +38,9 @@
 | 0030 | [中文用 Noto Sans TC 與 Noto Serif TC，接在拉丁字型之後](0030-chinese-fonts.md) | Accepted | 2026-10-15 |
 | 0031 | [單位換算用程式係數加上食材自己的重量與密度，資料庫保留原文單位](0031-unit-conversion-data.md) | Accepted | 2026-10-16 |
 | 0032 | [品項價格由食材成本即時計算，不存資料庫](0032-dish-cost-computed.md) | Accepted | 2026-10-16 |
+| 0033 | [食譜改成固定在畫面底部的資料夾，做法紙以滾動抽出](0033-recipe-folder-pull-out.md) | Accepted | 2026-10-20 |
+| 0034 | [步驟時間與重點由 LLM 匯入時產生，提醒存食譜筆記](0034-step-minutes-and-notes-from-llm.md) | Accepted | 2026-10-20 |
+| 0035 | [後層資料夾的顏色由主題色推算，主題可覆寫](0035-derived-deep-primary.md) | Accepted | 2026-10-20 |
 
 ## 模板
 
