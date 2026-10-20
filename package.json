@@ -15,6 +15,7 @@
 		"typecheck": "next typegen && tsc --noEmit",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
+		"db:backup": "tsx scripts/db-backup.ts",
 		"postinstall": "prisma generate",
 		"docs:serve": ".venv/bin/mkdocs serve",
 		"docs:build": ".venv/bin/mkdocs build --strict"

@@ -46,6 +46,9 @@ next-env.d.ts
 /prisma/*.db
 /prisma/*.db-journal
 
+# database backups from pnpm db:backup
+/backups/
+
 # local uploads
 /public/uploads/
 
