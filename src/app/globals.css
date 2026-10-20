@@ -360,9 +360,9 @@
 	--folder-tab-offset: 0.5rem;
 	/* How far the back flap's top edge shows above the front flap's */
 	--folder-back-rise: 0.375rem;
-	/* Width of one ingredient column while the list fits in two */
-	--folder-ingredient-column: 17rem;
 	--folder-column-gap: 2.5rem;
+	/* Space above an ingredient group label that follows another group */
+	--folder-group-gap: 0.875rem;
 	/* Instruction sheet: inset from the folder's sides, and the highest its top edge goes before it is pulled */
 	--instruction-inset-x: 0.5rem;
 	--instruction-top: calc(var(--header-height) + var(--paper-offset-y));

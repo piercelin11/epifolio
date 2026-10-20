@@ -162,13 +162,14 @@ function IngredientLine({
 }
 
 /**
- * The ingredient groups in columns that fill the space given. Columns
+ * The ingredient groups in three columns that fill the space given. A
+ * group runs on in the same column after the one before it; a label is
+ * never left at the foot of a column and a line is never split. Columns
  * that do not fit flow off to the side; `page` slides them into view
  * (see useColumnPages).
  */
 export function IngredientColumns({
 	listRef,
-	columns,
 	page,
 	groups,
 	factor,
@@ -177,7 +178,6 @@ export function IngredientColumns({
 	onSelectIngredient,
 }: {
 	listRef: Ref<HTMLDivElement>;
-	columns: number;
 	page: number;
 	groups: IngredientGroup[];
 	factor: number;
@@ -190,21 +190,21 @@ export function IngredientColumns({
 		<div className="min-h-0 flex-1 overflow-clip">
 			<div
 				ref={listRef}
-				data-columns={columns}
 				style={{ "--page": page } as CSSProperties}
 				className={cn(
-					"h-full gap-x-(--folder-column-gap) transition-transform duration-300",
-					"translate-x-[calc(var(--page)*-1*(100%+var(--folder-column-gap)))]",
-					"data-[columns=2]:w-[min(100%,calc(2*var(--folder-ingredient-column)+var(--folder-column-gap)))] data-[columns=2]:columns-2 data-[columns=3]:columns-3"
+					"h-full columns-3 gap-x-(--folder-column-gap) transition-transform duration-300 motion-reduce:transition-none",
+					"translate-x-[calc(var(--page)*-1*(100%+var(--folder-column-gap)))]"
 				)}
 			>
+				{/* Plain blocks, not flex, so groups break cleanly between columns */}
 				{groups.map((group, g) => (
-					<div
-						key={g}
-						className="mb-4 flex break-inside-avoid flex-col gap-1.5 last:mb-0"
-					>
-						{group.label && <GroupLabel>{group.label}</GroupLabel>}
-						<ul className="text-caption flex flex-col gap-0.5 leading-snug">
+					<div key={g} className="not-first:mt-(--folder-group-gap)">
+						{group.label && (
+							<div className="mb-1.5 break-after-avoid">
+								<GroupLabel>{group.label}</GroupLabel>
+							</div>
+						)}
+						<ul className="text-caption leading-snug *:break-inside-avoid *:not-first:mt-0.5">
 							{group.items.map((item) => (
 								<IngredientLine
 									key={item.id}

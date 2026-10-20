@@ -302,7 +302,6 @@ export function RecipeFolder({
 									</div>
 									<IngredientColumns
 										listRef={listRef}
-										columns={columns.columns}
 										page={columns.page}
 										groups={recipe.ingredientGroups}
 										factor={factor}
