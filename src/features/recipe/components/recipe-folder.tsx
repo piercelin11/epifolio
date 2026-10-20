@@ -7,7 +7,13 @@ import {
 	useReducedMotion,
 	useTransform,
 } from "motion/react";
-import { type ReactNode, useCallback, useLayoutEffect, useRef } from "react";
+import {
+	type MouseEvent,
+	type ReactNode,
+	useCallback,
+	useLayoutEffect,
+	useRef,
+} from "react";
 
 import { PaperSheet } from "@/features/paper-stack/components/paper-sheet";
 import type { StackLayerState } from "@/features/paper-stack/types";
@@ -93,6 +99,7 @@ function FolderTab({
 	return (
 		<button
 			type="button"
+			data-folder-tab
 			aria-expanded={open}
 			onClick={onToggle}
 			className={cn(
@@ -140,14 +147,38 @@ export function RecipeFolder({
 		() => stageRef.current?.closest<HTMLElement>("[data-paper-stack]") ?? null,
 		[]
 	);
-	const { pull, reset } = useSheetPull({
+	const { pull, reset, release } = useSheetPull({
 		enabled: usable && panels.instructions && contentHeight > rest,
 		max: Math.max(contentHeight - rest, 0),
 		page: rest,
 		scope,
 	});
 	const reveal = useMotionValue(panels.instructions ? rest : 0);
-	const sheetY = useTransform(() => -(reveal.get() + pull.get()));
+	// Part of the pull pushes the folder down, up to a share of its height.
+	const frontRef = useRef<HTMLDivElement>(null);
+	const sinkDepth = useMotionValue(0);
+	const frontHeight = useElementHeight(frontRef);
+	useLayoutEffect(() => {
+		sinkDepth.set(frontHeight * folderMotion.sink.depth);
+	}, [sinkDepth, frontHeight]);
+	const sink = useTransform(() =>
+		Math.min(pull.get() * folderMotion.sink.share, sinkDepth.get())
+	);
+	// The sheet is pulled from the folder's top edge, which sinks with it.
+	const sheetY = useTransform(() => sink.get() - reveal.get() - pull.get());
+
+	/**
+	 * While the folder is pushed down, a click on it lets it spring back
+	 * instead; only a checkbox and the tabs still work as usual.
+	 */
+	const onFolderClick = (event: MouseEvent) => {
+		if (sink.get() < 1) return;
+		const target = event.target as Element;
+		if (target.closest('input[type="checkbox"], [data-folder-tab]')) return;
+		event.preventDefault();
+		event.stopPropagation();
+		release();
+	};
 
 	// Opening and closing slide the sheet; anything else, such as the
 	// content changing height, moves it at once.
@@ -216,7 +247,10 @@ export function RecipeFolder({
 
 			{/* Back flap */}
 			{/* Clicks pass the flap's box and land only on its tab-shaped sheet */}
-			<div className="absolute inset-x-0 bottom-(--folder-bottom) flex h-[calc(var(--folder-height)+var(--folder-tab-height)+var(--folder-back-rise))] flex-col">
+			<motion.div
+				style={{ y: sink }}
+				className="absolute inset-x-0 bottom-(--folder-bottom) flex h-[calc(var(--folder-height)+var(--folder-tab-height)+var(--folder-back-rise))] flex-col"
+			>
 				<PaperSheet
 					tone="folder-deep"
 					className="folder-tab pointer-events-auto min-h-0 [--tab-left:calc(var(--folder-tab-offset)+var(--folder-tab-width)-var(--folder-tab-slant))]"
@@ -231,12 +265,13 @@ export function RecipeFolder({
 						/>
 					</Surface>
 				</PaperSheet>
-			</div>
+			</motion.div>
 
 			{/* Nutrition card, cut off at the folder's bottom edge */}
 			<div className="clip-below absolute inset-x-0 top-0 bottom-(--folder-bottom)">
 				<motion.div
 					initial={false}
+					style={{ y: sink }}
 					animate={{ "--shown": panels.nutrition ? 1 : 0 }}
 					transition={reduceMotion ? { duration: 0 } : folderMotion.slide}
 					className="pointer-events-auto absolute top-[calc(100%-var(--folder-height))] right-(--nutrition-card-right) flex h-[calc(var(--nutrition-card-rise)+var(--nutrition-card-tuck))] w-(--nutrition-card-width) translate-y-[calc((1-var(--shown))*var(--nutrition-card-tuck)-var(--shown)*var(--nutrition-card-rise))] rotate-(--nutrition-card-rotate) flex-col"
@@ -254,7 +289,12 @@ export function RecipeFolder({
 			</div>
 
 			{/* Front flap */}
-			<div className="absolute inset-x-0 bottom-(--folder-bottom) flex h-[calc(var(--folder-height)+var(--folder-tab-height))] flex-col">
+			<motion.div
+				ref={frontRef}
+				style={{ y: sink }}
+				onClickCapture={onFolderClick}
+				className="absolute inset-x-0 bottom-(--folder-bottom) flex h-[calc(var(--folder-height)+var(--folder-tab-height))] flex-col"
+			>
 				<PaperSheet
 					tone="folder"
 					className="folder-tab pointer-events-auto min-h-0 [--tab-left:var(--folder-tab-offset)]"
@@ -320,7 +360,7 @@ export function RecipeFolder({
 						)}
 					</Surface>
 				</PaperSheet>
-			</div>
+			</motion.div>
 		</div>
 	);
 }

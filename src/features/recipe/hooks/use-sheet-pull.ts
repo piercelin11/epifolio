@@ -34,6 +34,7 @@ const ownsKeys = "input, textarea, select, button, a, [contenteditable]";
 export function useSheetPull({ enabled, max, page, scope }: SheetPullOptions): {
 	pull: MotionValue<number>;
 	reset: () => number;
+	release: () => void;
 } {
 	const reduceMotion = useReducedMotion();
 	const target = useMotionValue(0);
@@ -117,5 +118,8 @@ export function useSheetPull({ enabled, max, page, scope }: SheetPullOptions): {
 		return pulled;
 	}, [pull, target, smooth]);
 
-	return { pull, reset };
+	/** Lets the sheet slide back to its resting height. */
+	const release = useCallback(() => target.set(0), [target]);
+
+	return { pull, reset, release };
 }
