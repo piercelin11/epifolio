@@ -21,39 +21,50 @@
 | [PLAN-010](PLAN-010-ingredient-matching.md) | 匯入的食材對應改由程式比對 | done | #85 |
 | [PLAN-011](PLAN-011-recipe-folder.md) | 食譜資料夾 | done | #114 |
 
+<!-- docs-system:begin plan-template v1 -->
+
 ## 模板
 
-````markdown
+```markdown
 ---
-status: draft            # draft | approved | in-progress | done
+status: draft # draft | approved | in-progress | done
 branch: plan-NNN-slug
-issue:                   # 父 issue 編號，approved 後填寫
+issue: # 父 issue 編號，approved 後填寫
 created: YYYY-MM-DD
 ---
 
 # PLAN-NNN：標題
 
 ## 目標
+
 為什麼做、解決什麼問題
 
 ## 非目標
+
 這次不做的事
 
 ## 驗收條件
+
 - 可驗證的條件（子 issue 的驗收依據）
 
 ## 邊界情況
+
 空狀態、錯誤、極端輸入
 
 ## 設計摘要
+
 資料、流程、介面的重點；有取捨之處連到 ADR
 
 ## 任務拆解
+
 1. 任務（→ 對應一張子 issue，approved 後在此填入編號）
 2. 任務
 
 ## 完成後遷移清單
+
 - [ ] 功能頁：docs/features/xxx.md
 - [ ] ADR：docs/adr/xxxx-xxx.md
 - [ ] glossary 新詞
-````
+```
+
+<!-- docs-system:end plan-template -->

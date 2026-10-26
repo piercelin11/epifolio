@@ -1,6 +1,6 @@
 # 決策紀錄（ADR）
 
-一個決策一個檔案，檔名 `NNNN-<slug>.md`（四位數編號）。只記錄「有取捨的決定」，不記過程細節。
+一個決策一個檔案，檔名 `NNNN-<slug>.md`（四位數編號）。只記錄「有取捨的決定」，不記過程細節。只新增不改寫；被推翻時把舊的標成 `Superseded by ADR-XXXX`。
 
 ## 索引
 
@@ -42,26 +42,35 @@
 | 0034 | [步驟時間與重點由 LLM 匯入時產生，提醒存食譜筆記](0034-step-minutes-and-notes-from-llm.md) | Accepted | 2026-10-20 |
 | 0035 | [後層資料夾的顏色由主題色推算，主題可覆寫](0035-derived-deep-primary.md) | Accepted | 2026-10-20 |
 
+<!-- docs-system:begin adr-template v1 -->
+
 ## 模板
 
-````markdown
+```markdown
 # ADR-NNNN：用決定本身當標題
 
 日期：YYYY-MM-DD
 狀態：Proposed | Accepted | Superseded by ADR-XXXX
 
 ## 背景
+
 當時遇到什麼問題、有什麼限制，逼你要做這個決定
 
 ## 決策
+
 最後選了哪個方案
 
 ## 考慮過的替代方案
+
 - 方案 A：否決理由
 
 ## 後果
+
 往後的程式碼與流程因此要遵守什麼；有哪些代價
 
 ## 相關
+
 功能頁、plan、issue、程式碼路徑
-````
+```
+
+<!-- docs-system:end adr-template -->

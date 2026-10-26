@@ -13,37 +13,47 @@
 | [食譜匯入](recipe-import.md) | draft | 2026-10-20 |
 | [雙語介面](bilingual-ui.md) | draft | 2026-10-16 |
 
+<!-- docs-system:begin feature-template v1 -->
+
 ## 功能頁模板
 
 新增功能頁時複製下面的結構（frontmatter 與章節都要保留）：
 
-````markdown
+```markdown
 ---
-status: draft            # draft | stable
+status: draft # draft | stable
 updated: YYYY-MM-DD
-source:                  # 對應的程式碼路徑
+source: # 對應的程式碼路徑
   - path/to/code
-adr: []                  # 相關決策，例如 [0001, 0003]
+adr: [] # 相關決策，例如 [0001, 0003]
 plan: PLAN-NNN
 ---
 
 # 功能名稱
 
 ## 一句話
+
 這個功能回答什麼問題
 
 ## 流程
+
 （Mermaid 流程圖）
 
 ## 規則 / 狀態
+
 （表格）
 
 ## 參數
+
 參數見 `<設定檔路徑>`。（標註「已確認」或「待校準」）
 
 ## 已知限制
+
 （同時開 issue 標 `known-limitation`）
 
 ## 相關連結
+
 ADR、plan、issue
-````
+```
+
+<!-- docs-system:end feature-template -->
